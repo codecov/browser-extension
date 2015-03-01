@@ -1,0 +1,30 @@
+{
+  "name": "Codecov Extension",
+  "version": "0.0.1",
+  "description": "Codecov Coverage in Github",
+  "icons": { 
+    "50": "icons/codecov-50.png"
+    // ,"128": ""
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://github.com/*"],
+      "all_frames": true,
+      "run_at": "document_end",
+      "js": ["dist/jquery.min.js", "dist/jquery.min.map", "dist/github.js"]
+    }
+  ],
+  "manifest_version": 2,
+  "web_accessible_resources": [
+    "dist/jquery.min.js", 
+    "dist/jquery.min.map", 
+    "dist/style.css",
+    "dist/github.css"
+  ],
+  "permissions": [
+    "*://github.com/*/blob/*",
+    "*://github.com/*/pull/*",
+    "*://github.com/*/compare/*",
+    "*://codecov.io/*"
+  ]
+}

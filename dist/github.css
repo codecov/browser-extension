@@ -1,0 +1,43 @@
+table:not(.diff-table)>tbody>tr>td.blob-num.codecov.codecov-hit.codecov-on{
+    background-color: #dbffdb;
+    border-color: #c1e9c1;
+}
+table:not(.diff-table)>tbody>tr>td.blob-code.codecov.codecov-hit.codecov-on{
+    background-color: #eaffea;
+}
+table:not(.diff-table)>tbody>tr>td.blob-num.codecov.codecov-missed.codecov-on{
+    background-color: #ffdddd;
+    border-color: #f1c0c0;
+}
+table:not(.diff-table)>tbody>tr>td.blob-code.codecov.codecov-missed.codecov-on{
+    background-color: #ffecec;
+}
+table:not(.diff-table)>tbody>tr>td.blob-num.codecov.codecov-partial.codecov-on{
+    background: rgb(247, 246, 172);
+}
+table:not(.diff-table)>tbody>tr>td.blob-code.codecov.codecov-partial.codecov-on{
+    background-color: rgb(252, 252, 214);
+}
+
+
+.diff-table>tbody>tr>td.blob-num.blob-num-addition.codecov.codecov-hit.codecov-on:before{
+    content: '\2713';
+    position: absolute;
+    color: #3fa03f;
+    font-weight: bold;
+    left: -12px;
+}
+.diff-table>tbody>tr>td.blob-num.blob-num-addition.codecov.codecov-partial.codecov-on:before{
+    content: '~';
+    position: absolute;
+    color: #c2922b;
+    font-weight: bold;
+    left: -12px;
+}
+.diff-table>tbody>tr>td.blob-num.blob-num-addition.codecov.codecov-missed.codecov-on:before{
+    content: '\2717';
+    position: absolute;
+    color: #d31f1f;
+    font-weight: bold;
+    left: -12px;
+}
