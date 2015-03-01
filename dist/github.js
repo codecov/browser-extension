@@ -1,81 +1,114 @@
 var Codecov,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-Codecov = {
-  settings: {
+Codecov = (function() {
+  Codecov.prototype.slug = null;
+
+  Codecov.prototype.ref = null;
+
+  Codecov.prototype.method = null;
+
+  Codecov.prototype.files = null;
+
+  Codecov.prototype.settings = {
+    url: 'https://codecov.io',
     show_missed: true,
     show_partial: true,
-    url: 'https://codecov.io',
-    show_hit: false
-  },
-  run: function() {
-    var files, head, hotkey, method, ref, split, stylesheet;
-    files = $('.repository-content .file');
-    if (!files) {
-      return;
-    }
-    method = 'file';
-    hotkey = $('[data-hotkey=y]');
-    if (hotkey.length > 0) {
-      split = hotkey.attr('href').split('/');
-      if (split[3] === 'blob') {
-        ref = split[4];
-      }
-    }
-    if (!ref) {
-      ref = $('.commit-id:last').text();
-      method = 'compare';
-    }
-    if (!ref) {
-      ref = $('.current-branch:last').text();
-      method = 'pull';
-    }
+    show_hit: false,
+    method: null,
+    files: null
+  };
+
+  function Codecov() {
+    var head, hotkey, split, stylesheet;
     stylesheet = document.createElement('link');
     stylesheet.href = chrome.extension.getURL('dist/github.css');
     stylesheet.rel = 'stylesheet';
     head = document.getElementsByTagName('head')[0] || document.documentElement;
     head.insertBefore(stylesheet, head.lastChild);
+    this.slug = document.URL.replace(/.*:\/\/github.com\//, '').match(/^[^\/]+\/[^\/]+/)[0];
+    this.method = 'blob';
+    hotkey = $('[data-hotkey=y]');
+    if (hotkey.length > 0) {
+      split = hotkey.attr('href').split('/');
+      if (split[3] === 'blob') {
+        this.ref = split[4];
+      }
+    }
+    if (!this.ref) {
+      this.ref = $('.commit-id:last').text();
+      this.method = 'compare';
+    }
+    if (!this.ref) {
+      this.ref = $('.current-branch:last').text();
+      this.method = 'pull';
+    }
+    this.run();
+  }
+
+  Codecov.prototype.run = function() {
+    var self;
+    this.files = $('.repository-content .file');
+    if (!this.files) {
+      return;
+    }
+    self = this;
     return $.ajax({
-      url: Codecov.settings.url + "/github/" + (document.URL.replace(/.*:\/\/github.com\//, '').match(/^[^\/]+\/[^\/]+/)[0]) + "?ref=" + ref,
+      url: this.settings.url + "/github/" + this.slug + "?ref=" + this.ref,
       method: 'get',
       headers: {
         Accept: 'application/json'
       },
-      success: function(res) {
-        return files.each(function() {
-          var coverage, file;
+      beforeSend: function() {
+        return self.files.each(function() {
+          var file;
           file = $(this);
-          if (method === 'compare') {
+          if (file.find('.file-actions > .button-group').length === 0) {
+            file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
+          }
+          return file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Coverage loading...">Coverage loading...</a>');
+        });
+      },
+      success: function(res) {
+        return self.files.each(function() {
+          var button, coverage, file;
+          file = $(this);
+          if (self.method === 'compare') {
             coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')];
-          } else if (method === 'file') {
+          } else if (self.method === 'blob') {
             coverage = res['report']['files'][file.find('#raw-url').attr('href').split('/').slice(5).join('/')];
           }
           if (file.find('.file-actions > .button-group').length === 0) {
             file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
           }
           if (coverage) {
-            file.find('.file-actions > .button-group').prepend($('<a class="minibutton tooltipped tooltipped-n selected" aria-label="Provided by codecov.io">Coverage ' + coverage['coverage'] + '%</a>').click(Codecov.toggle));
-            return file.find('tr').each(function() {
+            button = file.find('.minibutton.codecov').attr('aria-label', 'Toggle Codecov').text('Coverage ' + coverage['coverage'] + '%').removeClass('disabled').unbind().click(self.method === 'blob' ? self.toggle_coverage : self.toggle_diff);
+            file.find('tr').each(function() {
               var cov;
-              cov = Codecov.coverage(coverage['lines'][$(this).find('td:eq(0)').attr('data-line-number') || $(this).find('td:eq(1)').attr('data-line-number')]);
+              cov = self.color(coverage['lines'][$(this).find("td:eq(" + (self.method === 'blob' ? 0 : 1) + ")").attr('data-line-number')]);
               return $(this).find('td').addClass("codecov codecov-" + cov);
             });
+            if (self.method === 'blob') {
+              return button.trigger('click');
+            }
           } else {
-            return file.find('.file-actions > .button-group').prepend('<a class="minibutton disabled tooltipped tooltipped-n" aria-label="Commit not found or file not reported - by bodecov.io">No coverage</a>');
+            return file.find('.minibutton.codecov').attr('aria-label', 'Commit not found or file not reported to Codecov').text('No coverage');
           }
         });
       },
       statusCode: {
         401: function() {},
         404: function() {
-          if (method === 'file') {
-            return files.find('.file-actions > .button-group').prepend('<a class="minibutton disabled tooltipped tooltipped-n" aria-label="Commit not found or file not reported at codecov.io">No coverage</a>');
+          if (self.method === 'blob') {
+            return self.files.find('.file-actions > .button-group').prepend('<a class="minibutton disabled tooltipped tooltipped-n" aria-label="Commit not found or file not reported at codecov.io">No coverage</a>');
           }
         }
       }
     });
-  },
-  toggle: function() {
+  };
+
+  Codecov.prototype.toggle_coverage = function() {
+    console.log(this);
     if ($('.codecov.codecov-hit.codecov-on').length > 0) {
       return $('.codecov.codecov-hit').removeClass('codecov-on');
     } else if ($('.codecov.codecov-on').length > 0) {
@@ -85,28 +118,48 @@ Codecov = {
       $('.codecov').addClass('codecov-on');
       return $(this).addClass('selected');
     }
-  },
-  coverage: function(ln) {
+  };
+
+  Codecov.prototype.toggle_diff = function() {
+    var file;
+    file = $(this).parents('.file');
+    if (file.find('.blob-num-deletion:first').parent().is(':visible')) {
+      $(this).addClass('selected');
+      file.find('.blob-num-deletion').parent().hide();
+      return file.find('.codecov').addClass('codecov-on');
+    } else {
+      $(this).removeClass('selected');
+      file.find('.blob-num-deletion').parent().show();
+      return file.find('.codecov').removeClass('codecov-on');
+    }
+  };
+
+  Codecov.prototype.color = function(ln) {
     var v;
     if (ln === 0) {
-      return "missed" + (Codecov.settings.show_missed ? ' codecov-on' : '');
+      return "missed";
     } else if (ln === void 0) {
       return null;
     } else if (ln === true) {
-      return "partial" + (Codecov.settings.show_partial ? ' codecov-on' : '');
+      return "partial";
     } else if (indexOf.call(ln.toString(), '/') >= 0) {
       v = ln.split('/');
       if (v[0] === '0') {
-        return "missed" + (Codecov.settings.show_missed ? ' codecov-on' : '');
+        return "missed";
       } else if (v[0] === v[1]) {
-        return "hit" + (Codecov.settings.show_hit ? ' codecov-on' : '');
+        return "hit";
       } else {
-        return "partial" + (Codecov.settings.show_partial ? ' codecov-on' : '');
+        return "partial";
       }
     } else {
-      return "hit" + (Codecov.settings.show_hit ? ' codecov-on' : '');
+      return "hit";
     }
-  }
-};
+  };
 
-$(Codecov.run);
+  return Codecov;
+
+})();
+
+$(function() {
+  return new Codecov;
+});
