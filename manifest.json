@@ -11,13 +11,12 @@
       "matches": ["*://github.com/*"],
       "all_frames": true,
       "run_at": "document_end",
-      "js": ["dist/jquery.min.js", "dist/jquery.min.map", "dist/github.js"]
+      "js": ["dist/jquery-2.1.3.min.js", "dist/github.js"]
     }
   ],
   "manifest_version": 2,
   "web_accessible_resources": [
-    "dist/jquery.min.js", 
-    "dist/jquery.min.map", 
+    "dist/jquery-2.1.3.min.js",
     "dist/style.css",
     "dist/github.css"
   ],
