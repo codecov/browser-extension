@@ -1,8 +1,10 @@
 {
   "name": "Codecov Extension",
   "version": "0.0.1",
-  "description": "Codecov Coverage in Github",
-  "icons": { 
+  "homepage_url": "https://github.com/codecov/chrome-plugin",
+  "description": "Coverage reports overlay in Github.",
+  "offline_enabled": false,
+  "icons": {
     "16": "icons/codecov-16.png",
     "48": "icons/codecov-48.png",
     "128": "icons/codecov-128.png"
