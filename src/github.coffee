@@ -1,15 +1,12 @@
 class Codecov
-  slug: null
-  ref: null
-  method: null
-  files: null
+  slug: null  # :owner/:repo
+  ref: null   # sha of head
+  base: ''    # sha of base (compare|pull only)
+  file: ''    # specific file name viewing (blob only)
+  page: null  # type of github page: blob|compare|pull
+  files: null # array of dom files
   settings:
     url: 'https://codecov.io'
-    show_missed: yes
-    show_partial: yes
-    show_hit: no
-    method: null
-    files: null
 
   constructor: ->
     # attach stylesheet
@@ -26,22 +23,25 @@ class Codecov
     # =======
     # https://github.com/codecov/codecov-python/blob/master/codecov/clover.py
     # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
-    @method = 'blob'
-    hotkey = $('[data-hotkey=y]')
+    @page = 'blob'
+    hotkey = $('a[data-hotkey=y]')
     if hotkey.length > 0 
       split = hotkey.attr('href').split('/')
       if split[3] is 'blob'
         @ref = split[4]
+        @file = "/#{split.slice(5).join('/')}"
 
     unless @ref
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
+      @base = "&base=#{$('.commit-id:first').text()}"
       @ref = $('.commit-id:last').text()
-      @method = 'compare'
+      @page = 'compare'
 
     unless @ref
-      # https://github.com/codecov/codecov-python/pull/18/files
+      # https://github.com/codecov/codecov-python/pull/16/files
+      @base = "&base=#{$('.current-branch:first').text()}"
       @ref = $('.current-branch:last').text()
-      @method = 'pull'
+      @page = 'pull'
 
     @run()
 
@@ -56,10 +56,11 @@ class Codecov
     # get coverage
     # ============
     $.ajax
-      url: "#{@settings.url}/github/#{@slug}?ref=#{@ref}"
+      url: "#{@settings.url}/github/#{@slug}#{@file}?ref=#{@ref}#{@base}"
       method: 'get'
       headers:
         Accept: 'application/json'
+      dataType: 'json'
       beforeSend: ->
         # show loading coverage
         self.files.each ->
@@ -69,19 +70,31 @@ class Codecov
           file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Coverage loading...">Coverage loading...</a>')
 
       success: (res) ->
+        if self.page isnt 'blob'
+          if res['base']
+            compare = res['report']['coverage'] - res['base']
+            plus = if compare > 0 then '+' else '-'
+            $('.toc-diff-stats').append(" Coverage <strong>#{plus}#{compare}%</strong>")
+            $('#diffstat').append("<span class=\"text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s\" aria-label=\"Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%\">#{plus}#{compare}%</span>")
+          else
+            $('.toc-diff-stats').append(" Coverage <strong>#{res['report']['coverage']}%</strong>")
+            $('#diffstat').append("<span class=\"tooltipped tooltipped-s\" aria-label=\"Coverage #{res['report']['coverage']}%\">#{res['report']['coverage']}%</span>")
+
         self.files.each ->
           file = $(@)
-          # get file coverage
-          if self.method is 'compare'
+          # find covered file
+          # =================
+          if self.page is 'compare'
             coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
-          else if self.method is 'blob'
-            coverage = res['report']['files'][file.find('#raw-url').attr('href').split('/').slice(5).join('/')]
+          else if self.page is 'blob'
+            coverage = res['report']
 
           # assure button group
           if file.find('.file-actions > .button-group').length is 0
             file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
 
           # report coverage
+          # ===============
           if coverage
             # ... show diff not full file coverage for compare view
             button = file.find('.minibutton.codecov')
@@ -89,15 +102,18 @@ class Codecov
                          .text('Coverage '+coverage['coverage']+'%')
                          .removeClass('disabled')
                          .unbind()
-                         .click(if self.method is 'blob' then self.toggle_coverage else self.toggle_diff)
+                         .click(if self.page is 'blob' then self.toggle_coverage else self.toggle_diff)
 
             # overlay coverage
             file.find('tr').each ->
-              cov = self.color coverage['lines'][$(@).find("td:eq(#{if self.method is 'blob' then 0 else 1})").attr('data-line-number')]
+              cov = self.color coverage['lines'][$(@).find("td:eq(#{if self.page is 'blob' then 0 else 1})").attr('data-line-number')]
               $(@).find('td').addClass "codecov codecov-#{cov}"
 
             # turn on blob by default
-            button.trigger('click') if self.method is 'blob'
+            if self.page is 'blob'
+              # default important only
+              button.trigger('click')
+              button.trigger('click')
 
           else
             file.find('.minibutton.codecov').attr('aria-label', 'Commit not found or file not reported to Codecov').text('No coverage')
@@ -106,11 +122,10 @@ class Codecov
         401: ->
           # todo inform user that they need to login
         404: ->
-          if self.method is 'blob'
+          if self.page is 'blob'
             self.files.find('.file-actions > .button-group').prepend('<a class="minibutton disabled tooltipped tooltipped-n" aria-label="Commit not found or file not reported at codecov.io">No coverage</a>')
 
   toggle_coverage: ->
-    console.log @
     if $('.codecov.codecov-hit.codecov-on').length > 0
       # toggle hits off
       $('.codecov.codecov-hit').removeClass('codecov-on')
@@ -141,7 +156,7 @@ class Codecov
   color: (ln) ->
     if ln is 0
       "missed"
-    else if ln is undefined
+    else if not ln
       null
     else if ln is true
       "partial"
