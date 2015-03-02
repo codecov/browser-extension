@@ -1,17 +1,27 @@
 module.exports = (grunt) ->
   grunt.initConfig
     coffee:
-      codecov:
-        files: 'dist/github.js': 'src/github.coffee'
+      default:
+        files:
+          'dist/github.js': 'src/github.coffee'
         options: bare: yes
 
-    watch: 
-      codecov:
+    watch:
+      coffee:
         files: ['src/*.coffee']
-        tasks: 'default'
-      wip: files: ["app/**/*.py", "**/*.py", "app/*.py"], tasks: "shell:wip"
+        tasks: 'coffee'
+      less:
+        files: ['src/*.less']
+        tasks: 'less'
 
+    less:
+      default:
+        files:
+          'dist/github.css': 'src/github.less'
+        options: compress: yes, cleancss: yes
+
+  grunt.loadNpmTasks 'grunt-contrib-less'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
 
-  grunt.registerTask 'default', ['coffee']
+  grunt.registerTask 'default', ['coffee', 'less']
