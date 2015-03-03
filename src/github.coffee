@@ -123,14 +123,12 @@ class Codecov
 
       statusCode:
         401: ->
-          $('.minibutton.codecov').text("Please login at Codecov.io").addClass('danger')
+          $('.minibutton.codecov').text("Please login at Codecov.io").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov.io')
           # todo inform user that they need to login
         404: ->
-          $('.minibutton.codecov').text("Coverage not found")
-          if self.page is 'blob'
-            self.files.find('.file-actions > .button-group').prepend('<a class="minibutton disabled tooltipped tooltipped-n" aria-label="Commit not found or file not reported at codecov.io">No coverage</a>')
+          $('.minibutton.codecov').text("No coverage").attr('aria-label', 'Coverage not found')
         500: ->
-          $('.minibutton.codecov').text("Coverage not available")
+          $('.minibutton.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry')
 
 
   toggle_coverage: ->
