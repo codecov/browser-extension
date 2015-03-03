@@ -31,6 +31,9 @@ class Codecov
         @ref = split[4]
         @file = "/#{split.slice(5).join('/')}"
 
+      else if split[3] is 'commit'
+        @ref = split[4]
+
     unless @ref
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
       @base = "&base=#{$('.commit-id:first').text()}"
@@ -67,7 +70,7 @@ class Codecov
           file = $(@)
           if file.find('.file-actions > .button-group').length is 0
             file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
-          file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Coverage loading...">Coverage loading...</a>')
+          file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
 
       success: (res) ->
         if self.page isnt 'blob'
@@ -120,10 +123,15 @@ class Codecov
 
       statusCode:
         401: ->
+          $('.minibutton.codecov').text("Please login at Codecov.io").addClass('danger')
           # todo inform user that they need to login
         404: ->
+          $('.minibutton.codecov').text("Coverage not found")
           if self.page is 'blob'
             self.files.find('.file-actions > .button-group').prepend('<a class="minibutton disabled tooltipped tooltipped-n" aria-label="Commit not found or file not reported at codecov.io">No coverage</a>')
+        500: ->
+          $('.minibutton.codecov').text("Coverage not available")
+
 
   toggle_coverage: ->
     if $('.codecov.codecov-hit.codecov-on').length > 0

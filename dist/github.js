@@ -69,7 +69,7 @@ Codecov = (function() {
           if (file.find('.file-actions > .button-group').length === 0) {
             file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
           }
-          return file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Coverage loading...">Coverage loading...</a>');
+          return file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>');
         });
       },
       success: function(res) {
@@ -113,11 +113,17 @@ Codecov = (function() {
         });
       },
       statusCode: {
-        401: function() {},
+        401: function() {
+          return $('.minibutton.codecov').text("Please login at Codecov.io").addClass('danger');
+        },
         404: function() {
+          $('.minibutton.codecov').text("Coverage not found");
           if (self.page === 'blob') {
             return self.files.find('.file-actions > .button-group').prepend('<a class="minibutton disabled tooltipped tooltipped-n" aria-label="Commit not found or file not reported at codecov.io">No coverage</a>');
           }
+        },
+        500: function() {
+          return $('.minibutton.codecov').text("Coverage not available");
         }
       }
     });
