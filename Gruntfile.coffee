@@ -20,8 +20,10 @@ module.exports = (grunt) ->
           'dist/github.css': 'src/github.less'
         options: compress: yes, cleancss: yes
 
+  grunt.loadNpmTasks 'grunt-mocha'
   grunt.loadNpmTasks 'grunt-contrib-less'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
 
   grunt.registerTask 'default', ['coffee', 'less']
+  grunt.registerTask 'test', ['mocha']

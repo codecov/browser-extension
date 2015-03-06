@@ -15,17 +15,15 @@ Codecov = (function() {
   Codecov.prototype.files = null;
 
   Codecov.prototype.settings = {
-    url: 'https://codecov.io'
+    url: 'https://codecov.io',
+    debug: false
   };
 
-  function Codecov() {
-    var head, hotkey, split, stylesheet;
-    stylesheet = document.createElement('link');
-    stylesheet.href = chrome.extension.getURL('dist/github.css');
-    stylesheet.rel = 'stylesheet';
-    head = document.getElementsByTagName('head')[0] || document.documentElement;
-    head.insertBefore(stylesheet, head.lastChild);
-    this.slug = document.URL.replace(/.*:\/\/github.com\//, '').match(/^[^\/]+\/[^\/]+/)[0];
+  function Codecov(settings) {
+    var hotkey, split;
+    this.settings = $.extend(null, this.settings, settings);
+    $('head').append("<link href=\"" + (chrome.extension.getURL('dist/github.css')) + "\" rel=\"stylesheet\">");
+    this.slug = (this.settings.debug || document.URL).replace(/.*:\/\/github.com\//, '').match(/^[^\/]+\/[^\/]+/)[0];
     this.page = 'blob';
     hotkey = $('a[data-hotkey=y]');
     if (hotkey.length > 0) {
@@ -47,6 +45,9 @@ Codecov = (function() {
       this.ref = $('.current-branch:last').text();
       this.page = 'pull';
     }
+    if (!this.ref) {
+      return;
+    }
     this.run();
   }
 
@@ -59,11 +60,11 @@ Codecov = (function() {
     self = this;
     return $.ajax({
       url: this.settings.url + "/github/" + this.slug + this.file + "?ref=" + this.ref + this.base,
-      method: 'get',
+      type: 'get',
+      dataType: 'json',
       headers: {
         Accept: 'application/json'
       },
-      dataType: 'json',
       beforeSend: function() {
         return self.files.each(function() {
           var file;
@@ -75,20 +76,28 @@ Codecov = (function() {
         });
       },
       success: function(res) {
-        var compare, plus;
+        var compare, coverage, plus;
         if (self.page !== 'blob') {
           if (res['base']) {
-            compare = res['report']['coverage'] - res['base'];
+            compare = (res['report']['coverage'] - res['base']).toFixed(0);
             plus = compare > 0 ? '+' : '-';
             $('.toc-diff-stats').append(" Coverage <strong>" + plus + compare + "%</strong>");
             $('#diffstat').append("<span class=\"text-diff-" + (compare > 0 ? 'added' : 'deleted') + " tooltipped tooltipped-s\" aria-label=\"Coverage " + (compare > 0 ? 'increased' : 'decreased') + " " + plus + compare + "%\">" + plus + compare + "%</span>");
           } else {
-            $('.toc-diff-stats').append(" Coverage <strong>" + res['report']['coverage'] + "%</strong>");
-            $('#diffstat').append("<span class=\"tooltipped tooltipped-s\" aria-label=\"Coverage " + res['report']['coverage'] + "%\">" + res['report']['coverage'] + "%</span>");
+            coverage = res['report']['coverage'].toFixed(0);
+            $('.toc-diff-stats').append(" Coverage <strong>" + coverage + "%</strong>");
+            $('#diffstat').append("<span class=\"tooltipped tooltipped-s\" aria-label=\"Coverage " + coverage + "%\">" + coverage + "%</span>");
           }
         }
+        $('table-of-contents').find('li').each(function() {
+          var file, filename, ref;
+          file = $(this);
+          filename = file.find('a').text();
+          coverage = (ref = res.report.files[filename]) != null ? ref.coverage.toFixed(0) : void 0;
+          return file.find('.diffstat.right').prepend(coverage + "%");
+        });
         return self.files.each(function() {
-          var button, coverage, file;
+          var button, file;
           file = $(this);
           if (self.page === 'compare') {
             coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')];
@@ -99,7 +108,7 @@ Codecov = (function() {
             file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
           }
           if (coverage) {
-            button = file.find('.minibutton.codecov').attr('aria-label', 'Toggle Codecov').text('Coverage ' + coverage['coverage'] + '%').removeClass('disabled').unbind().click(self.page === 'blob' ? self.toggle_coverage : self.toggle_diff);
+            button = file.find('.minibutton.codecov').attr('aria-label', 'Toggle Codecov').text('Coverage ' + coverage['coverage'].toFixed(0) + '%').removeClass('disabled').unbind().click(self.page === 'blob' ? self.toggle_coverage : self.toggle_diff);
             file.find('tr').each(function() {
               var cov;
               cov = self.color(coverage['lines'][$(this).find("td:eq(" + (self.page === 'blob' ? 0 : 1) + ")").attr('data-line-number')]);
@@ -110,7 +119,7 @@ Codecov = (function() {
               return button.trigger('click');
             }
           } else {
-            return file.find('.minibutton.codecov').attr('aria-label', 'Commit not found or file not reported to Codecov').text('No coverage');
+            return file.find('.minibutton.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered');
           }
         });
       },
@@ -124,6 +133,10 @@ Codecov = (function() {
         500: function() {
           return $('.minibutton.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry');
         }
+      },
+      complete: function() {
+        var ref;
+        return (ref = self.settings) != null ? typeof ref.callback === "function" ? ref.callback() : void 0 : void 0;
       }
     });
   };

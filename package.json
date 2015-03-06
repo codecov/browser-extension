@@ -1,0 +1,34 @@
+{
+  "name": "codecov-chrome-plugin",
+  "version": "0.0.1",
+  "description": "Codeocv Chrome Plugin",
+  "main": "src/github.js",
+  "scripts": {
+    "test": "./node_modules/mocha-phantomjs/bin/mocha-phantomjs -R dot test/github/test_blob.html --local-to-remote-url-access=true  --web-security=false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codecov/chrome-plugin.git"
+  },
+  "keywords": [
+    "coverage",
+    "code-coverage",
+    "codecov.io",
+    "codecov"
+  ],
+  "author": "Steve Peak <steve@codecov.io>",
+  "license": "Apache v2.0",
+  "bugs": {
+    "url": "https://github.com/codecov/chrome-plugin/issues"
+  },
+  "homepage": "https://github.com/codecov/chrome-plugin",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "istanbul": "0.3.2",
+    "mocha-phantomjs": "3.5.3",
+    "jshint": "2.5.5",
+    "mocha": "1.21.4"
+  }
+}
