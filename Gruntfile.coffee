@@ -10,11 +10,13 @@ module.exports = (grunt) ->
       options:
         path: 'relative'
       dist:
-        src: 'src/'
-        dest: '.tmp/js/app'
+        src: 'src'
+        dest: 'lib-cov'
 
     coffee:
       default:
+        # expand: yes
+        # flatten: yes
         files:
           'dist/github.js': 'src/github.coffee'
         options: bare: yes
@@ -42,6 +44,7 @@ module.exports = (grunt) ->
           urls: ['http://localhost:3000/test/github/test_blob.html']
           run: yes
           reporter: 'mocha-phantom-coverage-reporter'
+          require: 'coffee-script/register'
           timeout: 10000
 
   grunt.loadNpmTasks 'grunt-mocha'

@@ -7,9 +7,8 @@
   </head>
   <body>
     <div id="mocha"></div>
-    <hr><hr><hr><hr><hr><hr>
-    <div>
-        
+    <hr><hr>
+    <div class="repository-content">
         <!-- 
         GET https://github.com/codecov/codecov-python/blob/master/codecov/clover.py
         -->
@@ -148,7 +147,6 @@
         <!--
         END
         --> 
-
     </div>
     <script src="../mocha.js"></script>
     <script src="../chai.js"></script>
@@ -159,9 +157,9 @@
       mocha.reporter('html');
       expect = chai.expect;
       chrome = {
-          extension: {
-              getURL: function(loca){ return "../../"+loca; }
-          }
+        extension: {
+          getURL: function(loca){ return "../../"+loca; }
+        }
       };
     </script>
     <script src="test_blob.js"></script>

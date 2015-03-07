@@ -6,4 +6,4 @@ build:
 
 dev:
 	mkdir node_modules
-	npm install grunt grunt-contrib-less grunt-contrib-watch grunt-contrib-coffee
+	npm install

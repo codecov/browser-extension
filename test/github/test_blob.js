@@ -1,17 +1,17 @@
-var coverage = ['hit', null, 'hit', null, 'hit', 'hit', 'hit', 'hit', 'partial', 'miss', 'partial', 'miss',
-                null, 'hit', null, 'partial', 'miss', null, 'hit', null, 'hit', null];
+var coverage = ['hit', null, 'hit', null, 'hit', 'hit', 'hit', 'hit', 'partial', 'missed', 'partial', 'missed',
+                null, 'hit', null, 'partial', 'missed', null, 'hit', null, 'hit', null];
 describe('codecov', function(){
   it('should start with no errors', function(done){
       var codecov = new Codecov({"debug": "https://github.com/codecov/codecov-python/blob/master/codecov/clover.py",
-                                 "callback": done,
-                                 "url": "https://codecov-staging.herokuapp.com"});
+                                 "callback": done});
       expect(codecov.slug).to.equal('codecov/codecov-python');
+      expect(codecov.file).to.equal('/codecov/clover.py');
       expect(codecov.ref).to.equal('4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5');
       expect(codecov.base).to.equal('');
   });
   it('should insert dist/github.css stylesheed', function(){
     // 2 becuse we ran new Codecov twice
-    expect($('link[href*="dist/github.css"]').length).to.equal(2);
+    expect($('link[href*="dist/github.css"]').length).to.not.equal(0);
   });
   it('should add coverage button', function(){
     var button = $('.file-actions .button-group a.minibutton.codecov');
@@ -20,14 +20,15 @@ describe('codecov', function(){
     expect(button.attr('aria-label')).to.equal('Toggle Codecov');
   });
   it('should still have all lines', function(){
-    expect($('tr').length).to.equal(21);
+    expect($('.file tr').length).to.equal(22);
   });
   it('should add covered lines', function(){
+    expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
     var x = 0;
-    $('tr').each(function(){
-      expect($('tr#L'+x).hasClass('codecov codecov-'+coverage[x])).to.equal(true);
-      if (coverage[x] === 'partial' || coverage[x] === 'miss') {
-        expect($('tr#L'+x).hasClass('codecov-on')).to.equal(true);
+    $('.file tr').each(function(){
+      expect($(this).find('td').hasClass('codecov codecov-'+coverage[x])).to.equal(true);
+      if (coverage[x] === 'partial' || coverage[x] === 'missed') {
+        expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
       }
       x++;
     });
@@ -36,22 +37,29 @@ describe('codecov', function(){
 
 describe('clicking codecov', function(){
   it('first time should toggle off', function(){
-    $('tr').each(function(){
-      expect($('tr#L'+x).hasClass('codecov-on')).to.equal(false);
+    $('.codecov.minibutton').trigger('click');
+    expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
+    $('.file tr').each(function(){
+      expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
     });
   });
   it('second time should toggle on', function(){
-    $('tr').each(function(){
-      expect($('tr#L'+x).hasClass('codecov-on')).to.equal(true);
+    $('.codecov.minibutton').trigger('click');
+    expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
+    $('.file tr').each(function(){
+      expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
     });
   });
   it('third time should toggle partial/miss', function(){
+    $('.codecov.minibutton').trigger('click');
+    expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
     var x = 0;
-    $('tr').each(function(){
-      if (coverage[x] === 'partial' || coverage[x] === 'miss') {
-        expect($('tr#L'+x).hasClass('codecov-on')).to.equal(true);
-      } else {
-        expect($('tr#L'+x).hasClass('codecov-on')).to.equal(false);
+    $('.file tr').each(function(){
+      if (coverage[x] === 'partial' || coverage[x] === 'missed') {
+        expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
+      } else if (coverage[x] === 'hit') {
+        console.log(coverage[x], $(this).find('td').hasClass('codecov-on'));
+        expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
       }
       x++;
     });

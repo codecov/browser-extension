@@ -14,7 +14,8 @@ class Codecov
 
     # attach stylesheet
     # =================
-    $('head').append("<link href=\"#{chrome.extension.getURL('dist/github.css')}\" rel=\"stylesheet\">")
+    unless $('#codecov-css').length > 0
+      $('head').append("<link href=\"#{chrome.extension.getURL('dist/github.css')}\" rel=\"stylesheet\" id=\"codecov-css\">")
 
     @slug = (@settings.debug or document.URL).replace(/.*:\/\/github.com\//, '').match(/^[^\/]+\/[^\/]+/)[0]
 
@@ -69,9 +70,10 @@ class Codecov
         # show loading coverage
         self.files.each ->
           file = $(@)
-          if file.find('.file-actions > .button-group').length is 0
-            file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
-          file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
+          unless file.find('.minibutton.codecov')
+            if file.find('.file-actions > .button-group').length is 0
+              file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
+            file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
 
       success: (res) ->
         if self.page isnt 'blob'

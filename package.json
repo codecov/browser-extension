@@ -22,9 +22,7 @@
     "url": "https://github.com/codecov/chrome-plugin/issues"
   },
   "homepage": "https://github.com/codecov/chrome-plugin",
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "devDependencies": {
     "mocha": "2.1.0",
     "grunt": "0.4.5",
