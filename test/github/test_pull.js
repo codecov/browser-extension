@@ -36,21 +36,22 @@ describe('codecov', function(){
 });
 
 describe('clicking codecov', function(){
-  it('will toggle off it', function(){
-    // first click
-    click($('.codecov.minibutton')[0]);
+  it('first time should toggle off', function(){
+    $('.codecov.minibutton').trigger('click');
     expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
     $('.file tr').each(function(){
       expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
     });
-    // first click
-    click($('.codecov.minibutton')[0]);
+  });
+  it('second time should toggle on', function(){
+    $('.codecov.minibutton').trigger('click');
     expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
     $('.file tr').each(function(){
       expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
     });
-    // first click
-    click($('.codecov.minibutton')[0]);
+  });
+  it('third time should toggle partial/miss', function(){
+    $('.codecov.minibutton').trigger('click');
     expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
     var x = 0;
     $('.file tr').each(function(){
