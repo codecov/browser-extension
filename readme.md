@@ -1,6 +1,8 @@
 Chrome Plugin `beta`
 ===========
 
+[![Circle CI](https://img.shields.io/circleci/project/codecov/chrome-plugin/master.svg)](https://circleci.com/gh/codecov/chrome-plugin) [![codecov.io](https://codecov.io/github/codecov/chrome-plugin/coverage.svg?branch=master)](https://codecov.io/github/codecov/chrome-plugin)
+
 > Codecov :heart:'s Github
 
 -----
