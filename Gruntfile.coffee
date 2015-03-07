@@ -40,6 +40,7 @@ module.exports = (grunt) ->
         options:
           mocha:
             ignoreLeaks: no
+            globals: ['jQuery*']
 
           urls: ['http://localhost:3000/test/github/test_blob.html']
           run: yes
