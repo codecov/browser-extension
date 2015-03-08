@@ -28,11 +28,15 @@ describe('codecov', function(){
     expect($('.codecov.minibutton.selected').length).to.equal(0);
     expect($('.blob-num-deletion:visible').length).to.not.equal(0);
   });
-  it('click will toggle coverage', function(){
+  it('click will toggle coverage', function(done){
     var file = $('.file-header[data-path="codecov/__init__.py"]');
+    expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(false);
     click($('.codecov.minibutton', file)[0]);
-    expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(true);
-    expect(file.next().find('.blob-num-deletion:visible').length).to.equal(0);
-    expect(file.next().find('.codecov:not(.codecov-on)').length).to.equal(0);
+    setTimeout(function(){
+      expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(true);
+      expect(file.next().find('.blob-num-deletion:visible').length).to.equal(0);
+      expect(file.next().find('.codecov:not(.codecov-on)').length).to.equal(0);
+      done();
+    }, 1000);
   });
 });

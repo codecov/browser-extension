@@ -11,7 +11,6 @@ class Codecov
 
   constructor: (settings) ->
     @settings = $.extend null, @settings, (settings ? {})
-    console.log(@)
 
     # attach stylesheet
     # =================
@@ -73,7 +72,6 @@ class Codecov
           if file.find('.minibutton.codecov').length is 0
             if file.find('.file-actions > .button-group').length is 0
               file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
-            console.log file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
 
       success: (res) ->
         if self.page isnt 'blob'
@@ -107,7 +105,6 @@ class Codecov
           # report coverage
           # ===============
           if coverage
-            console.log(res, coverage)
             # ... show diff not full file coverage for compare view
             button = file.find('.minibutton.codecov')
                          .attr('aria-label', 'Toggle Codecov')
