@@ -17,36 +17,36 @@ class Codecov
     unless $('#codecov-css').length > 0
       $('head').append("<link href=\"#{chrome.extension.getURL('dist/github.css')}\" rel=\"stylesheet\" id=\"codecov-css\">")
 
-    @slug = (@settings.debug or document.URL).replace(/.*:\/\/github.com\//, '').match(/^[^\/]+\/[^\/]+/)[0]
+    href = (@settings.debug or document.URL).split('/')
+    @slug = "#{href[3]}/#{href[4]}"
+    @page = href[5]
 
     # get ref
     # =======
-    # https://github.com/codecov/codecov-python/blob/master/codecov/clover.py
-    # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
-    @page = 'blob'
-    hotkey = $('a[data-hotkey=y]')
-    if hotkey.length > 0 
+    if @page is 'commit'
+      # https://github.com/codecov/codecov-python/commit/b0a3eef1c9c456e1794c503aacaff660a1a197aa
+      @ref = href[6]
+
+    else if @page in 'blob'
+      # https://github.com/codecov/codecov-python/blob/master/codecov/clover.py
+      # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
+      hotkey = $('a[data-hotkey=y]')
       split = hotkey.attr('href').split('/')
-      if split[3] is 'blob'
-        @ref = split[4]
-        @file = "/#{split.slice(5).join('/')}"
+      @ref = split[4]
+      @file = "/#{split.slice(5).join('/')}"
 
-      else if split[3] is 'commit'
-        @ref = split[4]
-
-    unless @ref
+    if @page is 'compare'
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
       @base = "&base=#{$('.commit-id:first').text()}"
       @ref = $('.commit-id:last').text()
-      @page = 'compare'
 
-    unless @ref
+    else if @page is 'pull'
       # https://github.com/codecov/codecov-python/pull/16/files
-      @base = "&base=#{$('.current-branch:first').text()}"
-      @ref = $('.current-branch:last').text()
-      @page = 'pull'
+      @base = "&base=#{$('.commit-id:first').text()}"
+      @ref = $('.commit-id:last').text()
 
-    return unless @ref
+    else
+      return
 
     @run()
 
@@ -70,10 +70,10 @@ class Codecov
         # show loading coverage
         self.files.each ->
           file = $(@)
-          unless file.find('.minibutton.codecov')
+          if file.find('.minibutton.codecov').length is 0
             if file.find('.file-actions > .button-group').length is 0
               file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
-            file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
+            console.log file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
 
       success: (res) ->
         if self.page isnt 'blob'
@@ -89,19 +89,16 @@ class Codecov
 
         # compare in toc
         $('table-of-contents').find('li').each ->
-          file = $(@)
-          filename = file.find('a').text()
-          coverage = res.report.files[filename]?.coverage.toFixed(0)
-          file.find('.diffstat.right').prepend("#{coverage}%")
+          $('.diffstat.right', @).prepend("#{res.report.files[$('a', @).text()]?.coverage.toFixed(0)}%")
 
         self.files.each ->
           file = $(@)
           # find covered file
           # =================
-          if self.page is 'compare'
-            coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
-          else if self.page is 'blob'
+          if self.page is 'blob'
             coverage = res['report']
+          else
+            coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
 
           # assure button group
           if file.find('.file-actions > .button-group').length is 0
@@ -110,6 +107,7 @@ class Codecov
           # report coverage
           # ===============
           if coverage
+            console.log(res, coverage)
             # ... show diff not full file coverage for compare view
             button = file.find('.minibutton.codecov')
                          .attr('aria-label', 'Toggle Codecov')

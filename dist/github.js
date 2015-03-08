@@ -20,34 +20,29 @@ Codecov = (function() {
   };
 
   function Codecov(settings) {
-    var hotkey, split;
+    var hotkey, href, ref, split;
     this.settings = $.extend(null, this.settings, settings);
     if (!($('#codecov-css').length > 0)) {
       $('head').append("<link href=\"" + (chrome.extension.getURL('dist/github.css')) + "\" rel=\"stylesheet\" id=\"codecov-css\">");
     }
-    this.slug = (this.settings.debug || document.URL).replace(/.*:\/\/github.com\//, '').match(/^[^\/]+\/[^\/]+/)[0];
-    this.page = 'blob';
-    hotkey = $('a[data-hotkey=y]');
-    if (hotkey.length > 0) {
+    href = (this.settings.debug || document.URL).split('/');
+    this.slug = href[3] + "/" + href[4];
+    this.page = href[5];
+    if (this.page === 'commit') {
+      this.ref = href[6];
+    } else if (ref = this.page, indexOf.call('blob', ref) >= 0) {
+      hotkey = $('a[data-hotkey=y]');
       split = hotkey.attr('href').split('/');
-      if (split[3] === 'blob') {
-        this.ref = split[4];
-        this.file = "/" + (split.slice(5).join('/'));
-      } else if (split[3] === 'commit') {
-        this.ref = split[4];
-      }
+      this.ref = split[4];
+      this.file = "/" + (split.slice(5).join('/'));
     }
-    if (!this.ref) {
+    if (this.page === 'compare') {
       this.base = "&base=" + ($('.commit-id:first').text());
       this.ref = $('.commit-id:last').text();
-      this.page = 'compare';
-    }
-    if (!this.ref) {
-      this.base = "&base=" + ($('.current-branch:first').text());
-      this.ref = $('.current-branch:last').text();
-      this.page = 'pull';
-    }
-    if (!this.ref) {
+    } else if (this.page === 'pull') {
+      this.base = "&base=" + ($('.commit-id:first').text());
+      this.ref = $('.commit-id:last').text();
+    } else {
       return;
     }
     this.run();
@@ -71,11 +66,11 @@ Codecov = (function() {
         return self.files.each(function() {
           var file;
           file = $(this);
-          if (!file.find('.minibutton.codecov')) {
+          if (file.find('.minibutton.codecov').length === 0) {
             if (file.find('.file-actions > .button-group').length === 0) {
               file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
             }
-            return file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>');
+            return console.log(file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>'));
           }
         });
       },
@@ -94,24 +89,22 @@ Codecov = (function() {
           }
         }
         $('table-of-contents').find('li').each(function() {
-          var file, filename, ref;
-          file = $(this);
-          filename = file.find('a').text();
-          coverage = (ref = res.report.files[filename]) != null ? ref.coverage.toFixed(0) : void 0;
-          return file.find('.diffstat.right').prepend(coverage + "%");
+          var ref;
+          return $('.diffstat.right', this).prepend(((ref = res.report.files[$('a', this).text()]) != null ? ref.coverage.toFixed(0) : void 0) + "%");
         });
         return self.files.each(function() {
           var button, file;
           file = $(this);
-          if (self.page === 'compare') {
-            coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')];
-          } else if (self.page === 'blob') {
+          if (self.page === 'blob') {
             coverage = res['report'];
+          } else {
+            coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')];
           }
           if (file.find('.file-actions > .button-group').length === 0) {
             file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
           }
           if (coverage) {
+            console.log(res, coverage);
             button = file.find('.minibutton.codecov').attr('aria-label', 'Toggle Codecov').text('Coverage ' + coverage['coverage'].toFixed(0) + '%').removeClass('disabled').unbind().click(self.page === 'blob' ? self.toggle_coverage : self.toggle_diff);
             file.find('tr').each(function() {
               var cov;
