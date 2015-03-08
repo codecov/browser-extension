@@ -45,7 +45,7 @@ module.exports = (grunt) ->
           urls: [
             'http://localhost:3000/test/github/test_blob.html'
             'http://localhost:3000/test/github/test_compare.html'
-            # 'http://localhost:3000/test/github/test_pull.html'
+            'http://localhost:3000/test/github/test_pull.html'
             ]
           run: yes
           reporter: 'mocha-phantom-coverage-reporter'

@@ -20,8 +20,9 @@ Codecov = (function() {
   };
 
   function Codecov(settings) {
-    var hotkey, href, ref, split;
-    this.settings = $.extend(null, this.settings, settings);
+    var href, split;
+    this.settings = $.extend(null, this.settings, settings != null ? settings : {});
+    console.log(this);
     if (!($('#codecov-css').length > 0)) {
       $('head').append("<link href=\"" + (chrome.extension.getURL('dist/github.css')) + "\" rel=\"stylesheet\" id=\"codecov-css\">");
     }
@@ -30,13 +31,11 @@ Codecov = (function() {
     this.page = href[5];
     if (this.page === 'commit') {
       this.ref = href[6];
-    } else if (ref = this.page, indexOf.call('blob', ref) >= 0) {
-      hotkey = $('a[data-hotkey=y]');
-      split = hotkey.attr('href').split('/');
+    } else if (this.page === 'blob') {
+      split = $('a[data-hotkey=y]').attr('href').split('/');
       this.ref = split[4];
       this.file = "/" + (split.slice(5).join('/'));
-    }
-    if (this.page === 'compare') {
+    } else if (this.page === 'compare') {
       this.base = "&base=" + ($('.commit-id:first').text());
       this.ref = $('.commit-id:last').text();
     } else if (this.page === 'pull') {
@@ -51,7 +50,7 @@ Codecov = (function() {
   Codecov.prototype.run = function() {
     var self;
     this.files = $('.repository-content .file');
-    if (!this.files) {
+    if (this.files.length === 0) {
       return;
     }
     self = this;

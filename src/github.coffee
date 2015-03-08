@@ -10,7 +10,8 @@ class Codecov
     debug: no
 
   constructor: (settings) ->
-    @settings = $.extend null, @settings, settings
+    @settings = $.extend null, @settings, (settings ? {})
+    console.log(@)
 
     # attach stylesheet
     # =================
@@ -27,15 +28,14 @@ class Codecov
       # https://github.com/codecov/codecov-python/commit/b0a3eef1c9c456e1794c503aacaff660a1a197aa
       @ref = href[6]
 
-    else if @page in 'blob'
+    else if @page is 'blob'
       # https://github.com/codecov/codecov-python/blob/master/codecov/clover.py
       # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
-      hotkey = $('a[data-hotkey=y]')
-      split = hotkey.attr('href').split('/')
+      split = $('a[data-hotkey=y]').attr('href').split('/')
       @ref = split[4]
       @file = "/#{split.slice(5).join('/')}"
 
-    if @page is 'compare'
+    else if @page is 'compare'
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
       @base = "&base=#{$('.commit-id:first').text()}"
       @ref = $('.commit-id:last').text()
@@ -54,7 +54,7 @@ class Codecov
     # get files
     # =========
     @files = $('.repository-content .file')
-    return unless @files
+    return if @files.length is 0
 
     self = @
 
