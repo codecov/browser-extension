@@ -22,7 +22,6 @@ Codecov = (function() {
   function Codecov(settings) {
     var href, split;
     this.settings = $.extend(null, this.settings, settings != null ? settings : {});
-    console.log(this);
     if (!($('#codecov-css').length > 0)) {
       $('head').append("<link href=\"" + (chrome.extension.getURL('dist/github.css')) + "\" rel=\"stylesheet\" id=\"codecov-css\">");
     }
@@ -67,9 +66,8 @@ Codecov = (function() {
           file = $(this);
           if (file.find('.minibutton.codecov').length === 0) {
             if (file.find('.file-actions > .button-group').length === 0) {
-              file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
+              return file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
             }
-            return console.log(file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>'));
           }
         });
       },
@@ -103,7 +101,6 @@ Codecov = (function() {
             file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
           }
           if (coverage) {
-            console.log(res, coverage);
             button = file.find('.minibutton.codecov').attr('aria-label', 'Toggle Codecov').text('Coverage ' + coverage['coverage'].toFixed(0) + '%').removeClass('disabled').unbind().click(self.page === 'blob' ? self.toggle_coverage : self.toggle_diff);
             file.find('tr').each(function() {
               var cov;

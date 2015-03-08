@@ -32,11 +32,8 @@ describe('codecov', function(){
     var file = $('.file-header[data-path="codecov/__init__.py"]');
     expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(false);
     click($('.codecov.minibutton', file)[0]);
-    setTimeout(function(){
-      expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(true);
-      expect(file.next().find('.blob-num-deletion:visible').length).to.equal(0);
-      expect(file.next().find('.codecov:not(.codecov-on)').length).to.equal(0);
-      done();
-    }, 1000);
+    expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(true);
+    expect(file.next().find('.blob-num-deletion:visible').length).to.equal(0);
+    expect(file.next().find('.codecov:not(.codecov-on)').length).to.equal(0);
   });
 });

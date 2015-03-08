@@ -36,7 +36,7 @@ describe('codecov', function(){
 });
 
 describe('clicking codecov', function(){
-  it('will toggle off it', function(){
+  it('will toggle it', function(){
     // first click
     click($('.codecov.minibutton')[0]);
     expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
