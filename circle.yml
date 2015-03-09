@@ -4,6 +4,6 @@ machine:
 
 test:
   pre:
-    - pip install codecov
+    - sudo pip install codecov
   post:
     - codecov
