@@ -55,7 +55,6 @@ describe('clicking codecov', function(){
       if (coverage[x] === 'partial' || coverage[x] === 'missed') {
         expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
       } else if (coverage[x] === 'hit') {
-        console.log(coverage[x], $(this).find('td').hasClass('codecov-on'));
         expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
       }
       x++;

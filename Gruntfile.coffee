@@ -15,8 +15,7 @@ module.exports = (grunt) ->
 
     coffee:
       default:
-        # expand: yes
-        # flatten: yes
+        expand: yes
         files:
           'dist/github.js': 'src/github.coffee'
         options: bare: yes
@@ -38,6 +37,9 @@ module.exports = (grunt) ->
     mocha:
       all:
         options:
+          page:
+            settings:
+              webSecurityEnabled: no
           mocha:
             ignoreLeaks: no
             globals: ['jQuery*', 'codecov']
@@ -49,7 +51,6 @@ module.exports = (grunt) ->
             ]
           run: no
           reporter: 'mocha-phantom-coverage-reporter'
-          require: 'coffee-script/register'
           timeout: 10000
 
   grunt.loadNpmTasks 'grunt-mocha'

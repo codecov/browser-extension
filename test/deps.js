@@ -10,3 +10,18 @@ var click = function (el){
     );
     el.dispatchEvent(ev);
 };
+
+mocha.ui('bdd');
+mocha.reporter('html');
+
+var expect = chai.expect;
+
+var chrome = {
+  extension: {
+    getURL: function(loca){ return "../../"+loca; }
+  }
+};
+
+var run = function(){
+  mocha.run();
+};

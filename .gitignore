@@ -1,5 +1,6 @@
-node_modules
 .DS_Store
 builds
-npm-debug.log
+coverage
 lib-cov
+node_modules
+npm-debug.log
