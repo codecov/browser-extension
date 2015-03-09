@@ -1,27 +1,10 @@
-Chrome Plugin `beta`
-===========
+Chrome Extension `beta`
+================
 
-[![Circle CI](https://img.shields.io/circleci/project/codecov/chrome-plugin/master.svg)](https://circleci.com/gh/codecov/chrome-plugin) [![codecov.io](https://codecov.io/github/codecov/chrome-plugin/coverage.svg?branch=master)](https://codecov.io/github/codecov/chrome-plugin)
+[![Circle CI](https://img.shields.io/circleci/project/codecov/chrome-plugin/master.svg)](https://circleci.com/gh/codecov/chrome-plugin) [![codecov.io](https://img.shields.io/codecov/c/github/codecov/chrome-plugin.svg)](https://codecov.io/github/codecov/chrome-plugin) [![Install Chrome Extension](https://img.shields.io/badge/extension-install-blue.svg)](https://chrome.google.com/webstore/detail/codecov-extension/keefkhehidemnokodkdkejapdgfjmijf)
 
-> Codecov :heart:'s Github
+The Codecov Chrome Extension will overlay coverage reports directly in Github.
 
------
-
-> YouTube preview: http://youtu.be/EypPQdAwnc0
-
-> Preview the plugin in Chrome by cloning this project then opening up [Chrome Extensions](chrome://extensions)
-click on **Load unpacked extension...** and find the cloned project folder.
-
-> Pull Requests and Comments very welcome!
-
-> Thank you and enjoy!
-
------
-
-
-The Codecov Chrome Plugin will over lay the repos coverage reports directly in Github. Yea... its awesome.
-
-![preview](https://cloud.githubusercontent.com/assets/2041757/6430536/c7c4ed6c-c040-11e4-8b43-ffb6638962cf.png)
-
+![preview](https://cloud.githubusercontent.com/assets/2041757/6550771/026264e8-c660-11e4-8802-129e13ce18a3.png)
 
 > Special thanks to @ndahlquist for the project inspiration
