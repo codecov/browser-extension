@@ -40,14 +40,14 @@ module.exports = (grunt) ->
         options:
           mocha:
             ignoreLeaks: no
-            globals: ['jQuery*']
+            globals: ['jQuery*', 'codecov']
 
           urls: [
             'http://localhost:3000/test/github/test_blob.html'
             'http://localhost:3000/test/github/test_compare.html'
             'http://localhost:3000/test/github/test_pull.html'
             ]
-          run: yes
+          run: no
           reporter: 'mocha-phantom-coverage-reporter'
           require: 'coffee-script/register'
           timeout: 10000

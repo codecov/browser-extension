@@ -10,7 +10,3 @@ var click = function (el){
     );
     el.dispatchEvent(ev);
 };
-
-$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
-    options.async = true;
-});

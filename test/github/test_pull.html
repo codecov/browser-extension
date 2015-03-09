@@ -777,6 +777,8 @@
     <script>
       mocha.ui('bdd');
       mocha.reporter('html');
+      window.codecov_settings = {"debug": "https://github.com/codecov/codecov-python/pull/16",
+                                 "callback": mocha.run};
       var expect = chai.expect;
       var chrome = {
         extension: {
@@ -785,9 +787,5 @@
       };
     </script>
     <script src="test_pull.js"></script>
-    <script>
-      if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
-      else { mocha.run(); }
-    </script>
   </body>
 </html>

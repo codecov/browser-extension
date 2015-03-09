@@ -1,14 +1,10 @@
-var coverage = ['hit', null, 'hit', null, 'hit', 'hit', 'hit', 'hit', 'partial', 'missed', 'partial', 'missed',
-                null, 'hit', null, 'partial', 'missed', null, 'hit', null, 'hit', null];
 describe('codecov', function(){
-  it('should start with no errors', function(done){
-      var codecov = new Codecov({"debug": "https://github.com/codecov/codecov-python/pull/16",
-                                 "callback": done});
-      expect(codecov.page).to.equal('pull');
-      expect(codecov.slug).to.equal('codecov/codecov-python');
-      expect(codecov.file).to.equal('');
-      expect(codecov.ref).to.equal('1d30954');
-      expect(codecov.base).to.equal("&base=3229ed3");
+  it('should start with no errors', function(){
+      expect(window.codecov.page).to.equal('pull');
+      expect(window.codecov.slug).to.equal('codecov/codecov-python');
+      expect(window.codecov.file).to.equal('');
+      expect(window.codecov.ref).to.equal('1d30954');
+      expect(window.codecov.base).to.equal("&base=3229ed3");
   });
   it('should insert dist/github.css stylesheed', function(){
     // 2 becuse we ran new Codecov twice

@@ -16,12 +16,13 @@ Codecov = (function() {
 
   Codecov.prototype.settings = {
     url: 'https://codecov.io',
-    debug: false
+    debug: false,
+    callback: null
   };
 
-  function Codecov(settings) {
-    var href, split;
-    this.settings = $.extend(null, this.settings, settings != null ? settings : {});
+  function Codecov() {
+    var href, ref, split;
+    this.settings = $.extend(null, this.settings, (ref = typeof window !== "undefined" && window !== null ? window.codecov_settings : void 0) != null ? ref : {});
     if (!($('#codecov-css').length > 0)) {
       $('head').append("<link href=\"" + (chrome.extension.getURL('dist/github.css')) + "\" rel=\"stylesheet\" id=\"codecov-css\">");
     }
@@ -66,8 +67,9 @@ Codecov = (function() {
           file = $(this);
           if (file.find('.minibutton.codecov').length === 0) {
             if (file.find('.file-actions > .button-group').length === 0) {
-              return file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
+              file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
             }
+            return file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>');
           }
         });
       },
@@ -187,5 +189,5 @@ Codecov = (function() {
 })();
 
 $(function() {
-  return new Codecov;
+  return window.codecov = new Codecov;
 });

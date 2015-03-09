@@ -8,9 +8,10 @@ class Codecov
   settings:
     url: 'https://codecov.io'
     debug: no
+    callback: null
 
-  constructor: (settings) ->
-    @settings = $.extend null, @settings, (settings ? {})
+  constructor: ->
+    @settings = $.extend null, @settings, (window?.codecov_settings ? {})
 
     # attach stylesheet
     # =================
@@ -72,6 +73,7 @@ class Codecov
           if file.find('.minibutton.codecov').length is 0
             if file.find('.file-actions > .button-group').length is 0
               file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
+            file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
 
       success: (res) ->
         if self.page isnt 'blob'
@@ -184,4 +186,4 @@ class Codecov
     else
       "hit"
 
-$ -> new Codecov
+$ -> window.codecov = new Codecov

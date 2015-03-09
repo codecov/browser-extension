@@ -1,11 +1,9 @@
 describe('codecov', function(){
-  it('should start with no errors', function(done){
-      var codecov = new Codecov({"debug": "https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6",
-                                 "callback": done});
-      expect(codecov.slug).to.equal('codecov/codecov-python');
-      expect(codecov.file).to.equal('');
-      expect(codecov.ref).to.equal('4c95614');
-      expect(codecov.base).to.equal('&base=fb55c9b');
+  it('should have accurate properties', function(){
+      expect(window.codecov.slug).to.equal('codecov/codecov-python');
+      expect(window.codecov.file).to.equal('');
+      expect(window.codecov.ref).to.equal('4c95614');
+      expect(window.codecov.base).to.equal('&base=fb55c9b');
   });
   it('should insert dist/github.css stylesheed', function(){
     // 2 becuse we ran new Codecov twice
@@ -28,7 +26,7 @@ describe('codecov', function(){
     expect($('.codecov.minibutton.selected').length).to.equal(0);
     expect($('.blob-num-deletion:visible').length).to.not.equal(0);
   });
-  it('click will toggle coverage', function(done){
+  it('click will toggle coverage', function(){
     var file = $('.file-header[data-path="codecov/__init__.py"]');
     expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(false);
     click($('.codecov.minibutton', file)[0]);

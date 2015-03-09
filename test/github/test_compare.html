@@ -2128,6 +2128,8 @@
     <script>
       mocha.ui('bdd');
       mocha.reporter('html');
+      window.codecov_settings = {"debug": "https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6", 
+                                 "callback": mocha.run};
       var expect = chai.expect;
       var chrome = {
         extension: {
@@ -2136,9 +2138,5 @@
       };
     </script>
     <script src="test_compare.js"></script>
-    <script>
-      if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
-      else { mocha.run(); }
-    </script>
   </body>
 </html>
