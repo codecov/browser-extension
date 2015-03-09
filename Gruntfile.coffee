@@ -43,7 +43,6 @@ module.exports = (grunt) ->
           mocha:
             ignoreLeaks: no
             globals: ['jQuery*', 'codecov']
-
           urls: [
             'http://localhost:3000/test/github/test_blob.html'
             'http://localhost:3000/test/github/test_compare.html'

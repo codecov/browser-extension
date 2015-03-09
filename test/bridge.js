@@ -109,5 +109,8 @@
     if (run) {
       mocha.run();
     }
+  } else {
+    mocha.ui('bdd');
+    mocha.reporter('html');
   }
 }());

@@ -11,9 +11,6 @@ var click = function (el){
     el.dispatchEvent(ev);
 };
 
-mocha.ui('bdd');
-mocha.reporter('html');
-
 var expect = chai.expect;
 
 var chrome = {
@@ -22,6 +19,6 @@ var chrome = {
   }
 };
 
-var run = function(){
+var mochaRunTests = function(){
   mocha.run();
 };
