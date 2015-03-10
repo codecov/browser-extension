@@ -155,18 +155,20 @@ class Codecov
 
   toggle_diff: ->
     file = $(@).parents('.file')
-    if file.find('.blob-num-deletion:first').parent().is(':visible')
-      $(@).addClass('selected')
-      # hide deleted lines
-      file.find('.blob-num-deletion').parent().hide()
-      # fill w/ coverage
-      file.find('.codecov').addClass('codecov-on')
-    else
+    if $(@).hasClass('selected')
+      # toggle off
       $(@).removeClass('selected')
       # show deleted lines
       file.find('.blob-num-deletion').parent().show()
       # remove covered lines
       file.find('.codecov').removeClass('codecov-on')
+    else
+      # toggle on
+      $(@).addClass('selected')
+      # hide deleted lines
+      file.find('.blob-num-deletion').parent().hide()
+      # fill w/ coverage
+      file.find('.codecov').addClass('codecov-on')
 
   color: (ln) ->
     if ln is 0

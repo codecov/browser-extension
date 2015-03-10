@@ -151,14 +151,14 @@ Codecov = (function() {
   Codecov.prototype.toggle_diff = function() {
     var file;
     file = $(this).parents('.file');
-    if (file.find('.blob-num-deletion:first').parent().is(':visible')) {
-      $(this).addClass('selected');
-      file.find('.blob-num-deletion').parent().hide();
-      return file.find('.codecov').addClass('codecov-on');
-    } else {
+    if ($(this).hasClass('selected')) {
       $(this).removeClass('selected');
       file.find('.blob-num-deletion').parent().show();
       return file.find('.codecov').removeClass('codecov-on');
+    } else {
+      $(this).addClass('selected');
+      file.find('.blob-num-deletion').parent().hide();
+      return file.find('.codecov').addClass('codecov-on');
     }
   };
 
