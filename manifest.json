@@ -1,6 +1,6 @@
 {
   "name": "Codecov Extension",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage_url": "https://github.com/codecov/chrome-plugin",
   "description": "Coverage reports overlay in Github.",
   "offline_enabled": false,
@@ -28,6 +28,7 @@
     "*://github.com/*/pull/*",
     "*://github.com/*/compare/*",
     "*://github.com/*/commit/*",
-    "*://codecov.io/*"
+    "*://codecov.io/*",
+    "storage"
   ]
 }

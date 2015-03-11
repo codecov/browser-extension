@@ -58,87 +58,92 @@ class Codecov
 
     self = @
 
-    # get coverage
-    # ============
-    $.ajax
-      url: "#{@settings.url}/github/#{@slug}#{@file}?ref=#{@ref}#{@base}"
-      type: 'get'
-      dataType: 'json'
-      headers:
-        Accept: 'application/json'
-      beforeSend: ->
-        # show loading coverage
-        self.files.each ->
-          file = $(@)
-          if file.find('.minibutton.codecov').length is 0
-            if file.find('.file-actions > .button-group').length is 0
-              file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
-            file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
+    @files.each ->
+      file = $(@)
+      if file.find('.minibutton.codecov').length is 0
+        if file.find('.file-actions > .button-group').length is 0
+          file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
+        file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
 
-      success: (res) ->
-        if self.page isnt 'blob'
-          if res['base']
-            compare = (res['report']['coverage'] - res['base']).toFixed(0)
-            plus = if compare > 0 then '+' else '-'
-            $('.toc-diff-stats').append(if compare is 0 then "Coverage did not change." else " Coverage changed <strong>#{plus}#{compare}%</strong>")
-            $('#diffstat').append("<span class=\"text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s\" aria-label=\"Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%\">#{plus}#{compare}%</span>")
-          else
-            coverage = res['report']['coverage'].toFixed(0)
-            $('.toc-diff-stats').append(" Coverage <strong>#{coverage}%</strong>")
-            $('#diffstat').append("<span class=\"tooltipped tooltipped-s\" aria-label=\"Coverage #{coverage}%\">#{coverage}%</span>")
+    chrome.storage.local.get "#{self.slug}/#{self.ref}", (res) ->
+      if res?[self.ref]
+        self.process res[self.ref]
+      else
+        # get coverage
+        # ============
+        $.ajax
+          url: "#{self.settings.url}/github/#{self.slug}#{self.file}?ref=#{self.ref}#{self.base}"
+          type: 'get'
+          dataType: 'json'
+          headers:
+            Accept: 'application/json'
+          success: (res) -> self.process res, yes
+          complete: -> self.settings?.callback?()
+          statusCode:
+            401: ->
+              $('.minibutton.codecov').text("Please login at Codecov.io").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov.io')
+            404: ->
+              $('.minibutton.codecov').text("No coverage").attr('aria-label', 'Coverage not found')
+            500: ->
+              $('.minibutton.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry')
 
-        # compare in toc
-        $('table-of-contents').find('li').each ->
-          $('.diffstat.right', @).prepend("#{res.report.files[$('a', @).text()]?.coverage.toFixed(0)}%")
+  process: (res, store) ->
+    self = @
+    if self.page isnt 'blob'
+      if res['base']
+        compare = (res['report']['coverage'] - res['base']).toFixed(0)
+        plus = if compare > 0 then '+' else '-'
+        $('.toc-diff-stats').append(if compare is '0' then "Coverage did not change." else " Coverage changed <strong>#{plus}#{compare}%</strong>")
+        $('#diffstat').append("<span class=\"text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s\" aria-label=\"Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%\">#{plus}#{compare}%</span>")
+      else
+        coverage = res['report']['coverage'].toFixed(0)
+        $('.toc-diff-stats').append(" Coverage <strong>#{coverage}%</strong>")
+        $('#diffstat').append("<span class=\"tooltipped tooltipped-s\" aria-label=\"Coverage #{coverage}%\">#{coverage}%</span>")
 
-        self.files.each ->
-          file = $(@)
-          # find covered file
-          # =================
-          if self.page is 'blob'
-            coverage = res['report']
-          else
-            coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
+    # compare in toc
+    $('table-of-contents').find('li').each ->
+      $('.diffstat.right', @).prepend("#{res.report.files[$('a', @).text()]?.coverage.toFixed(0)}%")
 
-          # assure button group
-          if file.find('.file-actions > .button-group').length is 0
-            file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
+    self.files.each ->
+      file = $(@)
+      # find covered file
+      # =================
+      if self.page is 'blob'
+        coverage = res['report']
+      else
+        coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
 
-          # report coverage
-          # ===============
-          if coverage
-            # ... show diff not full file coverage for compare view
-            button = file.find('.minibutton.codecov')
-                         .attr('aria-label', 'Toggle Codecov')
-                         .text('Coverage '+coverage['coverage'].toFixed(0)+'%')
-                         .removeClass('disabled')
-                         .unbind()
-                         .click(if self.page is 'blob' then self.toggle_coverage else self.toggle_diff)
+      # assure button group
+      if file.find('.file-actions > .button-group').length is 0
+        file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
 
-            # overlay coverage
-            file.find('tr').each ->
-              cov = self.color coverage['lines'][$(@).find("td:eq(#{if self.page is 'blob' then 0 else 1})").attr('data-line-number')]
-              $(@).find('td').addClass "codecov codecov-#{cov}"
+      # report coverage
+      # ===============
+      if coverage
+        # ... show diff not full file coverage for compare view
+        button = file.find('.minibutton.codecov')
+                     .attr('aria-label', 'Toggle Codecov')
+                     .text('Coverage '+coverage['coverage'].toFixed(0)+'%')
+                     .removeClass('disabled')
+                     .unbind()
+                     .click(if self.page is 'blob' then self.toggle_coverage else self.toggle_diff)
 
-            # turn on blob by default
-            if self.page is 'blob'
-              # default important only
-              button.trigger('click')
-              button.trigger('click')
+        # overlay coverage
+        file.find('tr').each ->
+          cov = self.color coverage['lines'][$(@).find("td:eq(#{if self.page is 'blob' then 0 else 1})").attr('data-line-number')]
+          $(@).find('td').addClass "codecov codecov-#{cov}"
 
-          else
-            file.find('.minibutton.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
+        # turn on blob by default
+        if self.page is 'blob'
+          # default important only
+          button.trigger('click')
+          button.trigger('click')
 
-      statusCode:
-        401: ->
-          $('.minibutton.codecov').text("Please login at Codecov.io").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov.io')
-          # todo inform user that they need to login
-        404: ->
-          $('.minibutton.codecov').text("No coverage").attr('aria-label', 'Coverage not found')
-        500: ->
-          $('.minibutton.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry')
+      else
+        file.find('.minibutton.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
 
-      complete: -> self.settings?.callback?()
+    if store
+      chrome.storage.local.set {"#{self.slug}/#{self.ref}": res}, -> console.log('keps coverage results')
 
   toggle_coverage: ->
     if $('.codecov.codecov-hit.codecov-on').length > 0
