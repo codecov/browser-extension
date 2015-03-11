@@ -80,7 +80,7 @@ class Codecov
           if res['base']
             compare = (res['report']['coverage'] - res['base']).toFixed(0)
             plus = if compare > 0 then '+' else '-'
-            $('.toc-diff-stats').append(" Coverage <strong>#{plus}#{compare}%</strong>")
+            $('.toc-diff-stats').append(if compare is 0 then "Coverage did not change." else " Coverage changed <strong>#{plus}#{compare}%</strong>")
             $('#diffstat').append("<span class=\"text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s\" aria-label=\"Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%\">#{plus}#{compare}%</span>")
           else
             coverage = res['report']['coverage'].toFixed(0)

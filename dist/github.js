@@ -79,7 +79,7 @@ Codecov = (function() {
           if (res['base']) {
             compare = (res['report']['coverage'] - res['base']).toFixed(0);
             plus = compare > 0 ? '+' : '-';
-            $('.toc-diff-stats').append(" Coverage <strong>" + plus + compare + "%</strong>");
+            $('.toc-diff-stats').append(compare === 0 ? "Coverage did not change." : " Coverage changed <strong>" + plus + compare + "%</strong>");
             $('#diffstat').append("<span class=\"text-diff-" + (compare > 0 ? 'added' : 'deleted') + " tooltipped tooltipped-s\" aria-label=\"Coverage " + (compare > 0 ? 'increased' : 'decreased') + " " + plus + compare + "%\">" + plus + compare + "%</span>");
           } else {
             coverage = res['report']['coverage'].toFixed(0);
