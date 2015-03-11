@@ -16,6 +16,18 @@ var expect = chai.expect;
 var chrome = {
   extension: {
     getURL: function(loca){ return "../../"+loca; }
+  },
+  storage: {
+    cache: {},
+    local : {
+      get: function(key, callback){
+        callback(chrome.storage.cache);
+      },
+      set: function(cache, callback){
+        chrome.storage.cache = cache;
+        callback();
+      }
+    }
   }
 };
 
