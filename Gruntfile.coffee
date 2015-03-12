@@ -44,9 +44,10 @@ module.exports = (grunt) ->
             ignoreLeaks: no
             globals: ['jQuery*', 'codecov']
           urls: [
-            'http://localhost:3000/test/github/test_blob.html'
-            'http://localhost:3000/test/github/test_compare.html'
-            'http://localhost:3000/test/github/test_pull.html'
+            # 'http://localhost:3000/test/github/test_blob.html'
+            # 'http://localhost:3000/test/github/test_compare.html'
+            'http://localhost:3000/test/github/test_blame.html'
+            # 'http://localhost:3000/test/github/test_pull.html'
             ]
           run: no
           reporter: 'mocha-phantom-coverage-reporter'

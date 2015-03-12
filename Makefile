@@ -2,7 +2,7 @@
 
 build:
 	zip -r ./builds/codecov.zip . -x ".*" -x "*/.*" -x "node_modules/*" -x "builds/*"
-	open -a "Google Chrome" https://chrome.google.com/webstore/developer/dashboard/g16141306515524943109
+	open -a "Google Chrome" https://chrome.google.com/webstore/developer/edit/keefkhehidemnokodkdkejapdgfjmijf
 
 dev:
 	mkdir node_modules

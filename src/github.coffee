@@ -33,7 +33,7 @@ class Codecov
       # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
       split = $('a[data-hotkey=y]').attr('href').split('/')
       @ref = split[4]
-      @file = "/#{split.slice(5).join('/')}"
+      @file = "/#{split[5..].join('/')}"
 
     else if @page is 'compare'
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
@@ -140,6 +140,7 @@ class Codecov
           # default important only
           button.trigger('click')
           button.trigger('click')
+
         else if self.page is 'blame'
           # default to all
           button.trigger('click')

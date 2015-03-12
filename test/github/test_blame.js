@@ -4,8 +4,8 @@ describe('codecov', function(){
   it('should start with no errors', function(){
       expect(window.codecov.slug).to.equal('codecov/codecov-python');
       expect(window.codecov.file).to.equal('/codecov/clover.py');
-      expect(window.codecov.ref).to.equal('4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5');
-      expect(window.codecov.page).to.equal('blob');
+      expect(window.codecov.ref).to.equal('master');
+      expect(window.codecov.page).to.equal('blame');
       expect(window.codecov.base).to.equal('');
   });
   it('should insert dist/github.css stylesheed', function(){
@@ -19,16 +19,13 @@ describe('codecov', function(){
     expect(button.attr('aria-label')).to.equal('Toggle Codecov (c)');
   });
   it('should still have all lines', function(){
-    expect($('.file tr').length).to.equal(22);
+    expect($('.file tr').length).to.equal(29);
   });
   it('should add covered lines', function(){
     expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
     var x = 0;
-    $('.file tr').each(function(){
+    $('.file tr.blame-line').each(function(){
       expect($(this).find('td').hasClass('codecov codecov-'+coverage[x])).to.equal(true);
-      if (coverage[x] === 'partial' || coverage[x] === 'missed') {
-        expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
-      }
       x++;
     });
   });
@@ -36,23 +33,24 @@ describe('codecov', function(){
 
 describe('clicking codecov', function(){
   it('will toggle it', function(){
-    // first click
-    click($('.codecov.minibutton')[0]);
-    expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
-    $('.file tr').each(function(){
-      expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
-    });
+    // IMPORTANT during test the clicking does not work in github.coffee
     // second click
     click($('.codecov.minibutton')[0]);
-    expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
-    $('.file tr').each(function(){
-      expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
+    expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
+    $('.file tr.blame-line').each(function(){
+      expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
     });
     // third click
     click($('.codecov.minibutton')[0]);
     expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
+    $('.file tr.blame-line').each(function(){
+      expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
+    });
+    // first click
+    click($('.codecov.minibutton')[0]);
+    expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
     var x = 0;
-    $('.file tr').each(function(){
+    $('.file tr.blame-line').each(function(){
       if (coverage[x] === 'partial' || coverage[x] === 'missed') {
         expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
       } else if (coverage[x] === 'hit') {
