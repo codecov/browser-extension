@@ -9,6 +9,9 @@ The Codecov Chrome Extension will overlay coverage reports directly in Github.
 
 > Special thanks to @ndahlquist for the project inspiration
 
+## Change Log
+> See [Releases](https://github.com/codecov/chrome-plugin/releases)
+
 ## Development References
 - [chrome.storage.local](https://developer.chrome.com/extensions/storage#property-local)
 - [Manifest File Format](https://developer.chrome.com/extensions/manifest)
