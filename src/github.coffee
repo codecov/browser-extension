@@ -28,7 +28,7 @@ class Codecov
       # https://github.com/codecov/codecov-python/commit/b0a3eef1c9c456e1794c503aacaff660a1a197aa
       @ref = href[6]
 
-    else if @page is 'blob'
+    else if @page in ['blob', 'blame']
       # https://github.com/codecov/codecov-python/blob/master/codecov/clover.py
       # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
       split = $('a[data-hotkey=y]').attr('href').split('/')
@@ -63,7 +63,7 @@ class Codecov
       if file.find('.minibutton.codecov').length is 0
         if file.find('.file-actions > .button-group').length is 0
           file.find('.file-actions a:first').wrap('<div class="button-group"></div>')
-        file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>')
+        file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>')
 
     chrome.storage.local.get "#{self.slug}/#{self.ref}", (res) ->
       if res?[self.ref]
@@ -89,7 +89,7 @@ class Codecov
 
   process: (res, store) ->
     self = @
-    if self.page isnt 'blob'
+    if self.page in ['commit', 'compare', 'pull']
       if res['base']
         compare = (res['report']['coverage'] - res['base']).toFixed(0)
         plus = if compare > 0 then '+' else '-'
@@ -108,7 +108,7 @@ class Codecov
       file = $(@)
       # find covered file
       # =================
-      if self.page is 'blob'
+      if self.page in ['blob', 'blame']
         coverage = res['report']
       else
         coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
@@ -122,15 +122,17 @@ class Codecov
       if coverage
         # ... show diff not full file coverage for compare view
         button = file.find('.minibutton.codecov')
-                     .attr('aria-label', 'Toggle Codecov')
+                     .attr('aria-label', 'Toggle Codecov (c)')
                      .text('Coverage '+coverage['coverage'].toFixed(0)+'%')
                      .removeClass('disabled')
                      .unbind()
-                     .click(if self.page is 'blob' then self.toggle_coverage else self.toggle_diff)
+                     .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
 
         # overlay coverage
+        _td = "td:eq(#{if self.page is 'blob' then 0 else 1})"
         file.find('tr').each ->
-          cov = self.color coverage['lines'][$(@).find("td:eq(#{if self.page is 'blob' then 0 else 1})").attr('data-line-number')]
+          td = $(@).find(_td)
+          cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
           $(@).find('td').addClass "codecov codecov-#{cov}"
 
         # turn on blob by default
@@ -138,12 +140,15 @@ class Codecov
           # default important only
           button.trigger('click')
           button.trigger('click')
+        else if self.page is 'blame'
+          # default to all
+          button.trigger('click')
 
       else
         file.find('.minibutton.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
 
     if store
-      chrome.storage.local.set {"#{self.slug}/#{self.ref}": res}, -> console.log('keps coverage results')
+      chrome.storage.local.set {"#{self.slug}/#{self.ref}": res}, -> null
 
   toggle_coverage: ->
     if $('.codecov.codecov-hit.codecov-on').length > 0
@@ -154,7 +159,7 @@ class Codecov
       $('.codecov').removeClass('codecov-on')
       $(@).removeClass('selected')
     else
-      # toggle all on 
+      # toggle all on
       $('.codecov').addClass('codecov-on')
       $(@).addClass('selected')
 

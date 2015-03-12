@@ -21,7 +21,7 @@ Codecov = (function() {
   };
 
   function Codecov() {
-    var href, ref, split;
+    var href, ref, ref1, split;
     this.settings = $.extend(null, this.settings, (ref = typeof window !== "undefined" && window !== null ? window.codecov_settings : void 0) != null ? ref : {});
     if (!($('#codecov-css').length > 0)) {
       $('head').append("<link href=\"" + (chrome.extension.getURL('dist/github.css')) + "\" rel=\"stylesheet\" id=\"codecov-css\">");
@@ -31,7 +31,7 @@ Codecov = (function() {
     this.page = href[5];
     if (this.page === 'commit') {
       this.ref = href[6];
-    } else if (this.page === 'blob') {
+    } else if ((ref1 = this.page) === 'blob' || ref1 === 'blame') {
       split = $('a[data-hotkey=y]').attr('href').split('/');
       this.ref = split[4];
       this.file = "/" + (split.slice(5).join('/'));
@@ -61,7 +61,7 @@ Codecov = (function() {
         if (file.find('.file-actions > .button-group').length === 0) {
           file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
         }
-        return file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io">Coverage loading...</a>');
+        return file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>');
       }
     });
     return chrome.storage.local.get(self.slug + "/" + self.ref, function(res) {
@@ -99,9 +99,9 @@ Codecov = (function() {
   };
 
   Codecov.prototype.process = function(res, store) {
-    var compare, coverage, obj, plus, self;
+    var compare, coverage, obj, plus, ref, self;
     self = this;
-    if (self.page !== 'blob') {
+    if ((ref = self.page) === 'commit' || ref === 'compare' || ref === 'pull') {
       if (res['base']) {
         compare = (res['report']['coverage'] - res['base']).toFixed(0);
         plus = compare > 0 ? '+' : '-';
@@ -114,13 +114,13 @@ Codecov = (function() {
       }
     }
     $('table-of-contents').find('li').each(function() {
-      var ref;
-      return $('.diffstat.right', this).prepend(((ref = res.report.files[$('a', this).text()]) != null ? ref.coverage.toFixed(0) : void 0) + "%");
+      var ref1;
+      return $('.diffstat.right', this).prepend(((ref1 = res.report.files[$('a', this).text()]) != null ? ref1.coverage.toFixed(0) : void 0) + "%");
     });
     self.files.each(function() {
-      var button, file;
+      var _td, button, file, ref1, ref2;
       file = $(this);
-      if (self.page === 'blob') {
+      if ((ref1 = self.page) === 'blob' || ref1 === 'blame') {
         coverage = res['report'];
       } else {
         coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')];
@@ -129,14 +129,18 @@ Codecov = (function() {
         file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
       }
       if (coverage) {
-        button = file.find('.minibutton.codecov').attr('aria-label', 'Toggle Codecov').text('Coverage ' + coverage['coverage'].toFixed(0) + '%').removeClass('disabled').unbind().click(self.page === 'blob' ? self.toggle_coverage : self.toggle_diff);
+        button = file.find('.minibutton.codecov').attr('aria-label', 'Toggle Codecov (c)').text('Coverage ' + coverage['coverage'].toFixed(0) + '%').removeClass('disabled').unbind().click((ref2 = self.page) === 'blob' || ref2 === 'blame' ? self.toggle_coverage : self.toggle_diff);
+        _td = "td:eq(" + (self.page === 'blob' ? 0 : 1) + ")";
         file.find('tr').each(function() {
-          var cov;
-          cov = self.color(coverage['lines'][$(this).find("td:eq(" + (self.page === 'blob' ? 0 : 1) + ")").attr('data-line-number')]);
+          var cov, ref3, td;
+          td = $(this).find(_td);
+          cov = self.color(coverage['lines'][td.attr('data-line-number') || ((ref3 = td.attr('id')) != null ? ref3.slice(1) : void 0)]);
           return $(this).find('td').addClass("codecov codecov-" + cov);
         });
         if (self.page === 'blob') {
           button.trigger('click');
+          return button.trigger('click');
+        } else if (self.page === 'blame') {
           return button.trigger('click');
         }
       } else {
@@ -149,7 +153,7 @@ Codecov = (function() {
         obj[self.slug + "/" + self.ref] = res,
         obj
       ), function() {
-        return console.log('keps coverage results');
+        return null;
       });
     }
   };

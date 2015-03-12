@@ -4,6 +4,7 @@
   "homepage_url": "https://github.com/codecov/chrome-plugin",
   "description": "Coverage reports overlay in Github.",
   "offline_enabled": false,
+  "manifest_version": 2,
   "icons": {
     "16": "icons/codecov-16.png",
     "48": "icons/codecov-48.png",
@@ -17,10 +18,9 @@
       "js": ["dist/jquery-2.1.3.min.js", "dist/github.js"]
     }
   ],
-  "manifest_version": 2,
   "web_accessible_resources": [
     "dist/jquery-2.1.3.min.js",
-    "dist/style.css",
+    "dist/github.js",
     "dist/github.css"
   ],
   "permissions": [
@@ -28,6 +28,7 @@
     "*://github.com/*/pull/*",
     "*://github.com/*/compare/*",
     "*://github.com/*/commit/*",
+    "*://github.com/*/blame/*",
     "*://codecov.io/*",
     "storage"
   ]
