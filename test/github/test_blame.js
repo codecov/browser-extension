@@ -22,7 +22,7 @@ describe('codecov', function(){
     expect($('.file tr').length).to.equal(29);
   });
   it('should add covered lines', function(){
-    expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
+    expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
     var x = 0;
     $('.file tr.blame-line').each(function(){
       expect($(this).find('td').hasClass('codecov codecov-'+coverage[x])).to.equal(true);
@@ -33,20 +33,11 @@ describe('codecov', function(){
 
 describe('clicking codecov', function(){
   it('will toggle it', function(){
-    // IMPORTANT during test the clicking does not work in github.coffee
-    // second click
-    click($('.codecov.minibutton')[0]);
-    expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
-    $('.file tr.blame-line').each(function(){
-      expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
-    });
-    // third click
     click($('.codecov.minibutton')[0]);
     expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
     $('.file tr.blame-line').each(function(){
       expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
     });
-    // first click
     click($('.codecov.minibutton')[0]);
     expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
     var x = 0;
@@ -57,6 +48,11 @@ describe('clicking codecov', function(){
         expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
       }
       x++;
+    });
+    click($('.codecov.minibutton')[0]);
+    expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
+    $('.file tr.blame-line').each(function(){
+      expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
     });
   });
 });
