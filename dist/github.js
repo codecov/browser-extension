@@ -33,7 +33,7 @@ Codecov = (function() {
     }, function(items) {
       var href, ref1, split;
       self.settings.first_view = items.first_view;
-      $.merge(self.settings.urls, items.enterprise.split("\n").filter(function(a) {
+      $.merge(self.settings.urls, (items.enterprise || "").split("\n").filter(function(a) {
         return a;
       }));
       if (!($('#codecov-css').length > 0)) {

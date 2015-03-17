@@ -21,7 +21,7 @@ class Codecov
       enterprise: ''
     }, (items) ->
       self.settings.first_view = items.first_view
-      $.merge self.settings.urls, items.enterprise.split("\n").filter((a) -> a)
+      $.merge self.settings.urls, (items.enterprise or "").split("\n").filter((a) -> a)
 
       # attach stylesheet
       # =================

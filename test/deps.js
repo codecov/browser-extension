@@ -18,8 +18,21 @@ var chrome = {
     getURL: function(loca){ return "../../"+loca; }
   },
   storage: {
-    cache: {},
-    local : {
+    cache: {
+      // defaults
+      first_view: 'im',
+      enterprise: ''
+    },
+    sync: {
+      get: function(key, callback){
+        callback(chrome.storage.cache);
+      },
+      set: function(cache, callback){
+        chrome.storage.cache = cache;
+        callback();
+      }
+    },
+    local: {
       get: function(key, callback){
         callback(chrome.storage.cache);
       },
