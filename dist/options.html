@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Codecov Extension</title>
+  <style>
+    body: { padding: 10px; }
+  </style>
+</head>
+
+<body>
+  <div>
+    <h3>Initial coverage view</h3>
+    <select id="first_view">
+     <option value="im">Hit and Misses</option>
+     <option value="a">All lines</option>
+     <option value="">No coveraage</option>
+    </select>
+  </div>
+
+  <br>
+
+  <div>
+    <h3>Enterprise Targets</h3>
+    <textarea id="enterprise" cols="30" rows="2"></textarea>
+    <p class="small">Type in url like <code>https://your-public-url.com</code></p>
+  </div>
+
+  <button id="save">Save</button> <span id="status"></span>
+
+  <script src="options.js"></script>
+</body>
+</html>
