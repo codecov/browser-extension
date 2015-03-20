@@ -4,7 +4,7 @@ describe('codecov', function(){
   it('should start with no errors', function(){
       expect(window.codecov.slug).to.equal('codecov/codecov-python');
       expect(window.codecov.file).to.equal('/codecov/clover.py');
-      expect(window.codecov.ref).to.equal('4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5');
+      expect(window.codecov.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
       expect(window.codecov.page).to.equal('blob');
       expect(window.codecov.base).to.equal('');
   });

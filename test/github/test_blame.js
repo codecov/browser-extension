@@ -4,7 +4,7 @@ describe('codecov', function(){
   it('should start with no errors', function(){
       expect(window.codecov.slug).to.equal('codecov/codecov-python');
       expect(window.codecov.file).to.equal('/codecov/clover.py');
-      expect(window.codecov.ref).to.equal('master');
+      expect(window.codecov.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
       expect(window.codecov.page).to.equal('blame');
       expect(window.codecov.base).to.equal('');
   });
@@ -21,11 +21,17 @@ describe('codecov', function(){
   it('should still have all lines', function(){
     expect($('.file tr').length).to.equal(29);
   });
+  it('button should be enabled', function(){
+    expect($('.codecov.btn').hasClass('selected')).to.equal(true);
+  });
   it('should add covered lines', function(){
-    expect($('.codecov.btn').hasClass('selected')).to.equal(false);
     var x = 0;
     $('.file tr.blame-line').each(function(){
-      expect($(this).find('td').hasClass('codecov codecov-'+coverage[x])).to.equal(true);
+      if (coverage[x] === 'partial' || coverage[x] === 'missed') {
+        expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
+      } else if (coverage[x] === 'hit') {
+        expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
+      }
       x++;
     });
   });
@@ -33,6 +39,11 @@ describe('codecov', function(){
 
 describe('clicking codecov', function(){
   it('will toggle it', function(){
+    click($('.codecov.btn')[0]);
+    expect($('.codecov.btn').hasClass('selected')).to.equal(false);
+    $('.file tr.blame-line').each(function(){
+      expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
+    });
     click($('.codecov.btn')[0]);
     expect($('.codecov.btn').hasClass('selected')).to.equal(true);
     $('.file tr.blame-line').each(function(){
@@ -48,11 +59,6 @@ describe('clicking codecov', function(){
         expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
       }
       x++;
-    });
-    click($('.codecov.btn')[0]);
-    expect($('.codecov.btn').hasClass('selected')).to.equal(false);
-    $('.file tr.blame-line').each(function(){
-      expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
     });
   });
 });
