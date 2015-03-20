@@ -1,6 +1,6 @@
 {
   "name": "codecov-chrome-plugin",
-  "version": "0.4.0",
+  "version": "0.1.1",
   "description": "Codeocv Chrome Plugin",
   "main": "src/github.js",
   "scripts": {
