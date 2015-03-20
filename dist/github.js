@@ -71,11 +71,11 @@ Codecov = (function() {
     this.files.each(function() {
       var file;
       file = $(this);
-      if (file.find('.minibutton.codecov').length === 0) {
-        if (file.find('.file-actions > .button-group').length === 0) {
-          file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
+      if (file.find('.btn.codecov').length === 0) {
+        if (file.find('.file-actions > .btn-group').length === 0) {
+          file.find('.file-actions a:first').wrap('<div class="btn-group"></div>');
         }
-        return file.find('.file-actions > .button-group').prepend('<a class="minibutton codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>');
+        return file.find('.file-actions > .btn-group').prepend('<a class="btn btn-sm codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>');
       }
     });
     return chrome.storage.local.get(self.slug + "/" + self.ref, function(res) {
@@ -113,17 +113,17 @@ Codecov = (function() {
       statusCode: {
         401: function() {
           if (!self.found) {
-            return $('.minibutton.codecov').text("Please login at Codecov.io").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov.io');
+            return $('.btn.codecov').text("Please login at Codecov.io").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov.io');
           }
         },
         404: function() {
           if (!self.found) {
-            return $('.minibutton.codecov').text("No coverage").attr('aria-label', 'Coverage not found');
+            return $('.btn.codecov').text("No coverage").attr('aria-label', 'Coverage not found');
           }
         },
         500: function() {
           if (!self.found) {
-            return $('.minibutton.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry');
+            return $('.btn.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry');
           }
         }
       }
@@ -157,11 +157,11 @@ Codecov = (function() {
       } else {
         coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')];
       }
-      if (file.find('.file-actions > .button-group').length === 0) {
-        file.find('.file-actions a:first').wrap('<div class="button-group"></div>');
+      if (file.find('.file-actions > .btn-group').length === 0) {
+        file.find('.file-actions a:first').wrap('<div class="btn-group"></div>');
       }
       if (coverage) {
-        button = file.find('.minibutton.codecov').attr('aria-label', 'Toggle Codecov (c)').text('Coverage ' + coverage['coverage'].toFixed(0) + '%').removeClass('disabled').unbind().click((ref2 = self.page) === 'blob' || ref2 === 'blame' ? self.toggle_coverage : self.toggle_diff);
+        button = file.find('.btn.codecov').attr('aria-label', 'Toggle Codecov (c)').text('Coverage ' + coverage['coverage'].toFixed(0) + '%').removeClass('disabled').unbind().click((ref2 = self.page) === 'blob' || ref2 === 'blame' ? self.toggle_coverage : self.toggle_diff);
         _td = "td:eq(" + (self.page === 'blob' ? 0 : 1) + ")";
         file.find('tr').each(function() {
           var cov, ref3, td;
@@ -179,7 +179,7 @@ Codecov = (function() {
           return results;
         }
       } else {
-        return file.find('.minibutton.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered');
+        return file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered');
       }
     });
     if (store) {
@@ -220,13 +220,27 @@ Codecov = (function() {
   };
 
   Codecov.prototype.color = function(ln) {
-    var v;
+    var h, m, v;
     if (ln === 0) {
       return "missed";
     } else if (!ln) {
       return null;
     } else if (ln === true) {
       return "partial";
+    } else if (typeof ln === 'list') {
+      h = $.grep(ln, function(p) {
+        return p[2] > 0;
+      }).length > 0;
+      m = $.grep(ln, function(p) {
+        return p[2] === 0;
+      }).length > 0;
+      if (h && m) {
+        return "partial";
+      } else if (h) {
+        return "hit";
+      } else {
+        return "missed";
+      }
     } else if (indexOf.call(ln.toString(), '/') >= 0) {
       v = ln.split('/');
       if (v[0] === '0') {

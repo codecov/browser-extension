@@ -10,7 +10,7 @@ describe('codecov', function(){
     expect($('link[href*="dist/github.css"]').length).to.not.equal(0);
   });
   it('should add coverage button', function(){
-    var buttons = $('.file-actions .button-group a.minibutton.codecov');
+    var buttons = $('.file-actions .btn-group a.btn.codecov');
     expect(buttons.length).to.equal(8);
     var text = ["Not covered", "Not covered", "Coverage 91%", "Coverage 60%", "Coverage 89%",
                 "Coverage 78%", "Not covered", "Not covered"];
@@ -23,14 +23,14 @@ describe('codecov', function(){
   });
   it('should not be shown', function(){
     expect($('.codecov-on').length).to.equal(0);
-    expect($('.codecov.minibutton.selected').length).to.equal(0);
+    expect($('.codecov.btn.selected').length).to.equal(0);
     expect($('.blob-num-deletion:visible').length).to.not.equal(0);
   });
   it('click will toggle coverage', function(){
     var file = $('.file-header[data-path="codecov/__init__.py"]');
-    expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(false);
-    click($('.codecov.minibutton', file)[0]);
-    expect($('.codecov.minibutton', file).hasClass('selected')).to.equal(true);
+    expect($('.codecov.btn', file).hasClass('selected')).to.equal(false);
+    click($('.codecov.btn', file)[0]);
+    expect($('.codecov.btn', file).hasClass('selected')).to.equal(true);
     expect(file.next().find('.blob-num-deletion:visible').length).to.equal(0);
     expect(file.next().find('.codecov:not(.codecov-on)').length).to.equal(0);
   });

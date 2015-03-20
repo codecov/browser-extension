@@ -13,7 +13,7 @@ describe('codecov', function(){
     expect($('link[href*="dist/github.css"]').length).to.not.equal(0);
   });
   it('should add coverage button', function(){
-    var button = $('.file-actions .button-group a.minibutton.codecov');
+    var button = $('.file-actions .btn-group a.btn.codecov');
     expect(button.length).to.equal(1);
     expect(button.text()).to.equal('Coverage 60%');
     expect(button.attr('aria-label')).to.equal('Toggle Codecov (c)');
@@ -22,7 +22,7 @@ describe('codecov', function(){
     expect($('.file tr').length).to.equal(29);
   });
   it('should add covered lines', function(){
-    expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
+    expect($('.codecov.btn').hasClass('selected')).to.equal(false);
     var x = 0;
     $('.file tr.blame-line').each(function(){
       expect($(this).find('td').hasClass('codecov codecov-'+coverage[x])).to.equal(true);
@@ -33,13 +33,13 @@ describe('codecov', function(){
 
 describe('clicking codecov', function(){
   it('will toggle it', function(){
-    click($('.codecov.minibutton')[0]);
-    expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
+    click($('.codecov.btn')[0]);
+    expect($('.codecov.btn').hasClass('selected')).to.equal(true);
     $('.file tr.blame-line').each(function(){
       expect($(this).find('td').hasClass('codecov-on')).to.equal(true);
     });
-    click($('.codecov.minibutton')[0]);
-    expect($('.codecov.minibutton').hasClass('selected')).to.equal(true);
+    click($('.codecov.btn')[0]);
+    expect($('.codecov.btn').hasClass('selected')).to.equal(true);
     var x = 0;
     $('.file tr.blame-line').each(function(){
       if (coverage[x] === 'partial' || coverage[x] === 'missed') {
@@ -49,8 +49,8 @@ describe('clicking codecov', function(){
       }
       x++;
     });
-    click($('.codecov.minibutton')[0]);
-    expect($('.codecov.minibutton').hasClass('selected')).to.equal(false);
+    click($('.codecov.btn')[0]);
+    expect($('.codecov.btn').hasClass('selected')).to.equal(false);
     $('.file tr.blame-line').each(function(){
       expect($(this).find('td').hasClass('codecov-on')).to.equal(false);
     });
