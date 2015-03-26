@@ -5,10 +5,6 @@ describe('codecov', function(){
       expect(window.codecov.ref).to.equal('4c95614');
       expect(window.codecov.base).to.equal('&base=fb55c9b');
   });
-  it('should insert dist/github.css stylesheed', function(){
-    // 2 becuse we ran new Codecov twice
-    expect($('link[href*="dist/github.css"]').length).to.not.equal(0);
-  });
   it('should add coverage button', function(){
     var buttons = $('.file-actions .btn-group a.btn.codecov');
     expect(buttons.length).to.equal(8);

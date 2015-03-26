@@ -8,10 +8,6 @@ describe('codecov', function(){
       expect(window.codecov.page).to.equal('blame');
       expect(window.codecov.base).to.equal('');
   });
-  it('should insert dist/github.css stylesheed', function(){
-    // 2 becuse we ran new Codecov twice
-    expect($('link[href*="dist/github.css"]').length).to.not.equal(0);
-  });
   it('should add coverage button', function(){
     var button = $('.file-actions .btn-group a.btn.codecov');
     expect(button.length).to.equal(1);

@@ -2,7 +2,8 @@
 function save_options() {
   chrome.storage.sync.set({
     first_view: document.getElementById('first_view').value,
-    enterprise: document.getElementById('enterprise').value
+    enterprise: document.getElementById('enterprise').value,
+    debug: document.getElementById('debug').checked
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
@@ -27,10 +28,12 @@ function clear_cache() {
 function restore_options() {
   chrome.storage.sync.get({
     first_view: 'im',
-    enterprise: ''
+    enterprise: '',
+    debug: false
   }, function(items) {
     document.getElementById('first_view').value = items.first_view;
     document.getElementById('enterprise').value = items.enterprise;
+    document.getElementById('debug').value = items.debug;
   });
 }
 document.addEventListener('DOMContentLoaded', restore_options);
