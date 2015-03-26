@@ -23,10 +23,6 @@ class Codecov
       self.settings.first_view = items.first_view
       $.merge self.settings.urls, (items.enterprise or "").split("\n").filter((a) -> a)
 
-      # attach stylesheet
-      # =================
-      unless $('#codecov-css').length > 0
-        $('head').append("<link href=\"#{chrome.extension.getURL('dist/github.css')}\" rel=\"stylesheet\" id=\"codecov-css\">")
 
       href = (self.settings.debug or document.URL).split('/')
       self.slug = "#{href[3]}/#{href[4]}"
