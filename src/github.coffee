@@ -14,6 +14,8 @@ class Codecov
     debug: no
     callback: null
 
+  log: -> console.log('codecov', @, arguments) if @settings.debug
+
   constructor: ->
     ###
     Called once at start of extension
@@ -34,9 +36,6 @@ class Codecov
     ###
     listen to dom changes
     ---------------------
-    https://github.com/defunkt/jquery-pjax#events
-    http://stackoverflow.com/questions/9515704/building-a-chrome-extension-inject-code-in-a-page-using-a-content-script/9517879#9517879
-    https://developer.chrome.com/extensions/content_scripts#execution-environment
     ###
     script = document.createElement('script')
     script.textContent = """$(document).on('pjax:success',function(){window.postMessage({type:"codecov"},"*");});"""
@@ -46,6 +45,7 @@ class Codecov
     window.addEventListener "message", ((event) ->
       return unless event.source is window
       if event.data.type and event.data.type is "codecov"
+        self.log('pjax event received')
         self.get_coverage()
     ), no
 
@@ -57,6 +57,7 @@ class Codecov
     CALLED: when dom changes and page first loads
     GOAL: is to collect page variables, insert dom elements, bind callbacks
     ###
+    self.log('::get_coverage')
     self = @
     href = (self.settings.debug or document.URL).split('/')
     self.slug = "#{href[3]}/#{href[4]}"
@@ -133,6 +134,7 @@ class Codecov
     GOAL: get coverage from cache -> storage -> URL
     ###
     return if @_processing
+    self.log('::run_coverage')
     self = @
     slugref = "#{self.slug}/#{self.ref}"
 
@@ -140,10 +142,12 @@ class Codecov
     # -----------------------
     @_processing = yes
     if @cache[0] == slugref
+      self.log('process(cache)')
       @process @cache[1]
     else
       chrome.storage.local.get slugref, (res) ->
         if res?[self.ref]
+          self.log('process(storage)', res[self.ref])
           self.process res[self.ref]
         else
           # run first url
@@ -155,6 +159,7 @@ class Codecov
     GOAL: http fetch coverage
     ###
     self = @
+    self.log('::get', endpoint)
     # get coverage
     # ============
     $.ajax
@@ -168,7 +173,9 @@ class Codecov
         self.process res, yes
 
       # for testing purposes
-      complete: -> self.settings?.callback?()
+      complete: ->
+        self.log('::ajax.complete', arguments)
+        self.settings?.callback?()
 
       # try to get coverage data from enterprise urls if any
       error: ->
@@ -193,6 +200,7 @@ class Codecov
     CALLED: to process report data
     GOAL: to update the dom with coverage
     ###
+    self.log('::process')
     @_processing = no
     self = @
     slugref = "#{self.slug}/#{self.ref}"
@@ -269,6 +277,7 @@ class Codecov
     CALLED: by user interaction
     GOAL: toggle coverage overlay on blobs/commits/blames/etc.
     ###
+    self.log('::toggle_coverage')
     if $('.codecov.codecov-hit.codecov-on').length > 0
       # toggle hits off
       $('.codecov.codecov-hit').removeClass('codecov-on')
@@ -286,6 +295,7 @@ class Codecov
     CALLED: by user interaction
     GOAL: toggle coverage overlay on diff/compare
     ###
+    self.log('::toggle_diff')
     file = $(@).parents('.file')
     if $(@).hasClass('selected')
       # toggle off
