@@ -12,9 +12,9 @@ Codecov = (function() {
 
   Codecov.prototype.page = null;
 
-  Codecov.prototype.files = null;
-
   Codecov.prototype.found = false;
+
+  Codecov.prototype.urlid = 0;
 
   Codecov.prototype.cache = [null, null];
 
@@ -22,22 +22,40 @@ Codecov = (function() {
     urls: ['https://codecov.io'],
     first_view: 'im',
     debug: false,
-    callback: null
+    callback: null,
+    debug_url: null
+  };
+
+  Codecov.prototype.log = function(title, data) {
+    if (this.settings.debug) {
+      return console.log(this, title, data);
+    }
   };
 
   function Codecov() {
+
+    /*
+    Called once at start of extension
+     */
     var ref, script, self;
     self = this;
-    this.settings = $.extend(null, this.settings, (ref = typeof window !== "undefined" && window !== null ? window.codecov_settings : void 0) != null ? ref : {});
     chrome.storage.sync.get({
       first_view: 'im',
-      enterprise: ''
+      enterprise: '',
+      debug: false
     }, function(items) {
       self.settings.first_view = items.first_view;
+      self.settings.debug = items.debug;
       return $.merge(self.settings.urls, (items.enterprise || "").split("\n").filter(function(a) {
         return a;
       }));
     });
+    this.settings = $.extend(null, this.settings, (ref = typeof window !== "undefined" && window !== null ? window.codecov_settings : void 0) != null ? ref : {});
+
+    /*
+    listen to dom changes
+    ---------------------
+     */
     script = document.createElement('script');
     script.textContent = "$(document).on('pjax:success',function(){window.postMessage({type:\"codecov\"},\"*\");});";
     (document.head || document.documentElement).appendChild(script);
@@ -47,6 +65,7 @@ Codecov = (function() {
         return;
       }
       if (event.data.type && event.data.type === "codecov") {
+        self.log('pjax event received');
         return self.get_coverage();
       }
     }), false);
@@ -54,14 +73,18 @@ Codecov = (function() {
   }
 
   Codecov.prototype.get_coverage = function() {
+
+    /*
+    CALLED: when dom changes and page first loads
+    GOAL: is to collect page variables, insert dom elements, bind callbacks
+     */
     var href, ref, self, split;
+    this.log('::get_coverage');
     self = this;
-    href = (self.settings.debug || document.URL).split('/');
+    href = (self.settings.debug_url || document.URL).split('/');
     self.slug = href[3] + "/" + href[4];
     self.page = href[5];
-    if (self.page === 'find') {
-      self.ref = href[6];
-    } else if (self.page === 'commit') {
+    if (self.page === 'commit') {
       self.ref = href[6];
     } else if ((ref = self.page) === 'blob' || ref === 'blame') {
       split = $('a[data-hotkey=y]').attr('href').split('/');
@@ -73,11 +96,11 @@ Codecov = (function() {
     } else if (self.page === 'pull') {
       self.base = "&base=" + ($('.commit-id:first').text());
       self.ref = $('.commit-id:last').text();
-    } else {
-      return;
+    } else if ($('.file-wrap').length === 1) {
+      self.page = 'tree';
+      self.ref = $('.file-wrap a.js-directory-link:first').attr('href').split('/')[4];
     }
-    this.files = $('.repository-content .file');
-    this.files.each(function() {
+    $('.repository-content .file').each(function() {
       var file;
       file = $(this);
       if (file.find('.btn.codecov').length === 0) {
@@ -87,38 +110,51 @@ Codecov = (function() {
         return file.find('.file-actions > .btn-group').prepend('<a class="btn btn-sm codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>');
       }
     });
-    $('#tree-finder-results').before("<div class=\"commit commit-tease codecov\">\n  <div class=\"commit-meta\">\n    <span class=\"sha-block\">coverage loading...</span>\n    <div class=\"authorship\">\n      <img alt=\"@codecov\" class=\"avatar\" data-user=\"8226205\" height=\"20\" src=\"https://avatars2.githubusercontent.com/u/8226205?v=3&amp;s=40\" width=\"20\"><span class=\"author-name\"><a href=\"https://codecov.io/github/" + self.slug + "?ref=" + self.ref + "\">Codecov</a></span> coverage results\n    </div>\n  </div>\n</div>");
     $('#tree-finder-field').keyup(function() {
       return setTimeout((function() {
         return self.run_coverage();
-      }), 100);
+      }), 200);
     });
     return this.run_coverage();
   };
 
   Codecov.prototype.run_coverage = function() {
+
+    /*
+    CALLED: when coverage should be retrieved.
+    GOAL: get coverage from cache -> storage -> URL
+     */
     var self, slugref;
     if (this._processing) {
       return;
     }
+    this.log('::run_coverage');
     self = this;
     slugref = self.slug + "/" + self.ref;
     this._processing = true;
     if (this.cache[0] === slugref) {
+      self.log('process(cache)');
       return this.process(this.cache[1]);
     } else {
       return chrome.storage.local.get(slugref, function(res) {
         if (res != null ? res[self.ref] : void 0) {
+          self.log('process(storage)', res[self.ref]);
           return self.process(res[self.ref]);
         } else {
-          return self.get(self.settings.urls[0]);
+          return self.get(self.settings.urls[self.urlid]);
         }
       });
     }
   };
 
   Codecov.prototype.get = function(endpoint) {
+
+    /*
+    CALLED: to get the coverage report from Codecov (or Enterprise urls)
+    GOAL: http fetch coverage
+     */
     var self;
+    this.log('::get', endpoint);
     self = this;
     return $.ajax({
       url: endpoint + "/github/" + self.slug + self.file + "?ref=" + self.ref + self.base,
@@ -128,16 +164,18 @@ Codecov = (function() {
         Accept: 'application/json'
       },
       success: function(res) {
+        self.url = endpoint;
         self.found = true;
         return self.process(res, true);
       },
       complete: function() {
         var ref;
+        self.log('::ajax.complete', arguments);
         return (ref = self.settings) != null ? typeof ref.callback === "function" ? ref.callback() : void 0 : void 0;
       },
       error: function() {
-        if (self.settings.urls.length > 0) {
-          return self.get(self.settings.urls[0]);
+        if (self.settings.urls.length > self.urlid + 1) {
+          return self.get(self.settings.urls[self.urlid += 1]);
         }
       },
       statusCode: {
@@ -169,18 +207,36 @@ Codecov = (function() {
 
   Codecov.prototype.process = function(res, store) {
     var compare, coverage, plus, ref, self, slugref;
+    if (store == null) {
+      store = false;
+    }
+
+    /*
+    CALLED: to process report data
+    GOAL: to update the dom with coverage
+     */
     this._processing = false;
+    this.log('::process');
     self = this;
     slugref = self.slug + "/" + self.ref;
     self.cache = [slugref, res];
-    if (self.page === 'find') {
-      $('.commit.codecov .sha-block').html("total coverage <span class=\"sha\">" + (Math.floor(res['report']['coverage'])) + "%</span>");
-      $('#tree-finder-results .sha.codecov').remove();
-      $('#tree-finder-results tr a').each(function() {
-        var coverage, ref;
-        coverage = (ref = res['report']['files'][$(this).attr('href').split('/').slice(7).join('/')]) != null ? ref.coverage : void 0;
-        if (coverage >= 0) {
-          return $(this).after("<span class=\"sha codecov\">" + (Math.floor(coverage)) + "%</span>");
+    if (store && self.cacheable) {
+      chrome.storage.local.set({
+        slugref: res
+      }, function() {
+        return null;
+      });
+    }
+    if (self.page === 'tree') {
+      $('.commit-meta').prepend("<a href=\"" + self.settings.urls[self.urlid] + "/github/" + self.slug + "?ref=" + self.ref + "\" class=\"sha-block codecov tooltipped tooltipped-n\" aria-label=\"Overall coverage\">" + (Math.floor(res['report']['coverage'])) + "%</a>");
+      return $('.file-wrap tr:not(.warning):not(.up-tree)').each(function() {
+        var coverage, href, ref;
+        href = $('td.content a', this).attr('href');
+        if (href) {
+          coverage = (ref = res['report']['files'][$('td.content a', this).attr('href').split('/').slice(5).join('/')]) != null ? ref.coverage : void 0;
+          if (coverage >= 0) {
+            return $('td:last', this).append("<span class=\"sha codecov tooltipped tooltipped-s\" aria-label=\"Coverage\">" + (Math.floor(coverage)) + "%</span>");
+          }
         }
       });
     } else {
@@ -203,7 +259,7 @@ Codecov = (function() {
           return $('.diffstat.right', this).prepend((Math.round(cov)) + "%");
         }
       });
-      self.files.each(function() {
+      return $('.repository-content .file').each(function() {
         var _, _td, button, file, i, len, ref1, ref2, ref3, ref4, results;
         file = $(this);
         if ((ref1 = self.page) === 'blob' || ref1 === 'blame') {
@@ -237,16 +293,15 @@ Codecov = (function() {
         }
       });
     }
-    if (store && self.cacheable) {
-      return chrome.storage.local.set({
-        slugref: res
-      }, function() {
-        return null;
-      });
-    }
   };
 
   Codecov.prototype.toggle_coverage = function() {
+
+    /*
+    CALLED: by user interaction
+    GOAL: toggle coverage overlay on blobs/commits/blames/etc.
+     */
+    this.log('::toggle_coverage');
     if ($('.codecov.codecov-hit.codecov-on').length > 0) {
       return $('.codecov.codecov-hit').removeClass('codecov-on');
     } else if ($('.codecov.codecov-on').length > 0) {
@@ -259,7 +314,13 @@ Codecov = (function() {
   };
 
   Codecov.prototype.toggle_diff = function() {
+
+    /*
+    CALLED: by user interaction
+    GOAL: toggle coverage overlay on diff/compare
+     */
     var file;
+    this.log('::toggle_diff');
     file = $(this).parents('.file');
     if ($(this).hasClass('selected')) {
       $(this).removeClass('selected');

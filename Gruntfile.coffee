@@ -37,7 +37,7 @@ module.exports = (grunt) ->
     curl:
       'test/github/test_pull.html': 'https://github.com/codecov/codecov-python/pull/16'
       'test/github/test_blob.html': 'https://github.com/codecov/codecov-python/blob/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py'
-      'test/github/test_find.html': 'https://github.com/codecov/codecov-python/find/097f692a0f02649a80de6c98749ca32a126223fc'
+      'test/github/test_tree.html': 'https://github.com/codecov/codecov-python/tree/097f692a0f02649a80de6c98749ca32a126223fc/codecov'
       'test/github/test_blame.html': 'https://github.com/codecov/codecov-python/blame/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py'
       'test/github/test_compare.html': 'https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614'
 
@@ -48,11 +48,11 @@ module.exports = (grunt) ->
           remove: ['link', 'script']
           prepend: {selector:'body',html:'<div id="mocha"></div>'},
           append: {selector:'head',html:'<link rel="stylesheet" href="../mocha.css" /><script src="../mocha.js"></script><script src="../chai.js"></script><script src="../bridge.js"></script><script src="../../dist/jquery-2.1.3.min.js"></script><script src="../deps.js"></script><script src="../../lib-cov/github.js"></script>'}
-      blob: {src: 'test/github/test_blob.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": "https://github.com/codecov/codecov-python/blob/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py", "callback": mochaRunTests};</script><script src="test_blob.js"></script>'}}}
-      pull: {src: 'test/github/test_pull.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": "https://github.com/codecov/codecov-python/pull/16", "callback": mochaRunTests};</script><script src="test_pull.js"></script>'}}}
-      find: {src: 'test/github/test_find.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": "https://github.com/codecov/codecov-python/find/097f692a0f02649a80de6c98749ca32a126223fc", "callback": mochaRunTests};</script><script src="test_find.js"></script>'}}}
-      blame: {src: 'test/github/test_blame.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": "https://github.com/codecov/codecov-python/blame/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py", "callback": mochaRunTests};</script><script src="test_blame.js"></script>'}}}
-      compare: {src: 'test/github/test_compare.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": "https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614", "callback": mochaRunTests};</script><script src="test_compare.js"></script>'}}}
+      blob: {src: 'test/github/test_blob.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": true, "debug_url": "https://github.com/codecov/codecov-python/blob/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py", "callback": mochaRunTests};</script><script src="test_blob.js"></script>'}}}
+      pull: {src: 'test/github/test_pull.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": true, "debug_url": "https://github.com/codecov/codecov-python/pull/16", "callback": mochaRunTests};</script><script src="test_pull.js"></script>'}}}
+      tree: {src: 'test/github/test_tree.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": true, "debug_url": "https://github.com/codecov/codecov-python/tree/097f692a0f02649a80de6c98749ca32a126223fc/codecov", "callback": mochaRunTests};</script><script src="test_tree.js"></script>'}}}
+      blame: {src: 'test/github/test_blame.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": true, "debug_url": "https://github.com/codecov/codecov-python/blame/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py", "callback": mochaRunTests};</script><script src="test_blame.js"></script>'}}}
+      compare: {src: 'test/github/test_compare.html', options: {append: {selector:'body',html:'<script>window.codecov_settings = {"debug": true, "debug_url": "https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614", "callback": mochaRunTests};</script><script src="test_compare.js"></script>'}}}
 
     mocha:
       all:

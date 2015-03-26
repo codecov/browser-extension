@@ -4,7 +4,6 @@ class Codecov
   base: ''    # sha of base (compare|pull only)
   file: ''    # specific file name viewing (blob only)
   page: null  # type of github page: blob|compare|pull
-  files: null # array of dom files
   found: no   # was coverage found
   urlid: 0    # which url to use when searching reports
   cache: [null, null]
@@ -13,8 +12,9 @@ class Codecov
     first_view: 'im'
     debug: no
     callback: null
+    debug_url: null
 
-  log: -> console.log('codecov', @, arguments) if @settings.debug
+  log: (title, data) -> console.log(@, title, data) if @settings.debug
 
   constructor: ->
     ###
@@ -24,14 +24,12 @@ class Codecov
 
     # establish settings
     # ------------------
-    @settings = $.extend null, @settings, (window?.codecov_settings ? {})
-
-    chrome.storage.sync.get {
-      first_view: 'im',
-      enterprise: ''
-    }, (items) ->
+    chrome.storage.sync.get {first_view: 'im', enterprise: '', debug: no }, (items) ->
       self.settings.first_view = items.first_view
+      self.settings.debug = items.debug
       $.merge self.settings.urls, (items.enterprise or "").split("\n").filter((a) -> a)
+
+    @settings = $.extend null, @settings, (window?.codecov_settings ? {})
 
     ###
     listen to dom changes
@@ -57,19 +55,15 @@ class Codecov
     CALLED: when dom changes and page first loads
     GOAL: is to collect page variables, insert dom elements, bind callbacks
     ###
-    self.log('::get_coverage')
+    @log('::get_coverage')
     self = @
-    href = (self.settings.debug or document.URL).split('/')
+    href = (self.settings.debug_url or document.URL).split('/')
     self.slug = "#{href[3]}/#{href[4]}"
     self.page = href[5]
 
     # get ref
     # =======
-    if self.page is 'find'
-      # https://github.com/codecov/codecov-python/find/master
-      self.ref = href[6]
-
-    else if self.page is 'commit'
+    if self.page is 'commit'
       # https://github.com/codecov/codecov-python/commit/b0a3eef1c9c456e1794c503aacaff660a1a197aa
       self.ref = href[6]
 
@@ -90,16 +84,13 @@ class Codecov
       self.base = "&base=#{$('.commit-id:first').text()}"
       self.ref = $('.commit-id:last').text()
 
-    else
-      return
-
-    # get files
-    # =========
-    @files = $('.repository-content .file')
+    else if $('.file-wrap').length == 1
+      self.page = 'tree'
+      self.ref = $('.file-wrap a.js-directory-link:first').attr('href').split('/')[4]
 
     # add Coverage Toggle
     # -------------------
-    @files.each ->
+    $('.repository-content .file').each ->
       file = $(@)
       if file.find('.btn.codecov').length is 0
         if file.find('.file-actions > .btn-group').length is 0
@@ -108,22 +99,9 @@ class Codecov
         file.find('.file-actions > .btn-group')
             .prepend('<a class="btn btn-sm codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>')
 
-    # add Tree List Header
-    # --------------------
-    $('#tree-finder-results').before """
-      <div class="commit commit-tease codecov">
-        <div class="commit-meta">
-          <span class="sha-block">coverage loading...</span>
-          <div class="authorship">
-            <img alt="@codecov" class="avatar" data-user="8226205" height="20" src="https://avatars2.githubusercontent.com/u/8226205?v=3&amp;s=40" width="20"><span class="author-name"><a href="https://codecov.io/github/#{self.slug}?ref=#{self.ref}">Codecov</a></span> coverage results
-          </div>
-        </div>
-      </div>
-      """
-
     # Add listender to tree query
     # ---------------------------
-    $('#tree-finder-field').keyup -> setTimeout (-> self.run_coverage()), 100
+    $('#tree-finder-field').keyup -> setTimeout (-> self.run_coverage()), 200
 
     # ok GO!
     @run_coverage()
@@ -134,7 +112,7 @@ class Codecov
     GOAL: get coverage from cache -> storage -> URL
     ###
     return if @_processing
-    self.log('::run_coverage')
+    @log('::run_coverage')
     self = @
     slugref = "#{self.slug}/#{self.ref}"
 
@@ -158,8 +136,8 @@ class Codecov
     CALLED: to get the coverage report from Codecov (or Enterprise urls)
     GOAL: http fetch coverage
     ###
+    @log('::get', endpoint)
     self = @
-    self.log('::get', endpoint)
     # get coverage
     # ============
     $.ajax
@@ -179,7 +157,7 @@ class Codecov
 
       # try to get coverage data from enterprise urls if any
       error: ->
-        self.get(self.settings.urls[self.urlid+=1]) if self.settings.urls.length > self.urlid
+        self.get(self.settings.urls[self.urlid+=1]) if self.settings.urls.length > self.urlid+1
 
       statusCode:
         401: ->
@@ -200,8 +178,8 @@ class Codecov
     CALLED: to process report data
     GOAL: to update the dom with coverage
     ###
-    self.log('::process')
     @_processing = no
+    @log('::process')
     self = @
     slugref = "#{self.slug}/#{self.ref}"
     # cache in extension
@@ -210,12 +188,13 @@ class Codecov
     if store and self.cacheable
       chrome.storage.local.set {slugref: res}, -> null
 
-    if self.page is 'find'
-      $('.commit.codecov .sha-block').html("total coverage <span class=\"sha\">#{Math.floor res['report']['coverage']}%</span>")
-      $('#tree-finder-results .sha.codecov').remove()
-      $('#tree-finder-results tr a').each ->
-        coverage = res['report']['files'][$(@).attr('href').split('/')[7..].join('/')]?.coverage
-        $(@).after("<span class=\"sha codecov\">#{Math.floor coverage}%</span>") if coverage >= 0
+    if self.page is 'tree'
+      $('.commit-meta').prepend("""<a href="#{self.settings.urls[self.urlid]}/github/#{self.slug}?ref=#{self.ref}" class="sha-block codecov tooltipped tooltipped-n" aria-label="Overall coverage">#{Math.floor res['report']['coverage']}%</a>""")
+      $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
+        href = $('td.content a', @).attr('href')
+        if href
+          coverage = res['report']['files'][$('td.content a', @).attr('href').split('/')[5..].join('/')]?.coverage
+          $('td:last', @).append("""<span class="sha codecov tooltipped tooltipped-s" aria-label="Coverage">#{Math.floor coverage}%</span>""") if coverage >= 0
 
     else
       if self.page in ['commit', 'compare', 'pull']
@@ -223,18 +202,18 @@ class Codecov
           compare = (res['report']['coverage'] - res['base']).toFixed(0)
           plus = if compare > 0 then '+' else '-'
           $('.toc-diff-stats').append(if compare is '0' then "Coverage did not change." else " Coverage changed <strong>#{plus}#{compare}%</strong>")
-          $('#diffstat').append("<span class=\"text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s\" aria-label=\"Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%\">#{plus}#{compare}%</span>")
+          $('#diffstat').append("""<span class="text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s" aria-label="Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%">#{plus}#{compare}%</span>""")
         else
           coverage = res['report']['coverage'].toFixed(0)
           $('.toc-diff-stats').append(" Coverage <strong>#{coverage}%</strong>")
-          $('#diffstat').append("<span class=\"tooltipped tooltipped-s\" aria-label=\"Coverage #{coverage}%\">#{coverage}%</span>")
+          $('#diffstat').append("""<span class="tooltipped tooltipped-s" aria-label="Coverage #{coverage}%">#{coverage}%</span>""")
 
       # compare in toc
       $('#toc li').each ->
         cov = res.report.files[$('a', @).text()]?.coverage
         $('.diffstat.right', @).prepend("#{Math.round cov}%") if cov >= 0
 
-      self.files.each ->
+      $('.repository-content .file').each ->
         file = $(@)
         # find covered file
         # =================
@@ -277,7 +256,7 @@ class Codecov
     CALLED: by user interaction
     GOAL: toggle coverage overlay on blobs/commits/blames/etc.
     ###
-    self.log('::toggle_coverage')
+    @log('::toggle_coverage')
     if $('.codecov.codecov-hit.codecov-on').length > 0
       # toggle hits off
       $('.codecov.codecov-hit').removeClass('codecov-on')
@@ -295,7 +274,7 @@ class Codecov
     CALLED: by user interaction
     GOAL: toggle coverage overlay on diff/compare
     ###
-    self.log('::toggle_diff')
+    @log('::toggle_diff')
     file = $(@).parents('.file')
     if $(@).hasClass('selected')
       # toggle off
