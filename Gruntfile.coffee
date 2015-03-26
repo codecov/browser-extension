@@ -37,9 +37,9 @@ module.exports = (grunt) ->
     curl:
       'test/github/test_pull.html': 'https://github.com/codecov/codecov-python/pull/16'
       'test/github/test_blob.html': 'https://github.com/codecov/codecov-python/blob/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py'
+      'test/github/test_find.html': 'https://github.com/codecov/codecov-python/find/097f692a0f02649a80de6c98749ca32a126223fc'
       'test/github/test_blame.html': 'https://github.com/codecov/codecov-python/blame/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py'
       'test/github/test_compare.html': 'https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614'
-      'test/github/test_find.html': 'https://github.com/codecov/codecov-python/find/097f692a0f02649a80de6c98749ca32a126223fc'
 
     dom_munger:
       all:

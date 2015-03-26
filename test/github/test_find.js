@@ -3,7 +3,7 @@ describe('codecov', function(){
       expect(window.codecov.page).to.equal('find');
       expect(window.codecov.slug).to.equal('codecov/codecov-python');
       expect(window.codecov.file).to.equal('');
-      expect(window.codecov.ref).to.equal('master');
+      expect(window.codecov.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
       expect(window.codecov.base).to.equal("");
   });
   it('should add coverage header', function(){

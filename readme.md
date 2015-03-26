@@ -14,7 +14,11 @@ The Codecov Chrome Extension will overlay coverage reports directly in Github.
 ## Change Log
 > See [Releases](https://github.com/codecov/chrome-plugin/releases)
 
-## Development References
-- [chrome.storage.local](https://developer.chrome.com/extensions/storage#property-local)
+
+#### Development References
+- [chrome storage local](https://developer.chrome.com/extensions/storage#property-local)
 - [Manifest File Format](https://developer.chrome.com/extensions/manifest)
 - [Chrome app dashboard](https://chrome.google.com/webstore/developer/dashboard?hl=en-US)
+- [Github pjax events](https://github.com/defunkt/jquery-pjax#events)
+- [injecting code for events](http://stackoverflow.com/questions/9515704/building-a-chrome-extension-inject-code-in-a-page-using-a-content-script/9517879#9517879)
+- [content scripts](https://developer.chrome.com/extensions/content_scripts)
