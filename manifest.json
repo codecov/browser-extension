@@ -29,11 +29,7 @@
     "dist/github.css"
   ],
   "permissions": [
-    "*://github.com/*/blob/*",
-    "*://github.com/*/pull/*",
-    "*://github.com/*/compare/*",
-    "*://github.com/*/commit/*",
-    "*://github.com/*/blame/*",
+    "*://github.com/*",
     "*://codecov.io/*",
     "storage"
   ]
