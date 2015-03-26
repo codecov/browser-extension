@@ -6,6 +6,8 @@ class Codecov
   page: null  # type of github page: blob|compare|pull
   files: null # array of dom files
   found: no   # was coverage found
+  urlid: 0    # which url to use when searching reports
+  cache: [null, null]
   settings:
     urls: ['https://codecov.io']
     first_view: 'im'
@@ -13,7 +15,13 @@ class Codecov
     callback: null
 
   constructor: ->
+    ###
+    Called once at start of extension
+    ###
     self = @
+
+    # establish settings
+    # ------------------
     @settings = $.extend null, @settings, (window?.codecov_settings ? {})
 
     chrome.storage.sync.get {
@@ -23,47 +31,73 @@ class Codecov
       self.settings.first_view = items.first_view
       $.merge self.settings.urls, (items.enterprise or "").split("\n").filter((a) -> a)
 
+    ###
+    listen to dom changes
+    ---------------------
+    https://github.com/defunkt/jquery-pjax#events
+    http://stackoverflow.com/questions/9515704/building-a-chrome-extension-inject-code-in-a-page-using-a-content-script/9517879#9517879
+    https://developer.chrome.com/extensions/content_scripts#execution-environment
+    ###
+    script = document.createElement('script')
+    script.textContent = """$(document).on('pjax:success',function(){window.postMessage({type:"codecov"},"*");});"""
+    (document.head or document.documentElement).appendChild(script);
+    script.parentNode.removeChild(script)
 
-      href = (self.settings.debug or document.URL).split('/')
-      self.slug = "#{href[3]}/#{href[4]}"
-      self.page = href[5]
+    window.addEventListener "message", ((event) ->
+      return unless event.source is window
+      if event.data.type and event.data.type is "codecov"
+        self.get_coverage()
+    ), no
 
-      # get ref
-      # =======
-      if self.page is 'commit'
-        # https://github.com/codecov/codecov-python/commit/b0a3eef1c9c456e1794c503aacaff660a1a197aa
-        self.ref = href[6]
+    # Go
+    self.get_coverage()
 
-      else if self.page in ['blob', 'blame']
-        # https://github.com/codecov/codecov-python/blob/master/codecov/clover.py
-        # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
-        split = $('a[data-hotkey=y]').attr('href').split('/')
-        self.ref = split[4]
-        self.file = "/#{split[5..].join('/')}"
+  get_coverage: ->
+    ###
+    CALLED: when dom changes and page first loads
+    GOAL: is to collect page variables, insert dom elements, bind callbacks
+    ###
+    self = @
+    href = (self.settings.debug or document.URL).split('/')
+    self.slug = "#{href[3]}/#{href[4]}"
+    self.page = href[5]
 
-      else if self.page is 'compare'
-        # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
-        self.base = "&base=#{$('.commit-id:first').text()}"
-        self.ref = $('.commit-id:last').text()
+    # get ref
+    # =======
+    if self.page is 'find'
+      # https://github.com/codecov/codecov-python/find/master
+      self.ref = href[6]
 
-      else if self.page is 'pull'
-        # https://github.com/codecov/codecov-python/pull/16/files
-        self.base = "&base=#{$('.commit-id:first').text()}"
-        self.ref = $('.commit-id:last').text()
+    else if self.page is 'commit'
+      # https://github.com/codecov/codecov-python/commit/b0a3eef1c9c456e1794c503aacaff660a1a197aa
+      self.ref = href[6]
 
-      else
-        return
+    else if self.page in ['blob', 'blame']
+      # https://github.com/codecov/codecov-python/blob/master/codecov/clover.py
+      # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
+      split = $('a[data-hotkey=y]').attr('href').split('/')
+      self.ref = split[4]
+      self.file = "/#{split[5..].join('/')}"
 
-      self.run()
+    else if self.page is 'compare'
+      # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
+      self.base = "&base=#{$('.commit-id:first').text()}"
+      self.ref = $('.commit-id:last').text()
 
-  run: ->
+    else if self.page is 'pull'
+      # https://github.com/codecov/codecov-python/pull/16/files
+      self.base = "&base=#{$('.commit-id:first').text()}"
+      self.ref = $('.commit-id:last').text()
+
+    else
+      return
+
     # get files
     # =========
     @files = $('.repository-content .file')
-    return if @files.length is 0
 
-    self = @
-
+    # add Coverage Toggle
+    # -------------------
     @files.each ->
       file = $(@)
       if file.find('.btn.codecov').length is 0
@@ -73,13 +107,53 @@ class Codecov
         file.find('.file-actions > .btn-group')
             .prepend('<a class="btn btn-sm codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>')
 
-    chrome.storage.local.get "#{self.slug}/#{self.ref}", (res) ->
-      if res?[self.ref]
-        self.process res[self.ref]
-      else
-        self.get self.settings.urls.shift()
+    # add Tree List Header
+    # --------------------
+    $('#tree-finder-results').before """
+      <div class="commit commit-tease codecov">
+        <div class="commit-meta">
+          <span class="sha-block">coverage loading...</span>
+          <div class="authorship">
+            <img alt="@codecov" class="avatar" data-user="8226205" height="20" src="https://avatars2.githubusercontent.com/u/8226205?v=3&amp;s=40" width="20"><span class="author-name"><a href="https://codecov.io/github/#{self.slug}?ref=#{self.ref}">Codecov</a></span> coverage results
+          </div>
+        </div>
+      </div>
+      """
+
+    # Add listender to tree query
+    # ---------------------------
+    $('#tree-finder-field').keyup -> setTimeout (-> self.run_coverage()), 100
+
+    # ok GO!
+    @run_coverage()
+
+  run_coverage: ->
+    ###
+    CALLED: when coverage should be retrieved.
+    GOAL: get coverage from cache -> storage -> URL
+    ###
+    return if @_processing
+    self = @
+    slugref = "#{self.slug}/#{self.ref}"
+
+    # get fron chrome storage
+    # -----------------------
+    @_processing = yes
+    if @cache[0] == slugref
+      @process @cache[1]
+    else
+      chrome.storage.local.get slugref, (res) ->
+        if res?[self.ref]
+          self.process res[self.ref]
+        else
+          # run first url
+          self.get self.settings.urls[self.urlid]
 
   get: (endpoint) ->
+    ###
+    CALLED: to get the coverage report from Codecov (or Enterprise urls)
+    GOAL: http fetch coverage
+    ###
     self = @
     # get coverage
     # ============
@@ -87,80 +161,114 @@ class Codecov
       url: "#{endpoint}/github/#{self.slug}#{self.file}?ref=#{self.ref}#{self.base}"
       type: 'get'
       dataType: 'json'
-      headers:
-        Accept: 'application/json'
+      headers: Accept: 'application/json'
       success: (res) ->
+        self.url = endpoint # keep the url that worked
         self.found = yes
         self.process res, yes
-      complete: -> self.settings?.callback?() # for testing purposes
-      error: -> self.get(self.settings.urls.shift()) if self.settings.urls.length > 0
+
+      # for testing purposes
+      complete: -> self.settings?.callback?()
+
+      # try to get coverage data from enterprise urls if any
+      error: ->
+        self.get(self.settings.urls[self.urlid+=1]) if self.settings.urls.length > self.urlid
+
       statusCode:
         401: ->
-          $('.btn.codecov').text("Please login at Codecov.io").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov.io') unless self.found
+          unless self.found
+            $('.btn.codecov').text("Please login at Codecov.io").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
+            $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Please login at Codecov.io').attr('aria-label', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
         404: ->
-          $('.btn.codecov').text("No coverage").attr('aria-label', 'Coverage not found') unless self.found
+          unless self.found
+            $('.btn.codecov').text("No coverage").attr('aria-label', 'Coverage not found')
+            $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('No coverage').attr('aria-label', 'Coverage not found')
         500: ->
-          $('.btn.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry') unless self.found
+          unless self.found
+            $('.btn.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry')
+            $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Coverage Error').attr('aria-label', 'There was an error loading coverage. Sorry')
 
-  process: (res, store) ->
+  process: (res, store=no) ->
+    ###
+    CALLED: to process report data
+    GOAL: to update the dom with coverage
+    ###
+    @_processing = no
     self = @
-    if self.page in ['commit', 'compare', 'pull']
-      if res['base']
-        compare = (res['report']['coverage'] - res['base']).toFixed(0)
-        plus = if compare > 0 then '+' else '-'
-        $('.toc-diff-stats').append(if compare is '0' then "Coverage did not change." else " Coverage changed <strong>#{plus}#{compare}%</strong>")
-        $('#diffstat').append("<span class=\"text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s\" aria-label=\"Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%\">#{plus}#{compare}%</span>")
-      else
-        coverage = res['report']['coverage'].toFixed(0)
-        $('.toc-diff-stats').append(" Coverage <strong>#{coverage}%</strong>")
-        $('#diffstat').append("<span class=\"tooltipped tooltipped-s\" aria-label=\"Coverage #{coverage}%\">#{coverage}%</span>")
+    slugref = "#{self.slug}/#{self.ref}"
+    # cache in extension
+    self.cache = [slugref, res]
+    # cache in chrome storage
+    if store and self.cacheable
+      chrome.storage.local.set {slugref: res}, -> null
 
-    # compare in toc
-    $('table-of-contents').find('li').each ->
-      $('.diffstat.right', @).prepend("#{res.report.files[$('a', @).text()]?.coverage.toFixed(0)}%")
+    if self.page is 'find'
+      $('.commit.codecov .sha-block').html("total coverage <span class=\"sha\">#{Math.floor res['report']['coverage']}%</span>")
+      $('#tree-finder-results .sha.codecov').remove()
+      $('#tree-finder-results tr a').each ->
+        coverage = res['report']['files'][$(@).attr('href').split('/')[7..].join('/')]?.coverage
+        $(@).after("<span class=\"sha codecov\">#{Math.floor coverage}%</span>") if coverage >= 0
 
-    self.files.each ->
-      file = $(@)
-      # find covered file
-      # =================
-      if self.page in ['blob', 'blame']
-        coverage = res['report']
-      else
-        coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
+    else
+      if self.page in ['commit', 'compare', 'pull']
+        if res['base']
+          compare = (res['report']['coverage'] - res['base']).toFixed(0)
+          plus = if compare > 0 then '+' else '-'
+          $('.toc-diff-stats').append(if compare is '0' then "Coverage did not change." else " Coverage changed <strong>#{plus}#{compare}%</strong>")
+          $('#diffstat').append("<span class=\"text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s\" aria-label=\"Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%\">#{plus}#{compare}%</span>")
+        else
+          coverage = res['report']['coverage'].toFixed(0)
+          $('.toc-diff-stats').append(" Coverage <strong>#{coverage}%</strong>")
+          $('#diffstat').append("<span class=\"tooltipped tooltipped-s\" aria-label=\"Coverage #{coverage}%\">#{coverage}%</span>")
 
-      # assure button group
-      if file.find('.file-actions > .btn-group').length is 0
-        file.find('.file-actions a:first').wrap('<div class="btn-group"></div>')
+      # compare in toc
+      $('#toc li').each ->
+        cov = res.report.files[$('a', @).text()]?.coverage
+        $('.diffstat.right', @).prepend("#{Math.round cov}%") if cov >= 0
 
-      # report coverage
-      # ===============
-      if coverage
-        # ... show diff not full file coverage for compare view
-        button = file.find('.btn.codecov')
-                     .attr('aria-label', 'Toggle Codecov (c)')
-                     .text('Coverage '+coverage['coverage'].toFixed(0)+'%')
-                     .removeClass('disabled')
-                     .unbind()
-                     .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
-
-        # overlay coverage
-        _td = "td:eq(#{if self.page is 'blob' then 0 else 1})"
-        file.find('tr').each ->
-          td = $(@).find(_td)
-          cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
-          $(@).find('td').addClass "codecov codecov-#{cov}"
-
-        # toggle blob/blame
+      self.files.each ->
+        file = $(@)
+        # find covered file
+        # =================
         if self.page in ['blob', 'blame']
-          button.trigger('click') for _ in self.settings.first_view
+          coverage = res['report']
+        else
+          coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
 
-      else
-        file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
+        # assure button group
+        if file.find('.file-actions > .btn-group').length is 0
+          file.find('.file-actions a:first').wrap('<div class="btn-group"></div>')
 
-    if store
-      chrome.storage.local.set {"#{self.slug}/#{self.ref}": res}, -> null
+        # report coverage
+        # ===============
+        if coverage
+          # ... show diff not full file coverage for compare view
+          button = file.find('.btn.codecov')
+                       .attr('aria-label', 'Toggle Codecov (c)')
+                       .text('Coverage '+coverage['coverage'].toFixed(0)+'%')
+                       .removeClass('disabled')
+                       .unbind()
+                       .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
+
+          # overlay coverage
+          _td = "td:eq(#{if self.page is 'blob' then 0 else 1})"
+          file.find('tr').each ->
+            td = $(@).find(_td)
+            cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
+            $(@).find('td').addClass "codecov codecov-#{cov}"
+
+          # toggle blob/blame
+          if self.page in ['blob', 'blame']
+            button.trigger('click') for _ in self.settings.first_view
+
+        else
+          file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
 
   toggle_coverage: ->
+    ###
+    CALLED: by user interaction
+    GOAL: toggle coverage overlay on blobs/commits/blames/etc.
+    ###
     if $('.codecov.codecov-hit.codecov-on').length > 0
       # toggle hits off
       $('.codecov.codecov-hit').removeClass('codecov-on')
@@ -174,6 +282,10 @@ class Codecov
       $(@).addClass('selected')
 
   toggle_diff: ->
+    ###
+    CALLED: by user interaction
+    GOAL: toggle coverage overlay on diff/compare
+    ###
     file = $(@).parents('.file')
     if $(@).hasClass('selected')
       # toggle off
