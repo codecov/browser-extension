@@ -256,7 +256,6 @@ class Codecov
     CALLED: by user interaction
     GOAL: toggle coverage overlay on blobs/commits/blames/etc.
     ###
-    @log('::toggle_coverage')
     if $('.codecov.codecov-hit.codecov-on').length > 0
       # toggle hits off
       $('.codecov.codecov-hit').removeClass('codecov-on')
@@ -274,7 +273,6 @@ class Codecov
     CALLED: by user interaction
     GOAL: toggle coverage overlay on diff/compare
     ###
-    @log('::toggle_diff')
     file = $(@).parents('.file')
     if $(@).hasClass('selected')
       # toggle off

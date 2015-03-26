@@ -66,7 +66,7 @@ module.exports = (grunt) ->
           urls: [
             'http://localhost:3000/test/github/test_blob.html'
             'http://localhost:3000/test/github/test_pull.html'
-            'http://localhost:3000/test/github/test_find.html'
+            'http://localhost:3000/test/github/test_tree.html'
             'http://localhost:3000/test/github/test_blame.html'
             'http://localhost:3000/test/github/test_compare.html'
             ]

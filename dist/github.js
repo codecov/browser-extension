@@ -301,7 +301,6 @@ Codecov = (function() {
     CALLED: by user interaction
     GOAL: toggle coverage overlay on blobs/commits/blames/etc.
      */
-    this.log('::toggle_coverage');
     if ($('.codecov.codecov-hit.codecov-on').length > 0) {
       return $('.codecov.codecov-hit').removeClass('codecov-on');
     } else if ($('.codecov.codecov-on').length > 0) {
@@ -320,7 +319,6 @@ Codecov = (function() {
     GOAL: toggle coverage overlay on diff/compare
      */
     var file;
-    this.log('::toggle_diff');
     file = $(this).parents('.file');
     if ($(this).hasClass('selected')) {
       $(this).removeClass('selected');
