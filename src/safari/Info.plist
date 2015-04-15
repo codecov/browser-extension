@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Author</key>
+  <string>Steve Peak</string>
+  <key>Builder Version</key>
+  <string>9537.75.14</string>
+  <key>CFBundleDisplayName</key>
+  <string>codecov</string>
+  <key>CFBundleIdentifier</key>
+  <string>com.codecov.io</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleShortVersionString</key>
+  <string>0.3.0</string>
+  <key>CFBundleVersion</key>
+  <string>0.3.0</string>
+  <key>Chrome</key>
+  <dict/>
+  <key>Content</key>
+  <dict>
+    <key>Scripts</key>
+    <dict>
+      <key>Start</key>
+      <array>
+        <string>jquery-2.1.3.min.js</string>
+        <string>codecov.js</string>
+      </array>
+    </dict>
+    <key>Stylesheets</key>
+    <array>
+      <string>codecov.css</string>
+    </array>
+  <key>Whitelist</key>
+  <array>
+    <string>https://github.com/*</string>
+    <string>https://bitbucket.com/*</string>
+    <string>https://gitlab.com/*</string>
+  </array>
+  </dict>
+  <key>Description</key>
+  <string>Overlay Codecov coverage reports in Github, Bitbucket and Gitlab</string>
+  <key>ExtensionInfoDictionaryVersion</key>
+  <string>1.0</string>
+  <key>Permissions</key>
+  <dict>
+    <key>Website Access</key>
+    <dict>
+      <key>Allowed Domains</key>
+      <array>
+        <string>github.com</string>
+        <string>bitbucket.com</string>
+        <string>gitlab.com</string>
+      </array>
+      <key>Include Secure Pages</key>
+      <true/>
+      <key>Level</key>
+      <string>Some</string>
+    </dict>
+  </dict>
+  <key>Website</key>
+  <string>https://codecov.io/</string>
+</dict>
+</plist>

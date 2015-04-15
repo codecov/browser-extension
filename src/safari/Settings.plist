@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+    <dict>
+        <key>DefaultValue</key>
+        <string>im</string>
+        <key>Key</key>
+        <string>first_view</string>
+        <key>Title</key>
+        <string>Initial coverage view</string>
+        <key>Titles</key>
+        <array>
+            <string>Miss and partial</string>
+            <string>Hit, miss, and partial</string>
+            <string>None</string>
+        </array>
+        <key>Type</key>
+        <string>RadioButtons</string>
+        <key>Values</key>
+        <array>
+            <string>im</string>
+            <string>a</string>
+            <string>null</string>
+        </array>
+    </dict>
+    <dict>
+        <key>Key</key>
+        <string>enterprise</string>
+        <key>Title</key>
+        <string>Enterprise Sites</string>
+        <key>Type</key>
+        <string>TextField</string>
+    </dict>
+    <dict>
+        <key>DefaultValue</key>
+        <false/>
+        <key>Key</key>
+        <string>debug</string>
+        <key>Title</key>
+        <string>Debug Mode</string>
+        <key>Type</key>
+        <string>CheckBox</string>
+    </dict>
+</array>
+</plist>

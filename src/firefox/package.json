@@ -1,0 +1,58 @@
+{
+  "name": "codecov",
+  "title": "Codecov Extension",
+  "id": "hello@codecov.io",
+  "description": "Overlay Coverage reports in Github, Bitbucket and Gitlab",
+  "author": "Codecov",
+  "homepage": "https://github.com/codecov/browser-extension",
+  "lib": "lib",
+  "main": "lib/main",
+  "data": "data",
+  "icon": "data/icons/codecov-48.png",
+  "icon64": "data/icons/codecov-64.png",
+  "license": "Apache v2.0",
+  "version": "0.3.0",
+  "preferences": [
+    {
+      "name": "first_view",
+      "title": "Initial coverage view",
+      "description": "What types of coverage to show when page loads",
+      "type": "radio",
+      "value": "im",
+      "options": [
+        {
+          "value": "im",
+          "label": "Miss and partial"
+        },
+        {
+          "value": "a",
+          "label": "Hit, miss, and partial"
+        },
+        {
+          "value": "",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "name": "enterprise",
+      "title": "Enterprise Sites",
+      "description": "Comma seperated",
+      "type": "string"
+    },
+    {
+      "name": "debug",
+      "title": "Debug Mode",
+      "description": "Log debug information to console",
+      "type": "bool",
+      "value": false
+    }
+  ],
+  "permissions": {
+    "cross-domain-content": [
+      "https://github.com",
+      "https://gitlab.com",
+      "https://bitbucket.com"
+    ]
+  }
+}

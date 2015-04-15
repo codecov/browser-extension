@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Codecov Extension</title>
+  <style>
+    body: { padding: 10px; }
+  </style>
+</head>
+
+<body>
+  <div>
+    <h3>Initial coverage view</h3>
+    <select id="first_view">
+     <option value="im">Miss and partial</option>
+     <option value="a">Hit, miss, and partial</option>
+     <option value="">None</option>
+    </select>
+  </div>
+
+  <br>
+
+  <div>
+    <h3>Enterprise Sites</h3>
+    <textarea id="enterprise" cols="30" rows="2" placeholder="https://github.mysite.com/"></textarea>
+    <p class="small">Newline characters for each url.</p>
+  </div>
+
+  <div>
+    <input type="checkbox" id="debug"> <label>Debug Mode</label>
+  </div>
+  <br>
+
+  <button id="save">Save Changes</button> <span id="status"></span>
+
+  <blockquote style="font-family:monospace;color:grey">Contribute at <a href="https://github.com/codecov/browser-extension">github.com/codecov/browser-extension</a></blockquote>
+  <script src="options.js"></script>
+</body>
+</html>

@@ -13,37 +13,16 @@ var click = function (el){
 
 var expect = chai.expect;
 
-var chrome = {
-  extension: {
-    getURL: function(loca){ return "../../"+loca; }
-  },
-  storage: {
-    cache: {
-      // defaults
-      first_view: 'im',
-      enterprise: ''
-    },
-    sync: {
-      get: function(key, callback){
-        callback(chrome.storage.cache);
-      },
-      set: function(cache, callback){
-        chrome.storage.cache = cache;
-        callback();
-      }
-    },
-    local: {
-      get: function(key, callback){
-        callback(chrome.storage.cache);
-      },
-      set: function(cache, callback){
-        chrome.storage.cache = cache;
-        callback();
-      }
-    }
-  }
+var cache = {
+  first_view: 'im',
+  enterprise: ''
 };
 
-var mochaRunTests = function(){
-  mocha.run();
-};
+function storage_get(key, cb){
+  cb(cache[key]);
+}
+
+function storage_set(key, value, cb){
+  cache[key] = value;
+  cb();
+}

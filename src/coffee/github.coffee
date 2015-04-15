@@ -1,4 +1,4 @@
-class Codecov
+class window.Github
   slug: null  # :owner/:repo
   ref: null   # sha of head
   base: ''    # sha of base (compare|pull only)
@@ -8,7 +8,7 @@ class Codecov
   urlid: 0    # which url to use when searching reports
   cache: [null, null]
   settings:
-    urls: ['https://codecov.io']
+    urls: []
     first_view: 'im'
     debug: no
     callback: null
@@ -16,7 +16,7 @@ class Codecov
 
   log: (title, data) -> console.log(@, title, data) if @settings.debug
 
-  constructor: ->
+  constructor: (prefs, cb) ->
     ###
     Called once at start of extension
     ###
@@ -24,28 +24,11 @@ class Codecov
 
     # establish settings
     # ------------------
-    chrome.storage.sync.get {first_view: 'im', enterprise: '', debug: no }, (items) ->
-      self.settings.first_view = items.first_view
-      self.settings.debug = items.debug
-      $.merge self.settings.urls, (items.enterprise or "").split("\n").filter((a) -> a)
+    self.settings = $.extend(self.settings, prefs)
+    self.settings.urls.unshift 'https://codecov.io'
 
-    @settings = $.extend null, @settings, (window?.codecov_settings ? {})
-
-    ###
-    listen to dom changes
-    ---------------------
-    ###
-    script = document.createElement('script')
-    script.textContent = """$(document).on('pjax:success',function(){window.postMessage({type:"codecov"},"*");});"""
-    (document.head or document.documentElement).appendChild(script);
-    script.parentNode.removeChild(script)
-
-    window.addEventListener "message", ((event) ->
-      return unless event.source is window
-      if event.data.type and event.data.type is "codecov"
-        self.log('pjax event received')
-        self.get_coverage()
-    ), no
+    # callback to allow custom events for each browser
+    cb? @
 
     # Go
     self.get_coverage()
@@ -116,14 +99,14 @@ class Codecov
     self = @
     slugref = "#{self.slug}/#{self.ref}"
 
-    # get fron chrome storage
-    # -----------------------
+    # get fron storage
+    # ----------------
     @_processing = yes
     if @cache[0] == slugref
       self.log('process(cache)')
       @process @cache[1]
     else
-      chrome.storage.local.get slugref, (res) ->
+      storage_get slugref, (res) ->
         if res?[self.ref]
           self.log('process(storage)', res[self.ref])
           self.process res[self.ref]
@@ -184,9 +167,9 @@ class Codecov
     slugref = "#{self.slug}/#{self.ref}"
     # cache in extension
     self.cache = [slugref, res]
-    # cache in chrome storage
+    # cache in storage
     if store and self.cacheable
-      chrome.storage.local.set {slugref: res}, -> null
+      storage_set {slugref: res}, -> null
 
     if self.page is 'tree'
       $('.commit-meta').prepend("""<a href="#{self.settings.urls[self.urlid]}/github/#{self.slug}?ref=#{self.ref}" class="sha-block codecov tooltipped tooltipped-n" aria-label="Overall coverage">#{Math.floor res['report']['coverage']}%</a>""")
@@ -310,5 +293,3 @@ class Codecov
         "partial"
     else
       "hit"
-
-$ -> window.codecov = new Codecov

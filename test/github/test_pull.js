@@ -1,10 +1,20 @@
+$(function(){
+    window.cc = codecov({
+      "debug": true,
+      "callback": mocha.run,
+      "first_view": 'im',
+      "enterprise": '',
+      "debug_url": "https://github.com/codecov/codecov-python/pull/16"
+    });
+});
+
 describe('codecov', function(){
   it('should start with no errors', function(){
-      expect(window.codecov.page).to.equal('pull');
-      expect(window.codecov.slug).to.equal('codecov/codecov-python');
-      expect(window.codecov.file).to.equal('');
-      expect(window.codecov.ref).to.equal('1d30954');
-      expect(window.codecov.base).to.equal("&base=3229ed3");
+      expect(window.cc.page).to.equal('pull');
+      expect(window.cc.slug).to.equal('codecov/codecov-python');
+      expect(window.cc.file).to.equal('');
+      expect(window.cc.ref).to.equal('1d30954');
+      expect(window.cc.base).to.equal("&base=3229ed3");
   });
   it('should add coverage button', function(){
     var button = $('.file-actions .btn-group a.btn.codecov');

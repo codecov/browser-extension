@@ -1,9 +1,19 @@
+$(function(){
+    window.cc = codecov({
+      "debug": true,
+      "callback": mocha.run,
+      "first_view": 'im',
+      "enterprise": '',
+      "debug_url": "https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614"
+    });
+});
+
 describe('codecov', function(){
   it('should have accurate properties', function(){
-      expect(window.codecov.slug).to.equal('codecov/codecov-python');
-      expect(window.codecov.file).to.equal('');
-      expect(window.codecov.ref).to.equal('4c95614');
-      expect(window.codecov.base).to.equal('&base=fb55c9b');
+      expect(window.cc.slug).to.equal('codecov/codecov-python');
+      expect(window.cc.file).to.equal('');
+      expect(window.cc.ref).to.equal('4c95614');
+      expect(window.cc.base).to.equal('&base=fb55c9b');
   });
   it('should add coverage button', function(){
     var buttons = $('.file-actions .btn-group a.btn.codecov');

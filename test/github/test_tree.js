@@ -1,10 +1,20 @@
+$(function(){
+    window.cc = codecov({
+      "debug": true,
+      "callback": mocha.run,
+      "first_view": 'im',
+      "enterprise": '',
+      "debug_url": "https://github.com/codecov/codecov-python/tree/097f692a0f02649a80de6c98749ca32a126223fc/codecov"
+    });
+});
+
 describe('codecov', function(){
   it('should proper settings', function(){
-      expect(window.codecov.page).to.equal('tree');
-      expect(window.codecov.slug).to.equal('codecov/codecov-python');
-      expect(window.codecov.file).to.equal('');
-      expect(window.codecov.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
-      expect(window.codecov.base).to.equal("");
+      expect(window.cc.page).to.equal('tree');
+      expect(window.cc.slug).to.equal('codecov/codecov-python');
+      expect(window.cc.file).to.equal('');
+      expect(window.cc.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
+      expect(window.cc.base).to.equal("");
   });
   it('should add coverage header', function(){
     expect($('.commit-meta .sha-block.codecov').text()).to.equal('87%');

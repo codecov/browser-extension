@@ -1,12 +1,22 @@
+$(function(){
+    window.cc = codecov({
+      "debug": true,
+      "callback": mocha.run,
+      "first_view": 'im',
+      "enterprise": '',
+      "debug_url": "https://github.com/codecov/codecov-python/blame/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py"
+    });
+});
+
 var coverage = ['hit', null, 'hit', null, 'hit', 'hit', 'hit', 'hit', 'partial', 'missed', 'partial', 'missed',
                 null, 'hit', null, 'partial', 'missed', null, 'hit', null, 'hit', null];
 describe('codecov', function(){
   it('should start with no errors', function(){
-      expect(window.codecov.slug).to.equal('codecov/codecov-python');
-      expect(window.codecov.file).to.equal('/codecov/clover.py');
-      expect(window.codecov.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
-      expect(window.codecov.page).to.equal('blame');
-      expect(window.codecov.base).to.equal('');
+      expect(window.cc.slug).to.equal('codecov/codecov-python');
+      expect(window.cc.file).to.equal('/codecov/clover.py');
+      expect(window.cc.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
+      expect(window.cc.page).to.equal('blame');
+      expect(window.cc.base).to.equal('');
   });
   it('should add coverage button', function(){
     var button = $('.file-actions .btn-group a.btn.codecov');
