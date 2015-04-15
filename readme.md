@@ -26,3 +26,5 @@ The Codecov Extension will overlay coverage reports directly in Github.
 #### Firefox References
 - [Modifying Web Pages Based on URL](https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Modifying_Web_Pages_Based_on_URL)
 - [Get/Set Preferences](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/simple-prefs#Getting_and_setting_preferences)
+- [Installing Extensions From Web Pages](https://developer.mozilla.org/en-US/docs/Installing_Extensions_and_Themes_From_Web_Pages)
+- [Signing an extension](https://developer.mozilla.org/en-US/docs/Signing_an_extension)
