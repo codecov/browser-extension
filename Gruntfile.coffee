@@ -5,6 +5,18 @@ module.exports = (grunt) ->
         options:
           port: 3000
           hostname: '0.0.0.0'
+      coverage:
+        options:
+          port: 4000
+          hostname: '0.0.0.0'
+          middleware: [
+            (req, res, next) ->
+              fs = require('fs')
+              try fs.mkdirSync('coverage')
+              try fs.mkdirSync("coverage/#{req.url[1..]}")
+              req.on 'data', (json) ->
+                fs.writeFileSync("coverage/#{req.url[1..]}/coverage.json", json.toString())
+          ]
 
     coffeecov:
       options:

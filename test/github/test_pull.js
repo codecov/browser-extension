@@ -3,6 +3,7 @@ $(function(){
       "debug": true,
       "callback": mocha.run,
       "first_view": 'im',
+      "filename": "pull",
       "enterprise": '',
       "debug_url": "https://github.com/codecov/codecov-python/pull/16"
     });

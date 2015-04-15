@@ -26,3 +26,13 @@ function storage_set(key, value, cb){
   cache[key] = value;
   cb();
 }
+
+function save_coverage(){
+  // my hack to get coverage
+  $.ajax({
+    "url": "http://localhost:4000/"+window.codecov_settings["filename"],
+    "type": "POST",
+    "contentType": 'application/json',
+    "data": JSON.stringify(_$jscoverage)
+  });
+}
