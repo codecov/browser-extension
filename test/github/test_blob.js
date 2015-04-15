@@ -3,7 +3,6 @@ $(function(){
       "debug": true,
       "callback": mocha.run,
       "first_view": 'im',
-      "filename": "blob",
       "enterprise": '',
       "debug_url": "https://github.com/codecov/codecov-python/blob/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py"
     });
@@ -12,6 +11,7 @@ $(function(){
 var coverage = ['hit', null, 'hit', null, 'hit', 'hit', 'hit', 'hit', 'partial', 'missed', 'partial', 'missed',
                 null, 'hit', null, 'partial', 'missed', null, 'hit', null, 'hit', null];
 describe('codecov', function(){
+  after(function(){save_coverage('blob');});
   it('should start with no errors', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');
       expect(window.cc.file).to.equal('/codecov/clover.py');
@@ -39,9 +39,6 @@ describe('codecov', function(){
       x++;
     });
   });
-});
-
-describe('clicking codecov', function(){
   it('will toggle it', function(){
     // first click
     click($('.codecov.btn')[0]);

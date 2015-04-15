@@ -3,13 +3,13 @@ $(function(){
       "debug": true,
       "callback": mocha.run,
       "first_view": 'im',
-      "filename": "pull",
       "enterprise": '',
       "debug_url": "https://github.com/codecov/codecov-python/pull/16"
     });
 });
 
 describe('codecov', function(){
+  after(function(){save_coverage('pull');});
   it('should start with no errors', function(){
       expect(window.cc.page).to.equal('pull');
       expect(window.cc.slug).to.equal('codecov/codecov-python');

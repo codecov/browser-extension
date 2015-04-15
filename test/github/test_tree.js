@@ -3,13 +3,13 @@ $(function(){
       "debug": true,
       "callback": mocha.run,
       "first_view": 'im',
-      "filename": "tree",
       "enterprise": '',
       "debug_url": "https://github.com/codecov/codecov-python/tree/097f692a0f02649a80de6c98749ca32a126223fc/codecov"
     });
 });
 
 describe('codecov', function(){
+  after(function(){save_coverage('tree');});
   it('should proper settings', function(){
       expect(window.cc.page).to.equal('tree');
       expect(window.cc.slug).to.equal('codecov/codecov-python');

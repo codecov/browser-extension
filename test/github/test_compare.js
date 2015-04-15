@@ -3,13 +3,13 @@ $(function(){
       "debug": true,
       "callback": mocha.run,
       "first_view": 'im',
-      "filename": "compare",
       "enterprise": '',
       "debug_url": "https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614"
     });
 });
 
 describe('codecov', function(){
+  after(function(){save_coverage('compare');});
   it('should have accurate properties', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');
       expect(window.cc.file).to.equal('');

@@ -3,7 +3,7 @@ Codecov Browser Extension
 
 [![Circle CI](https://img.shields.io/circleci/project/codecov/browser-extension/master.svg)](https://circleci.com/gh/codecov/browser-extension) [![codecov.io](https://img.shields.io/codecov/c/github/codecov/browser-extension.svg)](https://codecov.io/github/codecov/browser-extension)
 
-Overlay coverage reports from Codecov in Bithub, Bitbucket and Gitlab.
+Overlay coverage reports from Codecov in Github, Bitbucket and Gitlab.
 
 |                                                       **Overlay**                                                       | **Pull Requests** | **Trees** |
 | :---------------------------------------------------------------------------------------------------------------------: | :---------------: | :-------: |

@@ -27,10 +27,10 @@ function storage_set(key, value, cb){
   cb();
 }
 
-function save_coverage(){
+function save_coverage(name){
   // my hack to get coverage
   $.ajax({
-    "url": "http://localhost:4000/"+window.codecov_settings["filename"],
+    "url": "http://localhost:4000/"+name,
     "type": "POST",
     "contentType": 'application/json',
     "data": JSON.stringify(_$jscoverage)
