@@ -5,9 +5,9 @@ Codecov Browser Extension
 
 Overlay coverage reports from Codecov in Github, Bitbucket and Gitlab.
 
-|                                                       **Overlay**                                                       | **Pull Requests** | **Trees** |
-| :---------------------------------------------------------------------------------------------------------------------: | :---------------: | :-------: |
-| ![preview overlay](https://cloud.githubusercontent.com/assets/2041757/6550771/026264e8-c660-11e4-8802-129e13ce18a3.png) |                   |           |
+|                                                       **Overlay**                                                       |                                                      **Trees**                                                       |
+| :---------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: |
+| ![preview overlay](https://cloud.githubusercontent.com/assets/2041757/6550771/026264e8-c660-11e4-8802-129e13ce18a3.png) | ![tree preview](https://cloud.githubusercontent.com/assets/2041757/7163464/c98fa58c-e35f-11e4-9623-c56425d8b046.png) |
 
 
 ### Supported Browsers and Services
