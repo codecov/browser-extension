@@ -46,13 +46,14 @@ module.exports = (grunt) ->
         files: [
           {expand: yes, flatten: yes, src: ['icons/*'], dest: 'tmp/chrome/icons/', filter: 'isFile'}
           {expand: yes, flatten: yes, src: ['lib/*'], dest: 'tmp/chrome/lib'}
+          {expand: yes, flatten: yes, src: ['src/chrome/options.*'], dest: 'tmp/chrome/lib'}
           {expand: yes, flatten: yes, src: ['src/chrome/manifest.json'], dest: './tmp/chrome/'}
         ]
       firefox:
         files: [
           {expand: yes, flatten: yes, src: ['icons/*'], dest: 'tmp/firefox/data/icons/', filter: 'isFile'}
           {expand: yes, flatten: yes, src: ['lib/jquery-2.1.3.min.js', 'lib/codecov.js', 'lib/codecov.css'], dest: 'tmp/firefox/data'}
-          {expand: yes, flatten: yes, src: ['src/firefox/main.js'], dest: 'tmp/firefox/lib'}
+          {expand: yes, flatten: yes, src: ['src/firefox/main.js'], dest: 'tmp/firefox'}
           {expand: yes, flatten: yes, src: ['src/firefox/package.json'], dest: './tmp/firefox/'}
         ]
       safari:

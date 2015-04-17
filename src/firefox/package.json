@@ -5,11 +5,7 @@
   "description": "Overlay Coverage reports in Github, Bitbucket and Gitlab",
   "author": "Codecov",
   "homepage": "https://github.com/codecov/browser-extension",
-  "lib": "lib",
-  "main": "lib/main",
-  "data": "data",
   "icon": "data/icons/codecov-48.png",
-  "icon64": "data/icons/codecov-64.png",
   "license": "Apache v2.0",
   "version": "0.3.0",
   "preferences": [
@@ -52,6 +48,7 @@
     "cross-domain-content": [
       "https://github.com",
       "https://gitlab.com",
+      "https://codecov.io",
       "https://bitbucket.com"
     ]
   }
