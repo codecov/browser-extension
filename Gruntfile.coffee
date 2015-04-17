@@ -73,15 +73,15 @@ module.exports = (grunt) ->
       chrome:
         command: [
           'cd tmp/chrome && zip -r ../../dist/chrome.zip .'
-          '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --pack-extension="/User/peak/Documents/codecov/browser-extension/tmp/chrome" --pack-extension-key="/User/peak/.ssh/chrome.pem"'
-          'mv chrome.crx dist'
+          '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --pack-extension="/Users/peak/Documents/codecov/browser-extension/tmp/chrome" --pack-extension-key="/Users/peak/.ssh/chrome.pem"'
+          'mv ../chrome.crx ../../dist/chrome.crx'
           ].join('&&')
       firefox:
         command: "cd ./tmp/firefox && cfx xpi --output-file=../../dist/firefox.xpi"
       safari:
         command: ''
       opera:
-        command: 'cp ./dist/chrome.crx ./dist/opera.nex'
+        command: 'cp dist/chrome.crx dist/opera.nex'
 
     less:
       default:

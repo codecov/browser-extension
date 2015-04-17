@@ -18,12 +18,12 @@ Overlay coverage reports from Codecov in Github, Bitbucket and Gitlab.
 | Chrome  | :white_check_mark: [Review and Install][0] | `coming soon` | `coming soon` |
 | Firefox | :white_check_mark: [Review and Install][1] | `coming soon` | `coming soon` |
 | Safari  | `coming soon`                              | `coming soon` | `coming soon` |
-| Opera   | `coming soon`                              | `coming soon` | `coming soon` |
+| Opera   | :white_check_mark: [Review and Install][2] | `coming soon` | `coming soon` |
 | IE      | `not planned`                              | `no planned`  | `no planned`  |
 
 [0]: https://chrome.google.com/webstore/detail/codecov-extension/keefkhehidemnokodkdkejapdgfjmijf
-[1]: https://addons.mozilla.org/en-US/firefox/addon/codecov-extension/
-
+[1]: https://addons.mozilla.org/en-US/firefox/addon/codecov-extension
+[2]: https://addons.opera.com/en/extensions/details/codecov-extension
 
 ## Change Log
 See [Releases](https://github.com/codecov/browser-extension/releases)
