@@ -59,7 +59,7 @@ class window.Github
       # https://github.com/codecov/codecov-python/blob/4c95614d2aa78a74171f81fc4bf2c16a6d8b1cb5/codecov/clover.py
       split = $('a[data-hotkey=y]').attr('href').split('/')
       self.ref = split[4]
-      self.file = "/#{split[5..].join('/')}"
+      self.file = "#{split[5..].join('/')}"
 
     else if self.page is 'compare'
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
@@ -208,6 +208,13 @@ class window.Github
         # find covered file
         # =================
         coverage = res['report']['files'][self.file or file.find('.file-info>span[title]').attr('title')]
+        unless coverage
+          # search for best fit coverage
+          # if not found due to file path not accurate
+          for path of res['report']['files']
+            if path[self.file.length*-1..] is self.file
+              coverage = res['report']['files'][path]
+              break
 
         # assure button group
         if file.find('.file-actions > .btn-group').length is 0

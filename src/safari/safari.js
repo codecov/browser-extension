@@ -6,4 +6,4 @@ var storage_set = function(key, value, cb){
   cb();
 };
 
-codeov(safari.extension.settings);
+codecov(safari.extension.settings);
