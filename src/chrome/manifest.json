@@ -31,7 +31,8 @@
   "web_accessible_resources": [
     "lib/jquery-2.1.3.min.js",
     "lib/codecov.js",
-    "lib/codecov.css"
+    "lib/codecov.css",
+    "lib/listener.js"
   ],
   "permissions": [
     "*://github.com/*",

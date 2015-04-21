@@ -46,7 +46,11 @@ class window.Github
 
     # get ref
     # =======
-    if self.page is 'commit'
+    if self.page in ['releases', 'tags']
+      # planned
+      return
+
+    else if self.page is 'commit'
       # https://github.com/codecov/codecov-python/commit/b0a3eef1c9c456e1794c503aacaff660a1a197aa
       self.ref = href[6]
 
@@ -67,9 +71,12 @@ class window.Github
       self.base = "&base=#{$('.commit-id:first').text()}"
       self.ref = $('.commit-id:last').text()
 
-    else if $('.file-wrap').length == 1
-      self.page = 'tree'
+    else if self.page is 'tree'
       self.ref = $('.file-wrap a.js-directory-link:first').attr('href').split('/')[4]
+
+    else
+      # no coverage overlay
+      return
 
     # add Coverage Toggle
     # -------------------
@@ -81,10 +88,6 @@ class window.Github
               .wrap('<div class="btn-group"></div>')
         file.find('.file-actions > .btn-group')
             .prepend('<a class="btn btn-sm codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>')
-
-    # Add listender to tree query
-    # ---------------------------
-    $('#tree-finder-field').keyup -> setTimeout (-> self.run_coverage()), 200
 
     # ok GO!
     @run_coverage()
@@ -147,6 +150,10 @@ class window.Github
           unless self.found
             $('.btn.codecov').text("Please login at Codecov.io").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
             $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Please login at Codecov.io').attr('aria-label', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
+        402: ->
+          unless self.found
+            $('.btn.codecov').text("Umbrella required").addClass('danger').attr('aria-label', 'Umbrella account require to view private repo reports').click -> window.location = "https://codecov.io/umbrella"
+            $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Umbrella required').attr('aria-label', 'Umbrella account require to view private repo reports').click -> window.location = "https://codecov.io/umbrella"
         404: ->
           unless self.found
             $('.btn.codecov').text("No coverage").attr('aria-label', 'Coverage not found')
@@ -174,10 +181,10 @@ class window.Github
     if self.page is 'tree'
       $('.commit-meta').prepend("""<a href="#{self.settings.urls[self.urlid]}/github/#{self.slug}?ref=#{self.ref}" class="sha-block codecov tooltipped tooltipped-n" aria-label="Overall coverage">#{Math.floor res['report']['coverage']}%</a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
-        href = $('td.content a', @).attr('href')
-        if href
-          coverage = res['report']['files'][$('td.content a', @).attr('href').split('/')[5..].join('/')]?.coverage
-          $('td:last', @).append("""<span class="sha codecov tooltipped tooltipped-s" aria-label="Coverage">#{Math.floor coverage}%</span>""") if coverage >= 0
+        filepath = $('td.content a', @).attr('href')?.split('/')[5..].join('/')
+        if filepath
+          coverage = res['report']['files']?[filepath]?.coverage
+          $('td:last', @).append("""<span class="sha codecov tooltipped tooltipped-n" aria-label="Coverage">#{Math.floor coverage}%</span>""") if coverage >= 0
 
     else
       if self.page in ['commit', 'compare', 'pull']

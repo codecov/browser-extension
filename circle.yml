@@ -3,7 +3,5 @@ machine:
     version: 0.10.22
 
 test:
-  pre:
-    - sudo pip install codecov
   post:
-    - codecov
+    - bash <(curl -s https://codecov.io/bash)

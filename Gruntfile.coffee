@@ -47,6 +47,7 @@ module.exports = (grunt) ->
           {expand: yes, flatten: yes, src: ['icons/*'], dest: 'tmp/chrome/icons/', filter: 'isFile'}
           {expand: yes, flatten: yes, src: ['lib/*'], dest: 'tmp/chrome/lib'}
           {expand: yes, flatten: yes, src: ['src/chrome/options.*'], dest: 'tmp/chrome/lib'}
+          {expand: yes, flatten: yes, src: ['src/chrome/listener.js'], dest: 'tmp/chrome/lib'}
           {expand: yes, flatten: yes, src: ['src/chrome/manifest.json'], dest: './tmp/chrome/'}
         ]
       firefox:
