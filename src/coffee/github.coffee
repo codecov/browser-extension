@@ -127,7 +127,7 @@ class window.Github
     # get coverage
     # ============
     $.ajax
-      url: "#{endpoint}/github/#{self.slug}#{self.file}?ref=#{self.ref}#{self.base}"
+      url: "#{endpoint}/github/#{self.slug}?ref=#{self.ref}#{self.base}"
       type: 'get'
       dataType: 'json'
       headers: Accept: 'application/json'
@@ -207,10 +207,7 @@ class window.Github
         file = $(@)
         # find covered file
         # =================
-        if self.page in ['blob', 'blame']
-          coverage = res['report']
-        else
-          coverage = res['report']['files'][file.find('.file-info>span[title]').attr('title')]
+        coverage = res['report']['files'][self.file or file.find('.file-info>span[title]').attr('title')]
 
         # assure button group
         if file.find('.file-actions > .btn-group').length is 0
