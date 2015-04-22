@@ -14,7 +14,7 @@ describe('codecov', function(){
   after(function(){save_coverage('blob');});
   it('should start with no errors', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');
-      expect(window.cc.file).to.equal('/codecov/clover.py');
+      expect(window.cc.file).to.equal('codecov/clover.py');
       expect(window.cc.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
       expect(window.cc.page).to.equal('blob');
       expect(window.cc.base).to.equal('');
