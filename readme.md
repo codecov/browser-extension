@@ -3,11 +3,12 @@ Codecov Browser Extension
 
 [![Circle CI](https://img.shields.io/circleci/project/codecov/browser-extension/master.svg)](https://circleci.com/gh/codecov/browser-extension) [![codecov.io](https://img.shields.io/codecov/c/github/codecov/browser-extension.svg)](https://codecov.io/github/codecov/browser-extension)
 
-Overlay coverage reports from Codecov in Github, Bitbucket and Gitlab.
+Overlay coverage reports from Codecov in Github (Bitbucket and Gitlab `coming soon`)
 
 |                                                       **Overlay**                                                       |                                                      **Trees**                                                       |
 | :---------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: |
 | ![preview overlay](https://cloud.githubusercontent.com/assets/2041757/6550771/026264e8-c660-11e4-8802-129e13ce18a3.png) | ![tree preview](https://cloud.githubusercontent.com/assets/2041757/7163464/c98fa58c-e35f-11e4-9623-c56425d8b046.png) |
+| [Watch on YouTube](https://www.youtube.com/watch?v=d6wJKODB8_g) |
 
 
 ### Supported Browsers and Services
@@ -19,7 +20,7 @@ Overlay coverage reports from Codecov in Github, Bitbucket and Gitlab.
 | Firefox | :white_check_mark: [Review and Install][1] | `coming soon` | `coming soon` |
 | Safari  | `coming soon`                              | `coming soon` | `coming soon` |
 | Opera   | :white_check_mark: [Review and Install][2] | `coming soon` | `coming soon` |
-| IE      | `not planned`                              | `no planned`  | `no planned`  |
+
 
 [0]: https://chrome.google.com/webstore/detail/codecov-extension/keefkhehidemnokodkdkejapdgfjmijf
 [1]: https://addons.mozilla.org/en-US/firefox/addon/codecov-extension
