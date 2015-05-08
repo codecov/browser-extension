@@ -290,7 +290,7 @@ class window.Github
       null
     else if ln is true
       "partial"
-    else if typeof ln is 'list'
+    else if ln instanceof Array
       h = $.grep(ln, (p) -> p[2]>0).length > 0
       m = $.grep(ln, (p) -> p[2]==0).length > 0
       if h and m then "partial" else if h then "hit" else "missed"
