@@ -8,7 +8,16 @@ var storage_set = chrome.storage.local.set;
 $(function(){
   // start codecov
   chrome.storage.sync.get({"first_view": 'im', "enterprise": '', "debug": false}, function(prefs){
-    window._codecov = codecov(prefs);
+    var href = prefs.debug_url || document.URL;
+    // detect git service
+    // TODO enterprise based on service_urls
+    if( href.indexOf('https://github.com') === 0 ){
+      window.codecov = new Github(prefs);
+    } else if( href.indexOf('https://bitbucket.org') === 0 ){
+      window.codecov = new Bitbucket(prefs);
+    } else if( href.indexOf('https://gitlab.com') === 0 ){
+      window.codecov = new Bitbucket(prefs);
+    }
   });
 
   // inject listener
@@ -20,8 +29,14 @@ $(function(){
   (document.head||document.documentElement).appendChild(s);
 
   // hide codecov plugin
-  document.getElementById('chrome-install-plugin').style.display = 'none';
-  document.getElementById('opera-install-plugin').style.display = 'none';
+  var cip = document.getElementById('chrome-install-plugin');
+  if (typeof apple !== "undefined" && apple !== null) {
+    cip.style.display = 'none';
+  }
+  var oip = document.getElementById('opera-install-plugin');
+  if (typeof apple !== "undefined" && apple !== null) {
+    oip.style.display = 'none';
+  }
 });
 
 window.addEventListener("message", (function(event) {
@@ -29,7 +44,7 @@ window.addEventListener("message", (function(event) {
     return;
   }
   if (event.data.type && event.data.type === "codecov") {
-    window._codecov.log('::pjax-event-received');
-    return window._codecov.get_coverage();
+    window.codecov.log('::pjax-event-received');
+    return window.codecov._start();
   }
 }), false);

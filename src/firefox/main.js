@@ -4,7 +4,7 @@ var data = require('sdk/self').data,
 
 pageMod.PageMod({
   include: ['https://github.com/*',
-            'https://bitbucket.com/*',
+            'https://bitbucket.org/*',
             'https://gitlab.com/*'
            ],
   contentScriptFile : [data.url('jquery-2.1.3.min.js'),
