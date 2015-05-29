@@ -27,7 +27,7 @@ class window.Github extends Codecov
       return $('.commit-id:last').text()
 
     else if @page is 'tree'
-      return $('.file-wrap a.js-directory-link:first').attr('href').split('/')[4]
+      return $('.file-navigation .repo-root a:first').attr('data-branch')
 
     else
       # no coverage overlay
