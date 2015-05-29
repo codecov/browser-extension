@@ -72,7 +72,7 @@ class window.Github
       self.ref = $('.commit-id:last').text()
 
     else if self.page is 'tree'
-      self.ref = $('.file-navigation .select-menu-button:first').attr('data-ref')
+      self.ref = $('.file-navigation .repo-root a:first').attr('data-branch')
 
     else
       # no coverage overlay
