@@ -8,7 +8,7 @@ $(function(){
     });
 });
 
-describe('codecov', function(){
+describe('github tree', function(){
   after(function(){save_coverage('gh-tree');});
   it('should proper settings', function(){
       expect(window.cc.page).to.equal('tree');

@@ -10,7 +10,7 @@ $(function(){
 
 var coverage = ['hit', null, 'hit', null, 'hit', 'hit', 'hit', 'hit', 'partial', 'missed', 'partial', 'missed',
                 null, 'hit', null, 'partial', 'missed', null, 'hit', null, 'hit', null];
-describe('codecov', function(){
+describe('gihub blame', function(){
   after(function(){save_coverage('gh-blame');});
   it('should start with no errors', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');

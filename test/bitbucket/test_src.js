@@ -8,7 +8,7 @@ $(function(){
     });
 });
 
-describe('codecov', function(){
+describe('bitbucket src', function(){
   after(function(){save_coverage('src');});
   it('should start with no errors', function(){
     expect(window.cc).to.have.property('slug').and.to.equal('osallou/go-docker');

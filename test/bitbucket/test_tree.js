@@ -8,7 +8,7 @@ $(function(){
     });
 });
 
-describe('codecov', function(){
+describe('bitbucket tree', function(){
   after(function(){save_coverage('bb-tree');});
   it('should proper settings', function(){
     expect(window.cc).to.have.property('page').and.to.equal('src');

@@ -8,7 +8,7 @@ $(function(){
     });
 });
 
-describe('codecov', function(){
+describe('github pull', function(){
   after(function(){save_coverage('gh-pull');});
   it('should start with no errors', function(){
       expect(window.cc.page).to.equal('pull');

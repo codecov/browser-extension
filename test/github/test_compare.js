@@ -8,7 +8,7 @@ $(function(){
     });
 });
 
-describe('codecov', function(){
+describe('github compare', function(){
   after(function(){save_coverage('gh-compare');});
   it('should have accurate properties', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');
