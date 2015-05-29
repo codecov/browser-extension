@@ -9,7 +9,7 @@ $(function(){
 });
 
 describe('bitbucket commit', function(){
-  after(function(){save_coverage('src');});
+  after(function(){save_coverage('bb-commits');});
   it('should start with no errors', function(){
     expect(window.cc).to.have.property('slug').and.to.equal('osallou/go-docker');
     expect(window.cc).to.have.property('ref').and.to.equal('33a5c94583baf1fcc98db2c295c97283255163c1');

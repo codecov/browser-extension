@@ -9,7 +9,7 @@ $(function(){
 });
 
 describe('bitbucket src', function(){
-  after(function(){save_coverage('src');});
+  after(function(){save_coverage('bb-src');});
   it('should start with no errors', function(){
     expect(window.cc).to.have.property('slug').and.to.equal('osallou/go-docker');
     expect(window.cc).to.have.property('ref').and.to.equal('8c304f3171716b23f78dc6c1f6541b290a43386b');
