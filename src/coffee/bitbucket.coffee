@@ -9,6 +9,9 @@ class window.Bitbucket extends Codecov
     else if @page is 'commits'
       return href[6].split('?')[0]
 
+    else if @page is 'pull-request'
+      return $('.view-file:first').attr('href')?.split('/')[4]
+
     no  # overlay available
 
   prepare: ->
@@ -33,13 +36,12 @@ class window.Bitbucket extends Codecov
         cov = coverage?.coverage
         $('td.size', @).after('<td title="Coverage" class="codecov">' + (if cov >= 0 then "#{Math.round cov}%" else '') + "</td>")
 
-    # # diff file
+    # diff file
     $('section.bb-udiff').each ->
       file = $(@)
       fp = file.attr('data-path')
       coverage = res['report']['files'][fp] or self.find_best_fit_path(fp, res['report']['files'])
       unless coverage?.ignored
-        self.log(fp, coverage)
         if coverage
           button = $('.aui-button.codecov', @)
                     .attr('title', 'Toggle Codecov')
@@ -47,13 +49,11 @@ class window.Bitbucket extends Codecov
                     .unbind()
                     .click(self.toggle_diff)
 
-          self.log($('.udiff-line.common, .udiff-line.addition', @).find('a.line-numbers'))
           $('.udiff-line.common, .udiff-line.addition', @).find('a.line-numbers').each ->
             a = $(@)
             ln = a.attr('data-tnum')
             cov = coverage.lines?[ln]
-            if cov?
-              a.addClass("codecov codecov-#{self.color(coverage['lines'][ln])}")
+            a.addClass("codecov codecov-#{self.color(coverage['lines'][ln])}") if cov?
 
         else
           file.find('.aui-button.codecov').attr('title', 'File coverage not found').text('Not covered')
@@ -104,7 +104,7 @@ class window.Bitbucket extends Codecov
                               .addClass('aui-button-primary')
                               .attr('title', 'Login to view coverage by Codecov')
                               .click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
-      # $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Please login at Codecov.io').attr('title', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
+
     else if status is 402
       $('.aui-button.codecov').text("Umbrella required")
                               .addClass('aui-button-primary')
@@ -119,4 +119,3 @@ class window.Bitbucket extends Codecov
       $('.aui-button.codecov').text("Coverage error")
                               .attr('title', 'There was an error loading coverage. Sorry')
       # $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Coverage Error').attr('title', 'There was an error loading coverage. Sorry')
-

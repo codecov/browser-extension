@@ -119,7 +119,11 @@ class window.Codecov
     if store and @cacheable
       storage_set {slugref: res}, -> null
 
-    @overlay(res)
+    try
+      @overlay(res)
+    catch error
+      @log error
+      @error 500, error
 
   find_best_fit_path: (fp, files) ->
     matches = [path for path of files when path[fp.length*-1..] is fp or fp[path.length*-1..] is path]
