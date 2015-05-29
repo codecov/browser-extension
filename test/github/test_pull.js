@@ -1,5 +1,5 @@
 $(function(){
-    window.cc = codecov({
+    window.cc = new Github({
       "debug": true,
       "callback": mocha.run,
       "first_view": 'im',
@@ -9,7 +9,7 @@ $(function(){
 });
 
 describe('codecov', function(){
-  after(function(){save_coverage('pull');});
+  after(function(){save_coverage('gh-pull');});
   it('should start with no errors', function(){
       expect(window.cc.page).to.equal('pull');
       expect(window.cc.slug).to.equal('codecov/codecov-python');

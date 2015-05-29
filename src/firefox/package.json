@@ -2,7 +2,7 @@
   "name": "codecov",
   "title": "Codecov Extension",
   "id": "hello@codecov.io",
-  "description": "Overlay Coverage reports in Github, Bitbucket and Gitlab",
+  "description": "Overlay Coverage reports in Github and Bitbucket",
   "author": "Codecov",
   "homepage": "https://github.com/codecov/browser-extension",
   "icon": "data/icons/codecov-48.png",
@@ -49,7 +49,7 @@
       "https://github.com",
       "https://gitlab.com",
       "https://codecov.io",
-      "https://bitbucket.com"
+      "https://bitbucket.org"
     ]
   }
 }

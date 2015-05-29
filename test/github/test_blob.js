@@ -1,5 +1,5 @@
 $(function(){
-    window.cc = codecov({
+    window.cc = new Github({
       "debug": true,
       "callback": mocha.run,
       "first_view": 'im',
@@ -11,7 +11,7 @@ $(function(){
 var coverage = ['hit', null, 'hit', null, 'hit', 'hit', 'hit', 'hit', 'partial', 'missed', 'partial', 'missed',
                 null, 'hit', null, 'partial', 'missed', null, 'hit', null, 'hit', null];
 describe('codecov', function(){
-  after(function(){save_coverage('blob');});
+  after(function(){save_coverage('gh-blob');});
   it('should start with no errors', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');
       expect(window.cc.file).to.equal('codecov/clover.py');

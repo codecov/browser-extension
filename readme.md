@@ -3,7 +3,7 @@ Codecov Browser Extension
 
 [![Circle CI](https://img.shields.io/circleci/project/codecov/browser-extension/master.svg)](https://circleci.com/gh/codecov/browser-extension) [![codecov.io](https://img.shields.io/codecov/c/github/codecov/browser-extension.svg)](https://codecov.io/github/codecov/browser-extension)
 
-Overlay coverage reports from Codecov in Github (Bitbucket and Gitlab `coming soon`)
+Overlay coverage reports from Codecov in Github and Bitbucket (Gitlab `coming soon`)
 
 |                                                       **Overlay**                                                       |                                                      **Trees**                                                       |
 | :---------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: |
@@ -14,12 +14,12 @@ Overlay coverage reports from Codecov in Github (Bitbucket and Gitlab `coming so
 ### Supported Browsers and Services
 > Includes Enterprise support
 
-| Browser |                   Github                   |   Bitbucket   |     Gitlab    |
-| ------- | ------------------------------------------ | ------------- | ------------- |
-| Chrome  | :white_check_mark: [Review and Install][0] | `coming soon` | `coming soon` |
-| Firefox | :white_check_mark: [Review and Install][1] | `coming soon` | `coming soon` |
-| Safari  | `coming soon`                              | `coming soon` | `coming soon` |
-| Opera   | :white_check_mark: [Review and Install][2] | `coming soon` | `coming soon` |
+| Browser |                    Link                    |
+| ------- | ------------------------------------------ |
+| Chrome  | :white_check_mark: [Review and Install][0] |
+| Firefox | :white_check_mark: [Review and Install][1] |
+| Safari  | `coming soon`                              |
+| Opera   | :white_check_mark: [Review and Install][2] |
 
 
 [0]: https://chrome.google.com/webstore/detail/codecov-extension/keefkhehidemnokodkdkejapdgfjmijf

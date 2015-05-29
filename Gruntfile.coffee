@@ -28,7 +28,12 @@ module.exports = (grunt) ->
     coffee:
       default:
         expand: yes
-        files: 'lib/codecov.js': 'src/coffee/*.coffee'
+        files: 'lib/codecov.js': [
+          'src/coffee/codecov.coffee'
+          'src/coffee/github.coffee'
+          'src/coffee/bitbucket.coffee'
+          'src/coffee/gitlab.coffee'
+        ]
         options: bare: yes
 
     watch:
@@ -97,11 +102,14 @@ module.exports = (grunt) ->
       'test/github/test_tree.html': 'https://github.com/codecov/codecov-python/tree/097f692a0f02649a80de6c98749ca32a126223fc/codecov'
       'test/github/test_blame.html': 'https://github.com/codecov/codecov-python/blame/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py'
       'test/github/test_compare.html': 'https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614'
-      # bitbucket: null
-      # gitlab: null
+      # Bitbucket
+      'test/bitbucket/test_src.html': 'https://bitbucket.org/osallou/go-docker/src/8c304f3171716b23f78dc6c1f6541b290a43386b/godocker/godscheduler.py'
+      'test/bitbucket/test_commits.html': 'https://bitbucket.org/osallou/go-docker/commits/33a5c94583baf1fcc98db2c295c97283255163c1'
+      'test/bitbucket/test_tree.html': 'https://bitbucket.org/osallou/go-docker/src/8c304f3171716b23f78dc6c1f6541b290a43386b/godocker/?at=master'
+      # Gitlab
 
     dom_munger:
-      all_github:
+      all:  # excuted first
         src: 'test/**/*.html'
         options:
           remove: ['link', 'script']
@@ -113,12 +121,16 @@ module.exports = (grunt) ->
                                             <script src="../../lib/jquery-2.1.3.min.js"></script>
                                             <script src="../deps.js"></script>
                                             <script src="../../lib-cov/codecov.js"></script>
-                                            <script src="../../lib-cov/github.js"></script>'''}
+                                            <script src="../../lib-cov/github.js"></script>
+                                            <script src="../../lib-cov/bitbucket.js"></script>'''}
       github_blob: {src: 'test/github/test_blob.html', options: {append: {selector:'body',html:'<script src="test_blob.js"></script>'}}}
       github_pull: {src: 'test/github/test_pull.html', options: {append: {selector:'body',html:'<script src="test_pull.js"></script>'}}}
       github_tree: {src: 'test/github/test_tree.html', options: {append: {selector:'body',html:'<script src="test_tree.js"></script>'}}}
       github_blame: {src: 'test/github/test_blame.html', options: {append: {selector:'body',html:'<script src="test_blame.js"></script>'}}}
       github_compare: {src: 'test/github/test_compare.html', options: {append: {selector:'body',html:'<script src="test_compare.js"></script>'}}}
+
+      bitbucket_src: {src: 'test/bitbucket/test_src.html', options: {append: {selector:'body',html:'<script src="test_src.js"></script>'}}}
+      bitbucket_tree: {src: 'test/bitbucket/test_tree.html', options: {append: {selector:'body',html:'<script src="test_tree.js"></script>'}}}
 
     mocha:
       all:
@@ -130,12 +142,15 @@ module.exports = (grunt) ->
             ignoreLeaks: no
             globals: ['jQuery*', 'codecov']
           urls: [
+            # Github
             'http://localhost:3000/test/github/test_blob.html'
             'http://localhost:3000/test/github/test_pull.html'
             'http://localhost:3000/test/github/test_tree.html'
             'http://localhost:3000/test/github/test_blame.html'
             'http://localhost:3000/test/github/test_compare.html'
             # Bitbucket
+            'http://localhost:3000/test/bitbucket/test_src.html'
+            'http://localhost:3000/test/bitbucket/test_tree.html'
             # Gitlab
             ]
           run: no
