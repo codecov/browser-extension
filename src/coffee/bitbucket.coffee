@@ -7,7 +7,12 @@ class window.Bitbucket extends Codecov
       return href[6].split('?')[0]
 
     else if @page is 'commits'
-      return href[6].split('?')[0]
+      ref = href[6].split('?')[0]
+      if ref is 'all'
+        # finall the range of refs
+        return [$('.commit-list>tbody>tr:last>td.hash>div>a.hash').text(), $('.commit-list>tbody>tr:first>td.hash>div>a.hash').text()]
+      else
+        return ref
 
     no  # overlay available
 
@@ -17,6 +22,8 @@ class window.Bitbucket extends Codecov
     $('#editor-container, section.bb-udiff').each ->
       if $('.aui-button.codecov', @).length is 0
         $('.secondary>.aui-buttons:first', @).prepend('<a href="#" class="aui-button aui-button-light codecov" title="Requesting coverage from Codecov.io">Coverage loading...</a>')
+
+    $('.commit-list thead .hash').after('<th class="codecov" title="Powered by Codecov">Coverage</th>')
 
     yes  # get the coverage
 
@@ -33,7 +40,19 @@ class window.Bitbucket extends Codecov
         cov = coverage?.coverage
         $('td.size', @).after('<td title="Coverage" class="codecov">' + (if cov >= 0 then "#{Math.round cov}%" else '') + "</td>")
 
-    # # diff file
+    # list of commits
+    $('.commit-list td.hash').each ->
+      td = $(@)
+      # get the sha
+      sha = $('a', td).attr('href').split('/')[4]
+      # find commit
+      commit = res['commits']?[sha]
+      # create anchor
+      a = if commit then "<a class=\"hash\" href=\"#{self.url}/bitbucket/#{self.slug}?ref=#{sha}\">#{if commit.increased then '&uarr;' else '&darr;'} #{commit.coverage}%</a>" else ''
+      # add to dom
+      td.after("<td class=\"codecov\"><div>#{a}</div></td>")
+
+    # diff file
     $('section.bb-udiff').each ->
       file = $(@)
       fp = file.attr('data-path')
