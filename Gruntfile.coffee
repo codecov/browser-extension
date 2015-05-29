@@ -104,8 +104,9 @@ module.exports = (grunt) ->
       'test/github/test_compare.html': 'https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614'
       # Bitbucket
       'test/bitbucket/test_src.html': 'https://bitbucket.org/osallou/go-docker/src/8c304f3171716b23f78dc6c1f6541b290a43386b/godocker/godscheduler.py'
-      'test/bitbucket/test_commits.html': 'https://bitbucket.org/osallou/go-docker/commits/33a5c94583baf1fcc98db2c295c97283255163c1'
       'test/bitbucket/test_tree.html': 'https://bitbucket.org/osallou/go-docker/src/8c304f3171716b23f78dc6c1f6541b290a43386b/godocker/?at=master'
+      'test/bitbucket/test_commits.html': 'https://bitbucket.org/osallou/go-docker/commits/33a5c94583baf1fcc98db2c295c97283255163c1'
+      'test/bitbucket/test_commits_all.html': 'https://bitbucket.org/osallou/go-docker/commits/all?search=33a5c94583baf1fcc98db2c295c97283255163c1'
       # Gitlab
 
     dom_munger:

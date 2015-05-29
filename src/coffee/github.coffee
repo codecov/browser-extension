@@ -5,6 +5,10 @@ class window.Github extends Codecov
       # planned
       return no
 
+    else if @page is 'commits'
+      # https://github.com/codecov/browser-extension/commits/master
+      return href[6]
+
     else if @page is 'commit'
       # https://github.com/codecov/codecov-python/commit/b0a3eef1c9c456e1794c503aacaff660a1a197aa
       return href[6]
@@ -48,7 +52,14 @@ class window.Github extends Codecov
     yes  # get content to overlay
 
   overlay: (res) ->
-    if @page is 'tree'
+    if @page is 'commits'
+      $('.commit-group li').each ->
+        sha = $('button.js-zeroclipboard', @).attr('data-clipboard-text')
+        commit = res['commits']?[sha]
+        a = if commit then "<a class=\"hash\" href=\"#{self.url}/github/#{self.slug}?ref=#{sha}\">#{if commit.increased then '&uarr;' else '&darr;'} #{commit.coverage}%</a>" else ''
+        $('.commit-meta', @).append("<strong>#{a}</strong>")
+
+    else if @page is 'tree'
       $('.commit-meta').prepend("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov tooltipped tooltipped-n" aria-label="Overall coverage">#{Math.floor res['report']['coverage']}%</a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
         filepath = $('td.content a', @).attr('href')?.split('/')[5..].join('/')

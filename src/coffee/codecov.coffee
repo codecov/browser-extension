@@ -81,11 +81,16 @@ class window.Codecov
     GOAL: http fetch coverage
     ###
     @log('::get', endpoint)
+    if typeof @ref is 'string'
+      targeturl = "#{endpoint}/#{@service}/#{@slug}?ref=#{@ref}#{@base}"
+    else
+      targeturl = "#{endpoint}/#{@service}/#{@slug}/compare/#{@ref[0]}...#{ref[1]}"
+
     self = @
     # get coverage
     # ============
     $.ajax
-      url: "#{endpoint}/#{@service}/#{@slug}?ref=#{@ref}#{@base}"
+      url: targeturl
       type: 'get'
       dataType: 'json'
       headers: Accept: 'application/json'
