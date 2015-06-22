@@ -157,9 +157,6 @@ class window.Github extends Codecov
     if status is 401
       $('.btn.codecov').text("Please login at Codecov").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
       $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Please login at Codecov.io').attr('aria-label', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
-    else if status is 402
-      $('.btn.codecov').text("Umbrella required").addClass('danger').attr('aria-label', 'Umbrella account require to view private repo reports').click -> window.location = "https://codecov.io/umbrella"
-      $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Umbrella required').attr('aria-label', 'Umbrella account require to view private repo reports').click -> window.location = "https://codecov.io/umbrella"
     else if status is 404
       $('.btn.codecov').text("No coverage").attr('aria-label', 'Coverage not found')
       $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('No coverage').attr('aria-label', 'Coverage not found')

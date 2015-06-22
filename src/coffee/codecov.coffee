@@ -103,7 +103,7 @@ class window.Codecov
       error: (xhr, type, reason) ->
         self.log(arguments)
         self._get(self.settings.urls[self.urlid+=1]) if self.settings.urls.length > self.urlid+1
-        self.error(xhr.status, reason) unless self.found
+        self.error(xhr.status, reason)
 
   _process: (res, store=no) ->
     ###
