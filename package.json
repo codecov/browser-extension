@@ -28,6 +28,7 @@
   "devDependencies": {
     "mocha": "2.1.0",
     "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
     "grunt-curl": "2.1.0",
     "grunt-shell": "1.1.2",
     "grunt-mocha": "0.4.12",
