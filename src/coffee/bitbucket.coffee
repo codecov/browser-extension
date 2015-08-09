@@ -64,6 +64,7 @@ class window.Bitbucket extends Codecov
       fp = file.attr('data-path')
       # find covered file
       coverage = res['report']['files'][fp] or self.find_best_fit_path(fp, res['report']['files'])
+      filename = fp.split('/').pop()
       unless coverage?.ignored
         # report coverage
         if coverage
@@ -75,7 +76,8 @@ class window.Bitbucket extends Codecov
                        .click(self.toggle_coverage)
 
           # overlay coverage
-          $("a[name=cl-#{ln}]", file).addClass("codecov codecov-#{self.color(cov)}") for ln, cov of coverage['lines']
+          for ln, cov of coverage['lines']
+            $("a[name='#{filename}-#{ln}']", file).addClass("codecov codecov-#{self.color(cov)}")
 
           # toggle blob/blame
           if self.page in ['src', '']

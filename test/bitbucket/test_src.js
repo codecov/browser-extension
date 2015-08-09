@@ -25,29 +25,29 @@ describe('bitbucket src', function(){
   it('should add covered lines', function(){
     expect($('.codecov.aui-button').hasClass('aui-button-light')).to.be.true;
     var x = 0;
-    expect($("a[name=cl-70]").hasClass('codecov codecov-hit')).to.be.true;
-    expect($("a[name=cl-71]").hasClass('codecov codecov-partial')).to.be.true;
-    expect($("a[name=cl-74]").hasClass('codecov')).to.be.false;
-    expect($("a[name=cl-75]").hasClass('codecov codecov-missed')).to.be.true;
+    expect($("a[name='godscheduler.py-70']").hasClass('codecov codecov-hit')).to.be.true;
+    expect($("a[name='godscheduler.py-71']").hasClass('codecov codecov-partial')).to.be.true;
+    expect($("a[name='godscheduler.py-74']").hasClass('codecov')).to.be.false;
+    expect($("a[name='godscheduler.py-75']").hasClass('codecov codecov-missed')).to.be.true;
   });
   it('will toggle it', function(){
     // first click
     click($('.codecov.aui-button')[0]);
     expect($('.codecov.aui-button').hasClass('aui-button-light')).to.be.false;
-    expect($("a[name=cl-70]").hasClass('codecov-on')).to.be.false;
-    expect($("a[name=cl-71]").hasClass('codecov-on')).to.be.false;
-    expect($("a[name=cl-75]").hasClass('codecov-on')).to.be.false;
+    expect($("a[name='godscheduler.py-70']").hasClass('codecov-on')).to.be.false;
+    expect($("a[name='godscheduler.py-71']").hasClass('codecov-on')).to.be.false;
+    expect($("a[name='godscheduler.py-75']").hasClass('codecov-on')).to.be.false;
     // second click
     click($('.codecov.aui-button')[0]);
     expect($('.codecov.aui-button').hasClass('aui-button-light')).to.be.true;
-    expect($("a[name=cl-70]").hasClass('codecov-on')).to.be.true;
-    expect($("a[name=cl-71]").hasClass('codecov-on')).to.be.true;
-    expect($("a[name=cl-75]").hasClass('codecov-on')).to.be.true;
+    expect($("a[name='godscheduler.py-70']").hasClass('codecov-on')).to.be.true;
+    expect($("a[name='godscheduler.py-71']").hasClass('codecov-on')).to.be.true;
+    expect($("a[name='godscheduler.py-75']").hasClass('codecov-on')).to.be.true;
     // third click
     click($('.codecov.aui-button')[0]);
     expect($('.codecov.aui-button').hasClass('aui-button-light')).to.be.true;
-    expect($("a[name=cl-70]").hasClass('codecov-on')).to.be.false;
-    expect($("a[name=cl-71]").hasClass('codecov-on')).to.be.true;
-    expect($("a[name=cl-75]").hasClass('codecov-on')).to.be.true;
+    expect($("a[name='godscheduler.py-70']").hasClass('codecov-on')).to.be.false;
+    expect($("a[name='godscheduler.py-71']").hasClass('codecov-on')).to.be.true;
+    expect($("a[name='godscheduler.py-75']").hasClass('codecov-on')).to.be.true;
   });
 });
