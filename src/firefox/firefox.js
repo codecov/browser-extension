@@ -6,10 +6,5 @@ var storage_set = function(key, value, cb){
   cb();
 };
 self.port.on("preferences", function(prefs){
-  codecov(prefs, function(cc){
-    $(document).on('pjax:success', function(){
-      cc.log('pjax event received');
-      cc.get_coverage();
-    });
-  });
+  codecov_detect_location(prefs);
 });

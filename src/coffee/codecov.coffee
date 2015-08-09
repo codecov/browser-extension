@@ -150,3 +150,27 @@ class window.Codecov
         "partial"
     else
       "hit"
+
+
+window.codecov_detect_location = (prefs, cb) ->
+  # hide codecov plugin
+  document.getElementById('chrome-install-plugin')?.style.display = 'none'
+  document.getElementById('opera-install-plugin')?.style.display = 'none'
+
+  url = prefs.debug_url || document.URL
+  # detect git service
+  if url.indexOf('https://github.com') is 0
+    cc = new Github prefs, cb
+
+  else if url.indexOf('https://bitbucket.org') is 0
+    cc = new Bitbucket prefs, cb
+
+  else if url.indexOf('https://gitlab.com') is 0
+    cc = new Bitbucket prefs, cb
+
+  else
+    return
+
+  # Listen to pjax
+  # --------------
+  window.addEventListener "message", (-> cc._start()), no

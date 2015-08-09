@@ -37,12 +37,9 @@ module.exports = (grunt) ->
         options: bare: yes
 
     watch:
-      coffee:
-        files: ['src/coffee/*.coffee']
-        tasks: 'coffee'
-      less:
-        files: ['src/less/*.less']
-        tasks: 'less'
+      all:
+        files: ['src/**/*']
+        tasks: 'build'
 
     clean: ['tmp', 'test/**/*.html']
 
