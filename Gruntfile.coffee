@@ -82,8 +82,6 @@ module.exports = (grunt) ->
           ].join('&&')
       firefox:
         command: "cd ./tmp/firefox && cfx xpi --output-file=../../dist/firefox.xpi"
-      # safari:
-      #   command: ''
       opera:
         command: 'cp dist/chrome.crx dist/opera.nex'
 
