@@ -101,6 +101,7 @@ class window.Codecov
 
       # try to get coverage data from enterprise urls if any
       error: (xhr, type, reason) ->
+        self._processing = no
         self.log(arguments)
         self._get(self.settings.urls[self.urlid+=1]) if self.settings.urls.length > self.urlid+1
         self.error(xhr.status, reason)
