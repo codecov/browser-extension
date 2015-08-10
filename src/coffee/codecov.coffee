@@ -153,7 +153,7 @@ class window.Codecov
       "hit"
 
 
-window.codecov_detect_location = (prefs, cb) ->
+window.create_codecov_instance = (prefs, cb) ->
   # hide codecov plugin
   document.getElementById('chrome-install-plugin')?.style.display = 'none'
   document.getElementById('opera-install-plugin')?.style.display = 'none'
@@ -161,17 +161,10 @@ window.codecov_detect_location = (prefs, cb) ->
   url = prefs.debug_url || document.URL
   # detect git service
   if url.indexOf('https://github.com') is 0
-    cc = new Github prefs, cb
+    new Github prefs, cb
 
   else if url.indexOf('https://bitbucket.org') is 0
-    cc = new Bitbucket prefs, cb
+    new Bitbucket prefs, cb
 
   else if url.indexOf('https://gitlab.com') is 0
-    cc = new Bitbucket prefs, cb
-
-  else
-    return
-
-  # Listen to pjax
-  # --------------
-  window.addEventListener "message", (-> cc._start()), no
+    new Bitbucket prefs, cb
