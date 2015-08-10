@@ -27,7 +27,7 @@ class window.Github extends Codecov
       return $('.commit-id:last').text()
 
     else if @page is 'tree'
-      return $('.commit-meta .sha-block').attr('href').split('/').pop()
+      return $('.js-permalink-shortcut').attr('href').split('/')[4]
 
     else
       # no coverage overlay
@@ -48,14 +48,16 @@ class window.Github extends Codecov
     yes  # get content to overlay
 
   overlay: (res) ->
+    self = @
     if @page is 'tree'
-      $('.commit-meta').remove('.codecov').prepend("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov tooltipped tooltipped-n" aria-label="Overall coverage">#{Math.floor res['report']['coverage']}%</a>""")
+      branch = $('.file-navigation .repo-root a:first').attr('data-branch')
+      $('.commit-meta').remove('.codecov').prepend("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage']}%</a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
-        filepath = $('td.content a', @).attr('href')?.split('/')[5..].join('/')
+        filepath = $('td.content a', @).attr('href')?.replace("/#{self.slug}/blob/#{branch}/", '')
         if filepath
           coverage = res['report']['files']?[filepath]?.coverage
           unless coverage?.ignored
-            $('td:last', @).remove('.codecov').append("""<span class="sha codecov tooltipped tooltipped-n" aria-label="Coverage">#{Math.floor coverage}%</span>""") if coverage >= 0
+            $('td:last', @).remove('.codecov').append("""<span class="sha codecov tooltipped tooltipped-n" aria-label="Coverage">#{coverage}%</span>""") if coverage >= 0
 
     else
       if @page in ['commit', 'compare', 'pull']
@@ -110,7 +112,7 @@ class window.Github extends Codecov
 
             # toggle blob/blame
             if self.page in ['blob', 'blame']
-              button.unbind().trigger('click') for _ in self.settings.first_view
+              button.trigger('click') for _ in self.settings.first_view
 
           else
             file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')

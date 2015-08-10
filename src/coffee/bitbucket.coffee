@@ -45,7 +45,7 @@ class window.Bitbucket extends Codecov
         if coverage
           button = $('.aui-button.codecov', @)
                     .attr('title', 'Toggle Codecov')
-                    .text('Coverage '+coverage['coverage'].toFixed(0)+'%')
+                    .text('Coverage '+coverage['coverage'].toFixed(2)+'%')
                     .unbind()
                     .click(self.toggle_diff)
 
@@ -71,7 +71,7 @@ class window.Bitbucket extends Codecov
           # ... show diff not full file coverage for compare view
           button = file.find('.aui-button.codecov')
                        .attr('title', 'Toggle Codecov')
-                       .text('Coverage '+coverage['coverage'].toFixed(0)+'%')
+                       .text('Coverage '+coverage['coverage'].toFixed(2)+'%')
                        .unbind()
                        .click(self.toggle_coverage)
 

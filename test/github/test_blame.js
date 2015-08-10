@@ -22,7 +22,7 @@ describe('gihub blame', function(){
   it('should add coverage button', function(){
     var button = $('.file-actions .btn-group a.btn.codecov');
     expect(button.length).to.equal(1);
-    expect(button.text()).to.equal('Coverage 60%');
+    expect(button.text()).to.equal('Coverage 60.00%');
     expect(button.attr('aria-label')).to.equal('Toggle Codecov (c)');
   });
   it('should still have all lines', function(){
