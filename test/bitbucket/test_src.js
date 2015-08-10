@@ -19,7 +19,7 @@ describe('bitbucket src', function(){
   it('should add coverage button', function(){
     var button = $('a.aui-button.codecov');
     expect(button.length).to.equal(1);
-    expect(button.text()).to.equal('Coverage 62%');
+    expect(button.text()).to.equal('Coverage 62.17%');
     expect(button.attr('title')).to.equal('Toggle Codecov');
   });
   it('should add covered lines', function(){

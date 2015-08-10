@@ -18,12 +18,12 @@ describe('github tree', function(){
       expect(window.cc.base).to.equal("");
   });
   it('should add coverage header', function(){
-    expect($('.commit-meta .sha-block.codecov').text()).to.equal('87%');
+    expect($('.commit-meta .sha-block.codecov').text()).to.equal('87.57%');
   });
   it('should show coverage on files', function(){
-    expect($('.file-wrap tr:eq(2) td:last span.codecov').text()).to.equal('92%');
-    expect($('.file-wrap tr:eq(3) td:last span.codecov').text()).to.equal('60%');
-    expect($('.file-wrap tr:eq(4) td:last span.codecov').text()).to.equal('88%');
-    expect($('.file-wrap tr:eq(5) td:last span.codecov').text()).to.equal('77%');
+    expect($('.file-wrap tr:eq(2) td:last span.codecov').text()).to.equal('92.37%');
+    expect($('.file-wrap tr:eq(3) td:last span.codecov').text()).to.equal('60.00%');
+    expect($('.file-wrap tr:eq(4) td:last span.codecov').text()).to.equal('88.89%');
+    expect($('.file-wrap tr:eq(5) td:last span.codecov').text()).to.equal('77.78%');
   });
 });

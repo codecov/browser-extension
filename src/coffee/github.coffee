@@ -50,14 +50,14 @@ class window.Github extends Codecov
   overlay: (res) ->
     self = @
     if @page is 'tree'
-      branch = $('.file-navigation .repo-root a:first').attr('data-branch')
-      $('.commit-meta').remove('.codecov').prepend("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage']}%</a>""")
+      replacement = "/#{self.slug}/blob/#{$('.file-navigation .repo-root a:first').attr('data-branch')}/"
+      $('.commit-meta').remove('.codecov').prepend("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage'].toFixed(2)}%</a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
-        filepath = $('td.content a', @).attr('href')?.replace("/#{self.slug}/blob/#{branch}/", '')
+        filepath = $('td.content a', @).attr('href')?.replace(replacement, '')
         if filepath
           coverage = res['report']['files']?[filepath]?.coverage
           unless coverage?.ignored
-            $('td:last', @).remove('.codecov').append("""<span class="sha codecov tooltipped tooltipped-n" aria-label="Coverage">#{coverage}%</span>""") if coverage >= 0
+            $('td:last', @).remove('.codecov').append("""<span class="sha codecov tooltipped tooltipped-n" aria-label="Coverage">#{coverage.toFixed(2)}%</span>""") if coverage >= 0
 
     else
       if @page in ['commit', 'compare', 'pull']

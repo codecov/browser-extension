@@ -19,9 +19,9 @@ describe('bitbucket tree', function(){
   //   expect($('.commit-meta .sha-block.codecov').text()).to.equal('87%');
   // });
   it('should show coverage on files', function(){
-    expect($('#source-container tr:eq(2) td.codecov').text()).to.equal('49%');
-    expect($('#source-container tr:eq(3) td.codecov').text()).to.equal('57%');
+    expect($('#source-container tr:eq(2) td.codecov').text()).to.equal('49.02%');
+    expect($('#source-container tr:eq(3) td.codecov').text()).to.equal('57.14%');
     expect($('#source-container tr:eq(4) td.codecov').text()).to.equal('');
-    expect($('#source-container tr:eq(5) td.codecov').text()).to.equal('19%');
+    expect($('#source-container tr:eq(5) td.codecov').text()).to.equal('19.01%');
   });
 });
