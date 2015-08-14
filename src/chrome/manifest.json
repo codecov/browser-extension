@@ -35,9 +35,7 @@
     "lib/listener.js"
   ],
   "permissions": [
-    "*://github.com/*",
-    "*://codecov.io/*",
-    "*://bitbucket.org/*",
+    "*://*/*",
     "storage"
   ]
 }

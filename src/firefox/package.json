@@ -46,10 +46,7 @@
   ],
   "permissions": {
     "cross-domain-content": [
-      "https://github.com",
-      "https://gitlab.com",
-      "https://codecov.io",
-      "https://bitbucket.org"
+      "https://codecov.io"
     ]
   }
 }
