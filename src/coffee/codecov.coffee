@@ -85,10 +85,9 @@ class window.Codecov
     # get coverage
     # ============
     $.ajax
-      url: "#{endpoint}/#{@service}/#{@slug}?ref=#{@ref}#{@base}"
+      url: "#{endpoint}/api/#{@service}/#{@slug}?ref=#{@ref}#{@base}"
       type: 'get'
       dataType: 'json'
-      headers: Accept: 'application/json'
       success: (res) ->
         self.url = endpoint # keep the url that worked
         self.found = yes
