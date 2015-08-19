@@ -1,6 +1,7 @@
 class window.Github extends Codecov
   get_ref: (href) ->
     @service = 'github'
+    @file = null
     if @page in ['releases', 'tags']
       # planned
       return no
@@ -48,6 +49,7 @@ class window.Github extends Codecov
     yes  # get content to overlay
 
   overlay: (res) ->
+    @log('::overlay')
     self = @
     if @page is 'tree'
       replacement = "/#{self.slug}/blob/#{$('.file-navigation .repo-root a:first').attr('data-branch')}/"
@@ -64,7 +66,7 @@ class window.Github extends Codecov
         if res['base']
           compare = (res['report']['coverage'] - res['base']).toFixed(2)
           plus = if compare > 0 then '+' else '-'
-          $('.toc-diff-stats').remove('.codecov').append(if compare is '0' then '<span class="codecov">Coverage did not change.</span>' else """<span class="codecov"> Coverage changed <strong>#{plus}#{compare}%</strong></span>""")
+          $('.toc-diff-stats').remove('.codecov').append(if compare is '0.00' then '<span class="codecov">Coverage did not change.</span>' else """<span class="codecov"> Coverage changed <strong>#{plus}#{compare}%</strong></span>""")
           $('#diffstat').remove('.codecov').append("""<span class="codecov text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s" aria-label="Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%">#{plus}#{compare}%</span>""")
         else
           coverage = res['report']['coverage'].toFixed(2)

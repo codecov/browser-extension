@@ -112,7 +112,7 @@ class window.Codecov
     GOAL: to update the dom with coverage
     ###
     @_processing = no
-    @log('::process')
+    @log('::process', res)
     slugref = "#{@slug}/#{@ref}"
     # cache in extension
     @cache = [slugref, res]
@@ -121,7 +121,7 @@ class window.Codecov
       storage_set {slugref: res}, -> null
 
     try
-      @overlay(res)
+      @overlay res
     catch error
       @log error
       @error 500, error

@@ -1,6 +1,6 @@
 class window.Bitbucket extends Codecov
   get_ref: (href) ->
-    @log('bitbucket.get_ref')
+    @log('::get_ref')
     @service = 'bitbucket'
 
     if @page is 'src'
@@ -15,7 +15,7 @@ class window.Bitbucket extends Codecov
     no  # overlay available
 
   prepare: ->
-    @log('bitbucket.prepare')
+    @log('::prepare')
     # add Coverage Toggle
     $('#editor-container, section.bb-udiff').each ->
       if $('.aui-button.codecov', @).length is 0
@@ -24,7 +24,7 @@ class window.Bitbucket extends Codecov
     yes  # get the coverage
 
   overlay: (res) ->
-    @log('bitbucket.overlay')
+    @log('::overlay')
     self = @
 
     # tree view
