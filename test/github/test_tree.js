@@ -13,7 +13,7 @@ describe('github tree', function(){
   it('should proper settings', function(){
       expect(window.cc.page).to.equal('tree');
       expect(window.cc.slug).to.equal('codecov/codecov-python');
-      expect(window.cc.file).to.equal('');
+      expect(window.cc.file).to.equal(null);
       expect(window.cc.ref).to.equal('097f692a0f02649a80de6c98749ca32a126223fc');
       expect(window.cc.base).to.equal("");
   });

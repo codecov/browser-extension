@@ -12,7 +12,7 @@ describe('github compare', function(){
   after(function(){save_coverage('gh-compare');});
   it('should have accurate properties', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');
-      expect(window.cc.file).to.equal('');
+      expect(window.cc.file).to.equal(null);
       expect(window.cc.ref).to.equal('4c95614');
       expect(window.cc.base).to.equal('&base=fb55c9b');
   });

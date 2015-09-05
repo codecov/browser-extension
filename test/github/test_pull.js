@@ -13,7 +13,7 @@ describe('github pull', function(){
   it('should start with no errors', function(){
       expect(window.cc.page).to.equal('pull');
       expect(window.cc.slug).to.equal('codecov/codecov-python');
-      expect(window.cc.file).to.equal('');
+      expect(window.cc.file).to.equal(null);
       expect(window.cc.ref).to.equal('1d30954');
       expect(window.cc.base).to.equal("&base=3229ed3");
   });
