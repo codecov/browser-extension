@@ -164,6 +164,6 @@ class window.Github extends Codecov
     else if status is 404
       $('.btn.codecov').text("No coverage").attr('aria-label', 'Coverage not found')
       $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('No coverage').attr('aria-label', 'Coverage not found')
-    else if status is 500
+    else
       $('.btn.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry')
       $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Coverage Error').attr('aria-label', 'There was an error loading coverage. Sorry')

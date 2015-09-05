@@ -111,7 +111,7 @@ class window.Bitbucket extends Codecov
       $('.aui-button.codecov').text("No coverage")
                               .attr('title', 'Coverage not found')
       # $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('No coverage').attr('title', 'Coverage not found')
-    else if status is 500
+    else
       $('.aui-button.codecov').text("Coverage error")
                               .attr('title', 'There was an error loading coverage. Sorry')
       # $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Coverage Error').attr('title', 'There was an error loading coverage. Sorry')
