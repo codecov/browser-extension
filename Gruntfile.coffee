@@ -97,6 +97,7 @@ module.exports = (grunt) ->
       'test/github/test_tree.html': 'https://github.com/codecov/codecov-python/tree/097f692a0f02649a80de6c98749ca32a126223fc/codecov'
       'test/github/test_blame.html': 'https://github.com/codecov/codecov-python/blame/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py'
       'test/github/test_compare.html': 'https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614'
+      'test/github/test_commit.html': 'https://github.com/codecov/codecov-python/commit/91acfd99a5103ab16ff183a117a76c0d492c68a7'
       # Bitbucket
       'test/bitbucket/test_src.html': 'https://bitbucket.org/osallou/go-docker/src/8c304f3171716b23f78dc6c1f6541b290a43386b/godocker/godscheduler.py'
       'test/bitbucket/test_commits.html': 'https://bitbucket.org/osallou/go-docker/commits/33a5c94583baf1fcc98db2c295c97283255163c1'
@@ -123,6 +124,7 @@ module.exports = (grunt) ->
       github_tree: {src: 'test/github/test_tree.html', options: {append: {selector:'body',html:'<script src="test_tree.js"></script>'}}}
       github_blame: {src: 'test/github/test_blame.html', options: {append: {selector:'body',html:'<script src="test_blame.js"></script>'}}}
       github_compare: {src: 'test/github/test_compare.html', options: {append: {selector:'body',html:'<script src="test_compare.js"></script>'}}}
+      github_commit: {src: 'test/github/test_commit.html', options: {append: {selector:'body',html:'<script src="test_commit.js"></script>'}}}
 
       bitbucket_src: {src: 'test/bitbucket/test_src.html', options: {append: {selector:'body',html:'<script src="test_src.js"></script>'}}}
       bitbucket_tree: {src: 'test/bitbucket/test_tree.html', options: {append: {selector:'body',html:'<script src="test_tree.js"></script>'}}}
@@ -143,6 +145,7 @@ module.exports = (grunt) ->
             'http://localhost:3000/test/github/test_tree.html'
             'http://localhost:3000/test/github/test_blame.html'
             'http://localhost:3000/test/github/test_compare.html'
+            'http://localhost:3000/test/github/test_commit.html'
             # Bitbucket
             'http://localhost:3000/test/bitbucket/test_src.html'
             'http://localhost:3000/test/bitbucket/test_tree.html'
