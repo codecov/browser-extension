@@ -1,22 +1,13 @@
 module.exports = (grunt) ->
   grunt.initConfig
-    connect:
-      test:
-        options:
-          port: 3000
-          hostname: '0.0.0.0'
-      coverage:
-        options:
-          port: 4000
-          hostname: '0.0.0.0'
-          middleware: [
-            (req, res, next) ->
-              fs = require('fs')
-              try fs.mkdirSync('coverage')
-              try fs.mkdirSync("coverage/#{req.url[1..]}")
-              req.on 'data', (json) ->
-                fs.writeFileSync("coverage/#{req.url[1..]}/coverage.json", json.toString())
-          ]
+
+    # ----------
+    # Processing
+    # ----------
+    less:
+      default:
+        files: 'lib/codecov.css': 'src/less/*.less'
+        options: compress: yes, cleancss: yes
 
     coffeecov:
       options:
@@ -40,6 +31,10 @@ module.exports = (grunt) ->
       all:
         files: ['src/**/*']
         tasks: 'build'
+
+    # --------
+    # Building
+    # --------
 
     clean: ['tmp', 'test/**/*.html']
 
@@ -90,10 +85,26 @@ module.exports = (grunt) ->
       opera:
         command: 'cp dist/chrome.crx dist/opera.nex'
 
-    less:
-      default:
-        files: 'lib/codecov.css': 'src/less/*.less'
-        options: compress: yes, cleancss: yes
+    # -------
+    # Testing
+    # -------
+    connect:
+      test:
+        options:
+          port: 3000
+          hostname: '0.0.0.0'
+      coverage:
+        options:
+          port: 4000
+          hostname: '0.0.0.0'
+          middleware: [
+            (req, res, next) ->
+              fs = require('fs')
+              try fs.mkdirSync('coverage')
+              try fs.mkdirSync("coverage/#{req.url[1..]}")
+              req.on 'data', (json) ->
+                fs.writeFileSync("coverage/#{req.url[1..]}/coverage.json", json.toString())
+          ]
 
     curl:
       # Github
@@ -160,6 +171,9 @@ module.exports = (grunt) ->
           reporter: 'mocha-phantom-coverage-reporter'
           timeout: 10000
 
+  # -------------
+  # Load Packages
+  # -------------
   grunt.loadNpmTasks 'grunt-curl'
   grunt.loadNpmTasks 'grunt-shell'
   grunt.loadNpmTasks 'grunt-mocha'
@@ -177,5 +191,3 @@ module.exports = (grunt) ->
   grunt.registerTask 'build',    ['default', 'clean', 'copy', 'concat', 'shell']
   grunt.registerTask 'test',     ['curl', 'dom_munger', 'runTests']
   grunt.registerTask 'runTests', ['coffeecov', 'connect', 'mocha']
-
-  grunt.registerTask 'firefox', ['default', 'copy:firefox', 'concat:firefox', 'shell:firefox']
