@@ -26,6 +26,7 @@ class window.Bitbucket extends Codecov
   overlay: (res) ->
     @log('::overlay')
     self = @
+    $('.codecov:not(.aui-button)').remove()
 
     # tree view
     $('#source-list tr td.dirname').attr('colspan', 5)
