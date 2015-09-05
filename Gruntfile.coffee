@@ -66,6 +66,11 @@ module.exports = (grunt) ->
         ]
 
     concat:
+      options:
+        banner: """if (window.jQuery !== undefined &&
+                       (window.location.hostname === "bitbucket.org" ||
+                        $('meta[property="og:site_name"]').attr('content') == 'GitHub')) {\n\n"""
+        footer: '\n}'
       chrome:
         files: 'tmp/chrome/lib/codecov.js': ['src/chrome/chrome.js', 'tmp/chrome/lib/codecov.js']
       firefox:
@@ -79,7 +84,7 @@ module.exports = (grunt) ->
           'cd tmp/chrome && zip -r ../../dist/chrome.zip .'
           '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --pack-extension="/Users/peak/Documents/codecov/browser-extension/tmp/chrome" --pack-extension-key="/Users/peak/.ssh/chrome.pem"'
           'mv ../chrome.crx ../../dist/chrome.crx'
-          ].join('&&')
+          ].join(' && ')
       firefox:
         command: "cd ./tmp/firefox && cfx xpi --output-file=../../dist/firefox.xpi"
       opera:

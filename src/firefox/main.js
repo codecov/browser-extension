@@ -3,10 +3,7 @@ var data = require('sdk/self').data,
     prefs = require('sdk/simple-prefs').prefs;
 
 pageMod.PageMod({
-  include: ['https://github.com/*',
-            'https://bitbucket.org/*',
-            'https://gitlab.com/*'
-           ],
+  include: '*',
   contentScriptFile : [data.url('jquery-2.1.3.min.js'),
                        data.url('codecov.js')
                       ],
