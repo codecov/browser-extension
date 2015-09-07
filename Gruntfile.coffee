@@ -51,7 +51,7 @@ module.exports = (grunt) ->
         files: [
           {expand: yes, flatten: yes, src: ['icons/*'], dest: 'tmp/firefox/data/icons/', filter: 'isFile'}
           {expand: yes, flatten: yes, src: ['lib/jquery-2.1.3.min.js', 'lib/codecov.js', 'lib/codecov.css'], dest: 'tmp/firefox/data'}
-          {expand: yes, flatten: yes, src: ['src/firefox/main.js'], dest: 'tmp/firefox'}
+          {expand: yes, flatten: yes, src: ['src/firefox/index.js'], dest: 'tmp/firefox'}
           {expand: yes, flatten: yes, src: ['src/firefox/package.json'], dest: './tmp/firefox/'}
         ]
       safari:
@@ -81,7 +81,11 @@ module.exports = (grunt) ->
           'mv ../chrome.crx ../../dist/chrome.crx'
           ].join(' && ')
       firefox:
-        command: "cd ./tmp/firefox && cfx xpi --output-file=../../dist/firefox.xpi"
+        command: [
+          'cd tmp/firefox'
+          '../../node_modules/jpm/bin/jpm xpi'
+          'mv hello@codecov.io-0.4.4.xpi ../../dist/firefox.xpi'
+          ].join(' && ')
       opera:
         command: 'cp dist/chrome.crx dist/opera.nex'
 
