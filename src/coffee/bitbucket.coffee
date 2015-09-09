@@ -9,7 +9,7 @@ class window.Bitbucket extends Codecov
     else if @page is 'commits'
       return href[6].split('?')[0]
 
-    else if @page is 'pull-request'
+    else if @page in ['pull-request', 'pull-requests']
       return $('.view-file:first').attr('href')?.split('/')[4]
 
     no  # overlay available
