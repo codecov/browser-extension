@@ -26,7 +26,7 @@ class window.Bitbucket extends Codecov
   overlay: (res) ->
     @log('::overlay')
     self = @
-    $('.codecov:not(.aui-button)').remove()
+    $('.codecov.codecov-removable').remove()
 
     # tree view
     $('#source-list tr td.dirname').attr('colspan', 5)
@@ -35,7 +35,7 @@ class window.Bitbucket extends Codecov
       coverage = res.report.files[fn]
       unless coverage?.ignored
         cov = coverage?.coverage
-        $('td.size', @).after('<td title="Coverage" class="codecov">' + (if cov >= 0 then "#{cov.toFixed(2)}%" else '') + "</td>")
+        $('td.size', @).after('<td title="Coverage" class="codecov codecov-removable">' + (if cov >= 0 then "#{cov.toFixed(2)}%" else '') + "</td>")
 
     # diff file
     $('section.bb-udiff').each ->
