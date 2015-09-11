@@ -7,7 +7,7 @@
   "homepage": "https://github.com/codecov/browser-extension",
   "icon": "data/icons/codecov-48.png",
   "license": "Apache v2.0",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "preferences": [
     {
       "name": "first_view",
@@ -32,8 +32,14 @@
     },
     {
       "name": "enterprise",
-      "title": "Enterprise Sites",
-      "description": "Comma seperated",
+      "title": "Codecov Enterprise domains",
+      "description": "Please type in the domain name of your Codecov Enterprise instance.\nExample: codecov.mycompany.com\nUse comma for multiple entries.",
+      "type": "string"
+    },
+    {
+      "name": "domains",
+      "title": "Github Enterprise domains",
+      "description": "Please type in the domain name of your Github Enterprise instance.\nExample: github.mycompany.com\nUse comma for multiple entries.",
       "type": "string"
     },
     {
@@ -45,8 +51,6 @@
     }
   ],
   "permissions": {
-    "cross-domain-content": [
-      "https://codecov.io"
-    ]
+    "cross-domain-content": ["https://"]
   }
 }
