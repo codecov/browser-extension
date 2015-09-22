@@ -23,9 +23,9 @@ class window.Codecov
     # establish settings
     @settings = $.extend(@settings, prefs)
     @settings.urls = [] unless @settings.urls
-    @href = (@settings.debug_url or document.URL).split('/')
+    href = (@settings.debug_url or document.URL).split('/')
     # only add codecov.io when on production site
-    if @href[2] in ['github.com', 'bitbucket.org']
+    if href[2] in ['github.com', 'bitbucket.org']
       @settings.urls.unshift 'https://codecov.io'
 
     # callback to allow custom events for each browser
@@ -44,7 +44,7 @@ class window.Codecov
     GOAL: is to collect page variables, insert dom elements, bind callbacks
     ###
     @log('::start')
-    href = @href
+    href = (@settings.debug_url or document.URL).split('/')
     @slug = "#{href[3]}/#{href[4]}"
     @page = href[5]
     @ref = @get_ref href
