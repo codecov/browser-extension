@@ -10,25 +10,11 @@
   "version": "0.4.6",
   "preferences": [
     {
-      "name": "first_view",
-      "title": "Initial coverage view",
-      "description": "What types of coverage to show when page loads",
-      "type": "radio",
-      "value": "im",
-      "options": [
-        {
-          "value": "im",
-          "label": "Miss and partial"
-        },
-        {
-          "value": "a",
-          "label": "Hit, miss, and partial"
-        },
-        {
-          "value": "",
-          "label": "None"
-        }
-      ]
+      "name": "overlay",
+      "title": "Overlay coverage at startup",
+      "description": "Highlight lines by default",
+      "type": "bool",
+      "value": true
     },
     {
       "name": "enterprise",

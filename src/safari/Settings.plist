@@ -4,25 +4,13 @@
 <array>
     <dict>
         <key>DefaultValue</key>
-        <string>im</string>
+        <false/>
         <key>Key</key>
-        <string>first_view</string>
+        <string>overlay</string>
         <key>Title</key>
-        <string>Initial coverage view</string>
-        <key>Titles</key>
-        <array>
-            <string>Miss and partial</string>
-            <string>Hit, miss, and partial</string>
-            <string>None</string>
-        </array>
+        <string>Highlight lines</string>
         <key>Type</key>
-        <string>RadioButtons</string>
-        <key>Values</key>
-        <array>
-            <string>im</string>
-            <string>a</string>
-            <string>null</string>
-        </array>
+        <string>CheckBox</string>
     </dict>
     <dict>
         <key>Key</key>

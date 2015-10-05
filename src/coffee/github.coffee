@@ -60,7 +60,7 @@ class window.Github extends Codecov
         if filepath
           coverage = res['report']['files']?[filepath]?.coverage
           unless coverage?.ignored
-            $('td:last', @).append("""<span class="sha codecov codecov-removable tooltipped tooltipped-n" aria-label="Coverage">#{coverage.toFixed(2)}%</span>""") if coverage >= 0
+            $('td:last', @).append("""<a href="#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{filepath}?ref=#{self.ref}" class="sha codecov codecov-removable tooltipped tooltipped-n" aria-label="Coverage">#{coverage.toFixed(2)}%</a>""") if coverage >= 0
 
     else
       if @page in ['commit', 'compare', 'pull']
@@ -89,7 +89,7 @@ class window.Github extends Codecov
         # find covered file
         fp = self.file or file.find('.file-info>span[title]').attr('title')
         if fp
-          coverage = res['report']['files'][fp] or self.find_best_fit_path(fp, res['report']['files'])
+          coverage = res['report']['files'][fp]
           unless coverage?.ignored
 
             # assure button group
@@ -116,30 +116,21 @@ class window.Github extends Codecov
                 $(@).find('td').removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
 
               # toggle blob/blame
-              if self.page in ['blob', 'blame']
-                button.trigger('click') for _ in self.settings.first_view
+              if self.settings.overlay and self.page in ['blob', 'blame']
+                button.trigger('click')
 
             else
               file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
 
-    ###
-    CALLED: by user interaction
-    GOAL: toggle coverage overlay on blobs/commits/blames/etc.
-    ###
-    if $('.codecov.codecov-hit.codecov-on').length > 0
-      # toggle hits off
-      $('.codecov.codecov-hit').removeClass('codecov-on')
-    else if $('.codecov.codecov-on').length > 0
-      # toggle all off
-      $('.codecov').removeClass('codecov-on')
-      $(@).removeClass('selected')
-    else
-      # toggle all on
   toggle_coverage: (e) ->
     if e.shiftKey
       window.location = $(@).attr('data-codecov-url')
+    else if $('.codecov.codecov-on:first').length == 0
       $('.codecov').addClass('codecov-on')
       $(@).addClass('selected')
+    else
+      $('.codecov').removeClass('codecov-on')
+      $(@).removeClass('selected')
 
   toggle_diff: ->
     ###

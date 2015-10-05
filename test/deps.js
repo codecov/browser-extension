@@ -14,7 +14,7 @@ var click = function (el){
 var expect = chai.expect;
 
 var cache = {
-  first_view: 'im',
+  overlay: true,
   enterprise: ''
 };
 

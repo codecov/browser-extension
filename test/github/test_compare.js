@@ -2,7 +2,7 @@ $(function(){
     window.cc = new Github({
       "debug": true,
       "callback": mocha.run,
-      "first_view": 'im',
+      "overlay": true,
       "enterprise": '',
       "debug_url": "https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614"
     });

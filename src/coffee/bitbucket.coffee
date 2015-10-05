@@ -9,7 +9,7 @@ class window.Bitbucket extends Codecov
     else if @page is 'commits'
       return href[6].split('?')[0]
 
-    else if @page in ['pull-request', 'pull-requests']
+    else if @page is 'pull-requests'
       return $('.view-file:first').attr('href')?.split('/')[4]
 
     no  # overlay available
@@ -41,12 +41,13 @@ class window.Bitbucket extends Codecov
     $('section.bb-udiff').each ->
       file = $(@)
       fp = file.attr('data-path')
-      coverage = res['report']['files'][fp] or self.find_best_fit_path(fp, res['report']['files'])
+      coverage = res['report']['files'][fp]
       unless coverage?.ignored
         if coverage
           button = $('.aui-button.codecov', @)
                     .attr('title', 'Toggle Codecov')
                     .text('Coverage '+coverage['coverage'].toFixed(2)+'%')
+                    .attr('data-codecov-url', "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{fp}?ref=#{self.ref}")
                     .unbind()
                     .click(self.toggle_diff)
 
@@ -64,7 +65,7 @@ class window.Bitbucket extends Codecov
       file = $(@)
       fp = file.attr('data-path')
       # find covered file
-      coverage = res['report']['files'][fp] or self.find_best_fit_path(fp, res['report']['files'])
+      coverage = res['report']['files'][fp]
       filename = fp.split('/').pop()
       unless coverage?.ignored
         # report coverage
@@ -81,25 +82,22 @@ class window.Bitbucket extends Codecov
             $("a[name='#{filename}-#{ln}']", file).addClass("codecov codecov-#{self.color(cov)}")
 
           # toggle blob/blame
-          if self.page in ['src', '']
-            button.trigger('click') for _ in self.settings.first_view
+          if self.settings.overlay and self.page in ['src', '']
+            button.trigger('click')
 
         else
           file.find('.aui-button.codecov').attr('title', 'File coverage not found').text('Not covered')
 
-  toggle_coverage: (event) ->
-    event.preventDefault()
-    if $('a.codecov.codecov-hit.codecov-on').length > 0
-      # toggle hits off
-      $('a.codecov.codecov-hit').removeClass('codecov-on')
-    else if $('a.codecov.codecov-on').length > 0
-      # toggle all off
-      $('a.codecov').removeClass('codecov-on')
-      $(@).removeClass('aui-button-light')
-    else
-      # toggle all on
-      $('a.codecov').addClass('codecov-on')
+  toggle_coverage: (e) ->
+    e.preventDefault()
+    if e.shiftKey
+      window.location = $(@).attr('data-codecov-url')
+    else if $('.codecov.codecov-on:first').length == 0
+      $('.codecov').addClass('codecov-on')
       $(@).addClass('aui-button-light')
+    else
+      $('.codecov').removeClass('codecov-on')
+      $(@).removeClass('aui-button-light')
 
   error: (status, reason) ->
     if status is 401

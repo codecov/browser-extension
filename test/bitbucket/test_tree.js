@@ -2,7 +2,7 @@ $(function(){
     window.cc = new Bitbucket({
       "debug": true,
       "callback": mocha.run,
-      "first_view": 'im',
+      "overlay": true,
       "enterprise": '',
       "debug_url": "https://bitbucket.org/osallou/go-docker/src/8c304f3171716b23f78dc6c1f6541b290a43386b/godocker/?at=master"
     });

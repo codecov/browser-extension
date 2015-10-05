@@ -9,7 +9,7 @@ class window.Codecov
   cache: [null, null]
   settings:
     urls: []
-    first_view: 'im'
+    overlay: true
     debug: no
     callback: null
     debug_url: null
@@ -127,10 +127,6 @@ class window.Codecov
     catch error
       @log error
       @error 500, error
-
-  find_best_fit_path: (fp, files) ->
-    matches = [path for path of files when path[fp.length*-1..] is fp or fp[path.length*-1..] is path]
-    files[Math.max(matches)] if matches.length > 0
 
   color: (ln) ->
     if ln is 0

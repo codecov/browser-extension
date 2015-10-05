@@ -1,7 +1,7 @@
 // Saves options to chrome.storage.sync.
 function save_options() {
   chrome.storage.sync.set({
-    first_view: document.getElementById('first_view').value,
+    overlay: document.getElementById('overlay').checked,
     enterprise: document.getElementById('enterprise').value,
     debug: document.getElementById('debug').checked
   }, function() {
@@ -27,13 +27,13 @@ function clear_cache() {
 // stored in chrome.storage.
 function restore_options() {
   chrome.storage.sync.get({
-    first_view: 'im',
+    overlay: true,
     enterprise: '',
     debug: false
   }, function(items) {
-    document.getElementById('first_view').value = items.first_view;
+    document.getElementById('overlay').checked = items.overlay;
     document.getElementById('enterprise').value = items.enterprise;
-    document.getElementById('debug').value = items.debug;
+    document.getElementById('debug').checked = items.debug;
   });
 }
 document.addEventListener('DOMContentLoaded', restore_options);

@@ -7,7 +7,8 @@ var storage_set = chrome.storage.local.set;
 
 $(function(){
   // start codecov
-  chrome.storage.sync.get({"first_view": 'im', "enterprise": '', "debug": false}, function(prefs){
+  chrome.storage.sync.get({"overlay": true, "enterprise": '', "debug": false}, function(prefs){
+    if (prefs['overlay'] === undefined) { pref['overlay'] = true; }
     window.codecov = create_codecov_instance(prefs);
   });
 

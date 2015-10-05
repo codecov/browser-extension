@@ -2,7 +2,7 @@ $(function(){
     window.cc = new Bitbucket({
       "debug": true,
       "callback": mocha.run,
-      "first_view": 'im',
+      "overlay": true,
       "enterprise": '',
       "debug_url": "https://bitbucket.org/osallou/go-docker/src/8c304f3171716b23f78dc6c1f6541b290a43386b/godocker/godscheduler.py"
     });
@@ -41,12 +41,6 @@ describe('bitbucket src', function(){
     click($('.codecov.aui-button')[0]);
     expect($('.codecov.aui-button').hasClass('aui-button-light')).to.be.true;
     expect($("a[name='godscheduler.py-70']").hasClass('codecov-on')).to.be.true;
-    expect($("a[name='godscheduler.py-71']").hasClass('codecov-on')).to.be.true;
-    expect($("a[name='godscheduler.py-75']").hasClass('codecov-on')).to.be.true;
-    // third click
-    click($('.codecov.aui-button')[0]);
-    expect($('.codecov.aui-button').hasClass('aui-button-light')).to.be.true;
-    expect($("a[name='godscheduler.py-70']").hasClass('codecov-on')).to.be.false;
     expect($("a[name='godscheduler.py-71']").hasClass('codecov-on')).to.be.true;
     expect($("a[name='godscheduler.py-75']").hasClass('codecov-on')).to.be.true;
   });
