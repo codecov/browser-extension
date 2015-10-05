@@ -101,7 +101,8 @@ class window.Github extends Codecov
             if coverage
               # ... show diff not full file coverage for compare view
               button = file.find('.btn.codecov')
-                           .attr('aria-label', 'Toggle Codecov (c)')
+                           .attr('aria-label', 'Toggle Codecov (c), shift+click to open in Codecov')
+                           .attr('data-codecov-url', "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{fp}?ref=#{self.ref}")
                            .text('Coverage '+coverage['coverage'].toFixed(2)+'%')
                            .removeClass('disabled')
                            .unbind()
@@ -121,7 +122,6 @@ class window.Github extends Codecov
             else
               file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
 
-  toggle_coverage: ->
     ###
     CALLED: by user interaction
     GOAL: toggle coverage overlay on blobs/commits/blames/etc.
@@ -135,6 +135,9 @@ class window.Github extends Codecov
       $(@).removeClass('selected')
     else
       # toggle all on
+  toggle_coverage: (e) ->
+    if e.shiftKey
+      window.location = $(@).attr('data-codecov-url')
       $('.codecov').addClass('codecov-on')
       $(@).addClass('selected')
 
