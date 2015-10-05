@@ -88,37 +88,38 @@ class window.Github extends Codecov
 
         # find covered file
         fp = self.file or file.find('.file-info>span[title]').attr('title')
-        coverage = res['report']['files'][fp] or self.find_best_fit_path(fp, res['report']['files'])
-        unless coverage?.ignored
+        if fp
+          coverage = res['report']['files'][fp] or self.find_best_fit_path(fp, res['report']['files'])
+          unless coverage?.ignored
 
-          # assure button group
-          if file.find('.file-actions > .btn-group').length is 0
-            file.find('.file-actions a:first').wrap('<div class="btn-group"></div>')
+            # assure button group
+            if file.find('.file-actions > .btn-group').length is 0
+              file.find('.file-actions a:first').wrap('<div class="btn-group"></div>')
 
-          # report coverage
-          # ===============
-          if coverage
-            # ... show diff not full file coverage for compare view
-            button = file.find('.btn.codecov')
-                         .attr('aria-label', 'Toggle Codecov (c)')
-                         .text('Coverage '+coverage['coverage'].toFixed(2)+'%')
-                         .removeClass('disabled')
-                         .unbind()
-                         .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
+            # report coverage
+            # ===============
+            if coverage
+              # ... show diff not full file coverage for compare view
+              button = file.find('.btn.codecov')
+                           .attr('aria-label', 'Toggle Codecov (c)')
+                           .text('Coverage '+coverage['coverage'].toFixed(2)+'%')
+                           .removeClass('disabled')
+                           .unbind()
+                           .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
 
-            # overlay coverage
-            _td = "td:eq(#{if self.page is 'blob' then 0 else 1})"
-            file.find('tr').each ->
-              td = $(@).find(_td)
-              cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
-              $(@).find('td').removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
+              # overlay coverage
+              _td = "td:eq(#{if self.page is 'blob' then 0 else 1})"
+              file.find('tr').each ->
+                td = $(@).find(_td)
+                cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
+                $(@).find('td').removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
 
-            # toggle blob/blame
-            if self.page in ['blob', 'blame']
-              button.trigger('click') for _ in self.settings.first_view
+              # toggle blob/blame
+              if self.page in ['blob', 'blame']
+                button.trigger('click') for _ in self.settings.first_view
 
-          else
-            file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
+            else
+              file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
 
   toggle_coverage: ->
     ###
