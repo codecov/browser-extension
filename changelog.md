@@ -1,3 +1,9 @@
+## `v0.4.7`
+- [bug] fix issue on Github when no file was found
+- [feature] Hold shift key and click on Codecov button to open document in Codecov
+- [change] now overlaying all coverage data by default
+  - https://github.com/codecov/browser-extension/issues/11
+
 ## `v0.4.6`
 - [firefox] better page detection for injecting scripts
 - [firefox] fix enterprise cross domain scriptiing

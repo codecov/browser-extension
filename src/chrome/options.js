@@ -31,6 +31,7 @@ function restore_options() {
     enterprise: '',
     debug: false
   }, function(items) {
+    if (items['overlay'] === undefined) { items['overlay'] = true; }
     document.getElementById('overlay').checked = items.overlay;
     document.getElementById('enterprise').value = items.enterprise;
     document.getElementById('debug').checked = items.debug;
