@@ -22,12 +22,17 @@ class window.Codecov
     ###
     # establish settings
     @settings = $.extend(@settings, prefs)
-    @settings.urls = [] unless @settings.urls
+    urls = []
+    # add enterprise urls
+    if prefs.enterprise
+      urls = prefs.enterprise.split('\n').filter(Boolean)
+
     href = (@settings.debug_url or document.URL).split('/')
     # only add codecov.io when on production site
     if href[2] in ['github.com', 'bitbucket.org']
-      @settings.urls.unshift 'https://codecov.io'
+      urls.unshift 'https://codecov.io'
 
+    @settings.urls = urls
     # callback to allow custom events for each browser
     cb? @
 
