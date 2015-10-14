@@ -18,7 +18,7 @@ describe('github tree', function(){
       expect(window.cc.base).to.equal("");
   });
   it('should add coverage header', function(){
-    expect($('.commit-meta .sha-block.codecov').text()).to.equal('87.57%');
+    expect($('.new-commit-tease .right .codecov').text()).to.equal('87.57%');
   });
   it('should show coverage on files', function(){
     expect($('.file-wrap tr:eq(2) td:last a.codecov').text()).to.equal('92.37%');

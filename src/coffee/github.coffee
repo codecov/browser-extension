@@ -54,7 +54,8 @@ class window.Github extends Codecov
     $('.codecov-removable').remove()
     if @page is 'tree'
       replacement = "/#{self.slug}/blob/#{$('.file-navigation .repo-root a:first').attr('data-branch')}/"
-      $('.commit-meta').prepend("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov codecov-removable tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage'].toFixed(2)}%</a>""")
+      console.log('Here steve@')
+      $('.new-commit-tease .right').append("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov codecov-removable tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage'].toFixed(2)}%</a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
         filepath = $('td.content a', @).attr('href')?.replace(replacement, '')
         if filepath
@@ -68,19 +69,17 @@ class window.Github extends Codecov
           compare = (res['report']['coverage'] - res['base']).toFixed(2)
           plus = if compare > 0 then '+' else '-'
           $('.toc-diff-stats').append(if compare is '0.00' then '<span class="codecov codecov-removable">Coverage did not change.</span>' else """<span class="codecov codecov-removable"> Coverage changed <strong>#{plus}#{compare}%</strong></span>""")
-          $('#diffstat').append("""<span class="codecov codecov-removable text-diff-#{if compare > 0 then 'added' else 'deleted'} tooltipped tooltipped-s" aria-label="Coverage #{if compare > 0 then 'increased' else 'decreased'} #{plus}#{compare}%">#{plus}#{compare}%</span>""")
         else
           coverage = res['report']['coverage'].toFixed(2)
           unless coverage?.ignored
             $('.toc-diff-stats').append("""<span class="codecov codecov-removable"> Coverage <strong>#{coverage}%</strong></span>""")
-            $('#diffstat').append("""<span class="codecov codecov-removable tooltipped tooltipped-s" aria-label="Coverage">#{coverage}%</span>""")
 
       # compare in toc
       $('#toc li').each ->
         coverage = res.report.files[$('a', @).text()]
         unless coverage?.ignored
           cov = coverage?.coverage
-          $('.diffstat.right', @).prepend("""<span class="codecov codecov-removable">#{Math.round cov}%</span>""") if cov >= 0
+          $('.new-commit-tease .right', @).prepend("""<span class="codecov codecov-removable">#{Math.round cov}%</span>""") if cov >= 0
 
       self = @
       $('.repository-content .file').each ->

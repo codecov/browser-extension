@@ -1,4 +1,5 @@
 ## `v0.4.7`
+- [bug] fix enterprise endpoints
 
 ## `v0.4.6`
 - [bug] fix issue on Github when no file was found
