@@ -54,7 +54,6 @@ class window.Github extends Codecov
     $('.codecov-removable').remove()
     if @page is 'tree'
       replacement = "/#{self.slug}/blob/#{$('.file-navigation .repo-root a:first').attr('data-branch')}/"
-      console.log('Here steve@')
       $('.new-commit-tease .right').append("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov codecov-removable tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage'].toFixed(2)}%</a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
         filepath = $('td.content a', @).attr('href')?.replace(replacement, '')
