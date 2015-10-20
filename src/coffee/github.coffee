@@ -54,7 +54,7 @@ class window.Github extends Codecov
     $('.codecov-removable').remove()
     if @page is 'tree'
       replacement = "/#{self.slug}/blob/#{$('.file-navigation .repo-root a:first').attr('data-branch')}/"
-      $('.new-commit-tease .right').append("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov codecov-removable tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage'].toFixed(2)}%</a>""")
+      $('.commit-tease .right').append("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov codecov-removable tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage'].toFixed(2)}%</a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
         filepath = $('td.content a', @).attr('href')?.replace(replacement, '')
         if filepath
@@ -78,7 +78,7 @@ class window.Github extends Codecov
         coverage = res.report.files[$('a', @).text()]
         unless coverage?.ignored
           cov = coverage?.coverage
-          $('.new-commit-tease .right', @).prepend("""<span class="codecov codecov-removable">#{Math.round cov}%</span>""") if cov >= 0
+          $('.commit-tease .right', @).prepend("""<span class="codecov codecov-removable">#{Math.round cov}%</span>""") if cov >= 0
 
       self = @
       $('.repository-content .file').each ->

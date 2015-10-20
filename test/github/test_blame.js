@@ -31,7 +31,7 @@ describe('gihub blame', function(){
     expect($('.codecov.btn').hasClass('selected')).to.equal(true);
   });
   it('should add covered lines', function(){
-    expect($('.file tr td.codecov.codecov-on').length).to.equal(73);
+    expect($('.file tr td.codecov.codecov-on').length).to.equal(45);
   });
   it('will toggle it', function(){
     click($('.codecov.btn')[0]);
@@ -39,6 +39,6 @@ describe('gihub blame', function(){
     expect($('.file tr td.codecov.codecov-on').length).to.equal(0);
     click($('.codecov.btn')[0]);
     expect($('.codecov.btn').hasClass('selected')).to.equal(true);
-    expect($('.file tr td.codecov.codecov-on').length).to.equal(73);
+    expect($('.file tr td.codecov.codecov-on').length).to.equal(45);
   });
 });

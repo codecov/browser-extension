@@ -30,7 +30,7 @@ describe('github blob', function(){
   });
   it('should add covered lines', function(){
     expect($('.codecov.btn').hasClass('selected')).to.equal(true);
-    expect($('.file tr td.codecov.codecov-on').length).to.equal(44);
+    expect($('.file tr td.codecov.codecov-on').length).to.equal(30);
   });
   it('will toggle it', function(){
     // off
@@ -40,6 +40,6 @@ describe('github blob', function(){
     // back on
     click($('.codecov.btn')[0]);
     expect($('.codecov.btn').hasClass('selected')).to.equal(true);
-    expect($('.file tr td.codecov.codecov-on').length).to.equal(44);
+    expect($('.file tr td.codecov.codecov-on').length).to.equal(30);
   });
 });
