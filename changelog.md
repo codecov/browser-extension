@@ -1,5 +1,6 @@
 ## `v0.4.8`
 - [feature] added coverage diff to compare/pulls
+- [bug] fixes shift click
 
 ## `v0.4.7`
 - [bug] fix enterprise endpoints

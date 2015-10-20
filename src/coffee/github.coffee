@@ -139,11 +139,15 @@ class window.Github extends Codecov
       $('.codecov').removeClass('codecov-on')
       $(@).removeClass('selected')
 
-  toggle_diff: ->
+  toggle_diff: (e) ->
     ###
     CALLED: by user interaction
     GOAL: toggle coverage overlay on diff/compare
     ###
+    if e.shiftKey
+      window.location = $(@).attr('data-codecov-url')
+      return
+
     file = $(@).parents('.file')
     if $(@).hasClass('selected')
       # toggle off
