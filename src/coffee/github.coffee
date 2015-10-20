@@ -101,17 +101,26 @@ class window.Github extends Codecov
               button = file.find('.btn.codecov')
                            .attr('aria-label', 'Toggle Codecov (c), shift+click to open in Codecov')
                            .attr('data-codecov-url', "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{fp}?ref=#{self.ref}")
-                           .text('Coverage '+coverage['coverage'].toFixed(2)+'%')
+                           .text("Coverage #{coverage['coverage'].toFixed(2)}%")
                            .removeClass('disabled')
                            .unbind()
                            .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
 
               # overlay coverage
               _td = "td:eq(#{if self.page is 'blob' then 0 else 1})"
+              hits = 0
+              total = 0
               file.find('tr').each ->
                 td = $(@).find(_td)
                 cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
-                $(@).find('td').removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
+                if cov
+                  total += 1
+                  hits += 1 if cov is 'hit'
+                  $(@).find('td').removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
+
+              if self.page in ['compare', 'pull']
+                diff = self.ratio hits, total
+                button.text("Coverage #{coverage['coverage'].toFixed(2)}% (Diff #{diff}%)")
 
               # toggle blob/blame
               if self.settings.overlay and self.page in ['blob', 'blame']

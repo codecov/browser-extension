@@ -1,3 +1,6 @@
+## `v0.4.8`
+- [feature] added coverage diff to compare/pulls
+
 ## `v0.4.7`
 - [bug] fix enterprise endpoints
 

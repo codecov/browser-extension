@@ -155,6 +155,14 @@ class window.Codecov
     else
       "hit"
 
+  ratio: (x, y) ->
+    if x >= y
+      "100"
+    else if y > x > 0
+      (Math.round( (x / y) * 10000 ) / 100).toFixed(2)
+    else
+      "0.00"
+
 
 window.create_codecov_instance = (prefs, cb) ->
   # hide codecov plugin

@@ -20,8 +20,7 @@ describe('github pull', function(){
   it('should add coverage button', function(){
     var button = $('.file-actions .btn-group a.btn.codecov');
     expect(button.length).to.equal(5);
-    // expect(button.text()).to.equal('Coverage 60%');
-    // expect(button.attr('aria-label')).to.equal('Toggle Codecov');
+    expect(button[0].text()).to.equal('Coverage 84.92% (Diff 100%)');
   });
   it('should still have all lines', function(){
     expect($('.file tr').length).to.equal(69);

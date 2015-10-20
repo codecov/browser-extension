@@ -19,8 +19,8 @@ describe('github compare', function(){
   it('should add coverage button', function(){
     var buttons = $('.file-actions .btn-group a.btn.codecov');
     expect(buttons.length).to.equal(8);
-    var text = ["Not covered", "Not covered", "Coverage 89.17%", "Coverage 60.00%", "Coverage 88.89%",
-                "Coverage 77.78%", "Not covered", "Not covered"];
+    var text = ["Not covered", "Not covered", "Coverage 89.17% (Diff 68.42%)", "Coverage 60.00% (Diff 60.00%)", "Coverage 88.89% (Diff 88.24%)",
+                "Coverage 77.78% (Diff 77.78%)", "Not covered", "Not covered"];
     buttons.each(function(){
       expect($(this).text()).to.equal(text.shift());
     });
