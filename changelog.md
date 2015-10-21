@@ -1,3 +1,6 @@
+## `v0.4.9`
+- [feature] added coverage data to toc
+
 ## `v0.4.8`
 - [feature] added coverage diff to compare/pulls
 - [bug] fixes shift click

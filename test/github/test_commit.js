@@ -18,10 +18,12 @@ describe('github compare', function(){
   it('should add coverage button', function(){
     var buttons = $('.file-actions .btn-group a.btn.codecov');
     expect(buttons.length).to.equal(3);
-    var text = ["Not covered", "Coverage 90.80%", "Not covered"];
-    buttons.each(function(){
-      expect($(this).text()).to.equal(text.shift());
-    });
+    expect($(buttons).eq(0).text()).to.equal("Not covered");
+    expect($(buttons).eq(1).text()).to.equal("Coverage 90.80% (Diff 50.00%)");
+    expect($(buttons).eq(2).text()).to.equal("Not covered");
+  });
+  it('should show diff in toc', function(){
+    expect($('a[href="#diff-ed4cb86e1f4a5c5feeecc37b90ec6a23"]').parent('.diffstat').find('.codecov').text()).to.equal('90.80% (50.00%)');
   });
   it('should not be shown', function(){
     expect($('.codecov-on').length).to.equal(0);

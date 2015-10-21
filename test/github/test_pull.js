@@ -22,6 +22,9 @@ describe('github pull', function(){
     expect(button.length).to.equal(5);
     expect($(button).eq(1).text()).to.equal('Coverage 84.92% (Diff 100%)');
   });
+  it('should show diff in toc', function(){
+    expect($('a[href="#diff-ed4cb86e1f4a5c5feeecc37b90ec6a23"]').parent('.diffstat').find('.codecov').text()).to.equal('84.92% (100%)');
+  });
   it('should still have all lines', function(){
     expect($('.file tr').length).to.equal(69);
   });

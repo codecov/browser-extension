@@ -73,14 +73,9 @@ class window.Github extends Codecov
           unless coverage?.ignored
             $('.toc-diff-stats').append("""<span class="codecov codecov-removable"> Coverage <strong>#{coverage}%</strong></span>""")
 
-      # compare in toc
-      $('#toc li').each ->
-        coverage = res.report.files[$('a', @).text()]
-        unless coverage?.ignored
-          cov = coverage?.coverage
-          $('.commit-tease .right', @).prepend("""<span class="codecov codecov-removable">#{Math.round cov}%</span>""") if cov >= 0
-
       self = @
+      total_hits = 0
+      total_lines = 0
       $('.repository-content .file').each ->
         file = $(@)
 
@@ -97,11 +92,13 @@ class window.Github extends Codecov
             # report coverage
             # ===============
             if coverage
-              # ... show diff not full file coverage for compare view
+              coverage_precent = coverage['coverage'].toFixed(2)
+              coverage_precent = '100' if coverage_precent == '100.00'
+
               button = file.find('.btn.codecov')
                            .attr('aria-label', 'Toggle Codecov (c), shift+click to open in Codecov')
                            .attr('data-codecov-url', "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{fp}?ref=#{self.ref}")
-                           .text("Coverage #{coverage['coverage'].toFixed(2)}%")
+                           .text("Coverage #{coverage_precent}%")
                            .removeClass('disabled')
                            .unbind()
                            .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
@@ -109,18 +106,25 @@ class window.Github extends Codecov
               # overlay coverage
               _td = "td:eq(#{if self.page is 'blob' then 0 else 1})"
               hits = 0
-              total = 0
+              lines = 0
               file.find('tr').each ->
                 td = $(@).find(_td)
                 cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
                 if cov
-                  total += 1
+                  lines += 1
                   hits += 1 if cov is 'hit'
                   $(@).find('td').removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
 
-              if self.page in ['compare', 'pull']
-                diff = self.ratio hits, total
-                button.text("Coverage #{coverage['coverage'].toFixed(2)}% (Diff #{diff}%)")
+              total_hits += hits
+              total_lines += lines
+
+              if self.page in ['commit', 'compare', 'pull']
+                diff = self.ratio hits, lines
+                button.text("Coverage #{coverage_precent}% (Diff #{diff}%)")
+                # update in toc
+                $('#toc a[href="#'+file.prev().attr('name')+'"]')
+                  .parent('span.diffstat')
+                  .prepend("""<span class="codecov codecov-removable">#{coverage_precent}% <strong>(#{diff}%)</strong></span>""")
 
               # toggle blob/blame
               if self.settings.overlay and self.page in ['blob', 'blame']
@@ -128,6 +132,10 @@ class window.Github extends Codecov
 
             else
               file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
+
+      if self.page in ['commit', 'compare', 'pull']
+        # upate toc-diff-stats
+        $('.toc-diff-stats .codecov').append(" (Diff <strong>#{self.ratio(total_hits, total_lines)}%</strong>)</span>")
 
   toggle_coverage: (e) ->
     if e.shiftKey
