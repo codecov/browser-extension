@@ -1,4 +1,4 @@
-Codecov Extension [![Circle CI](https://img.shields.io/circleci/project/codecov/browser-extension/master.svg)](https://circleci.com/gh/codecov/browser-extension) [![codecov.io](https://img.shields.io/codecov/c/github/codecov/browser-extension.svg)](https://codecov.io/github/codecov/browser-extension)
+Codecov Extension
 =================
 > Overlay reports directly into Github and Bitbucket to streamline your workflow.
 
