@@ -16,6 +16,7 @@ td.blob-num.codecov.codecov-on{
     border-color: #eee;
   }
 }
+
 td.blob-code.codecov.codecov-on{
   &.codecov-hit{
     background-color: #eaffea;
@@ -31,9 +32,30 @@ td.blob-code.codecov.codecov-on{
   }
 }
 
-.sha-block.codecov{
+.sha-block.codecov,
+.sha.codecov{
   margin: 0 4px;
 }
-.sha.codecov {
-  margin: 0 4px;
+
+.file.codecov-enabled{
+  // hide Diff higlighting when codecov is enabled
+  .blob-num-addition, .blob-code-addition,
+  .blob-num-deletion, .blob-code-deletion{
+    background-color: inherit;
+    border-color: inherit;
+  }
+}
+
+.file:not(.codecov-enabled) .empty-cell.codecov{
+  // diff/compare show on empty cell diffs
+  &.codecov-hit{
+    background-color: #34A032;
+  }
+  &.codecov-partial{
+    background-color: #DADA38;
+  }
+  &.codecov-missed{
+    background-color: #A03232;
+  }
+
 }

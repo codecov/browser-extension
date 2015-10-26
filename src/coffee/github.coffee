@@ -158,6 +158,8 @@ class window.Github extends Codecov
 
     file = $(@).parents('.file')
     if $(@).hasClass('selected')
+      # disable Codecov
+      file.removeClass('codecov-enabled')
       # toggle off
       $(@).removeClass('selected')
       # show deleted lines
@@ -165,6 +167,8 @@ class window.Github extends Codecov
       # remove covered lines
       file.find('.codecov').removeClass('codecov-on')
     else
+      # enable Codecov
+      file.addClass('codecov-enabled')
       # toggle on
       $(@).addClass('selected')
       # hide deleted lines

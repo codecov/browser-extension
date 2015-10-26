@@ -1,4 +1,6 @@
-## `v0.4.9`
+## `v0.5.0`
+- [fix] remove background on diff +/- when overlaying coverage
+- [ui] show coverage on diffs without toggling
 - [feature] added coverage data to toc
 
 ## `v0.4.8`
