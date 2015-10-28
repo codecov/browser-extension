@@ -1,3 +1,7 @@
+## `v0.5.1`
+- [fix] diff to be only lines adjusted
+- fix toc overlay to show once
+
 ## `v0.5.0`
 - [fix] remove background on diff +/- when overlaying coverage
 - [ui] show coverage on diffs without toggling
