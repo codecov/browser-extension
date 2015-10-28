@@ -111,9 +111,11 @@ class window.Github extends Codecov
                 td = $(@).find(_td)
                 cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
                 if cov
-                  lines += 1
-                  hits += 1 if cov is 'hit'
-                  $(@).find('td').removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
+                  td = $(@).find('td')
+                  td.removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
+                  if td.first().hasClass('blob-num-addition')
+                    lines += 1
+                    hits += 1 if cov is 'hit'
 
               total_hits += hits
               total_lines += lines
