@@ -76,6 +76,16 @@ class window.Github extends Codecov
       self = @
       total_hits = 0
       total_lines = 0
+
+      # which <td> is the source code
+      split_view = $('.diff-table.file-diff-split').length > 0
+      if self.page is 'blob'
+        _td = "td:eq(0)"
+      else if split_view
+        _td = "td:eq(2)"
+      else
+        _td = "td:eq(1)"
+
       $('.repository-content .file').each ->
         file = $(@)
 
@@ -104,16 +114,19 @@ class window.Github extends Codecov
                            .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
 
               # overlay coverage
-              _td = "td:eq(#{if self.page is 'blob' then 0 else 1})"
               hits = 0
               lines = 0
               file.find('tr').each ->
-                td = $(@).find(_td)
+                td = $(_td, @)
                 cov = self.color coverage['lines'][td.attr('data-line-number') or (td.attr('id')?[1..])]
                 if cov
-                  td = $(@).find('td')
-                  td.removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
-                  if td.first().hasClass('blob-num-addition')
+                  if split_view
+                    # only add codecov classes on last two columns
+                    $('td:eq(2), td:eq(3)', @).removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
+                  else
+                    $('td', @).removeClass('codecov-hit codecov-missed codecov-partial').addClass("codecov codecov-#{cov}")
+
+                  if $('.blob-num-addition', @).length > 0
                     lines += 1
                     hits += 1 if cov is 'hit'
 
@@ -165,7 +178,8 @@ class window.Github extends Codecov
       # toggle off
       $(@).removeClass('selected')
       # show deleted lines
-      file.find('.blob-num-deletion').parent().show()
+      unless $('.diff-table.file-diff-split').length > 0
+        file.find('.blob-num-deletion').parent().show()
       # remove covered lines
       file.find('.codecov').removeClass('codecov-on')
     else
@@ -174,7 +188,8 @@ class window.Github extends Codecov
       # toggle on
       $(@).addClass('selected')
       # hide deleted lines
-      file.find('.blob-num-deletion').parent().hide()
+      unless $('.diff-table.file-diff-split').length > 0
+        file.find('.blob-num-deletion').parent().hide()
       # fill w/ coverage
       file.find('.codecov').addClass('codecov-on')
 

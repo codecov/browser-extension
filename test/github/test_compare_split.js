@@ -4,12 +4,12 @@ $(function(){
       "callback": mocha.run,
       "overlay": true,
       "enterprise": '',
-      "debug_url": "https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614"
+      "debug_url": "https://github.com/codecov/codecov-python/compare/codecov:21dcc07...codecov:4c95614?diff=split"
     });
 });
 
-describe('github compare', function(){
-  after(function(){save_coverage('gh-compare');});
+describe('github compare w/ split', function(){
+  after(function(){save_coverage('gh-compare-split');});
   it('should have accurate properties', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');
       expect(window.cc.file).to.equal(null);
@@ -33,7 +33,7 @@ describe('github compare', function(){
     expect($('a[href="#diff-4b50cd5807f5f353de7e70825979d1be"]').parent('.diffstat').find('.codecov').text()).to.equal('60.00% (50.00%)');
   });
   it('should still have all lines', function(){
-    expect($('.file tr').length).to.equal(218);
+    expect($('.file tr').length).to.equal(184);
   });
   it('should not be shown', function(){
     expect($('.codecov-on').length).to.equal(0);
@@ -45,7 +45,7 @@ describe('github compare', function(){
     expect($('.codecov.btn', file).hasClass('selected')).to.equal(false);
     click($('.codecov.btn', file)[0]);
     expect($('.codecov.btn', file).hasClass('selected')).to.equal(true);
-    expect(file.next().find('.blob-num-deletion:visible').length).to.equal(0);
+    expect(file.next().find('.blob-num-deletion:visible').length).to.equal(7);
     expect(file.next().find('.codecov:not(.codecov-on)').length).to.equal(0);
   });
 });

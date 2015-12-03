@@ -32,6 +32,18 @@ td.blob-code.codecov.codecov-on{
   }
 }
 
+.file-diff-split{
+  td.blob-num.codecov.codecov-hit:not(.codecov-on){
+    background-color: #4FD94F;
+  }
+  td.blob-num.codecov.codecov-partial:not(.codecov-on){
+    background-color: #FEF04F;
+  }
+  td.blob-num.codecov.codecov-missed:not(.codecov-on){
+    background-color: #EF6C6C;
+  }
+}
+
 .sha-block.codecov,
 .sha.codecov{
   margin: 0 4px;

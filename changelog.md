@@ -1,3 +1,6 @@
+## `v0.5.2`
+- [fix] GitHub split views
+
 ## `v0.5.1`
 - [fix] diff to be only lines adjusted
 - fix toc overlay to show once
