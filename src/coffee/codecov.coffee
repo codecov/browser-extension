@@ -174,8 +174,17 @@ window.create_codecov_instance = (prefs, cb) ->
   if url.indexOf('https://github.com') is 0
     new Github prefs, cb
 
+  else if $('meta[property="og:site_name"]').attr('content') is 'GitHub'
+    new Github prefs, cb
+
   else if url.indexOf('https://bitbucket.org') is 0
     new Bitbucket prefs, cb
 
-  else if url.indexOf('https://gitlab.com') is 0
-    new Bitbucket prefs, cb
+  # else if $('meta[name="application-name"]').attr('content').indexOf('Stash') > -1
+  #   new BitbucketServer prefs, cb
+
+  # else if url.indexOf('https://gitlab.com') is 0
+  #   new Gitlab prefs, cb
+
+  # else if $('meta[name="description"]').attr('content').indexOf('GitLab') > -1
+  #   new Gitlab prefs, cb
