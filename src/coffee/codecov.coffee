@@ -169,22 +169,12 @@ window.create_codecov_instance = (prefs, cb) ->
   document.getElementById('chrome-install-plugin')?.style.display = 'none'
   document.getElementById('opera-install-plugin')?.style.display = 'none'
 
-  url = prefs.debug_url || document.URL
   # detect git service
-  if url.indexOf('https://github.com') is 0
+  if $('meta[name="hostname"]').length > 0
     new Github prefs, cb
 
-  else if $('meta[property="og:site_name"]').attr('content') is 'GitHub'
-    new Github prefs, cb
-
-  else if url.indexOf('https://bitbucket.org') is 0
+  else if $('meta[name="application-name"]').attr('content') in ['Bitbucket', 'Stash']
     new Bitbucket prefs, cb
 
-  # else if $('meta[name="application-name"]').attr('content').indexOf('Stash') > -1
-  #   new BitbucketServer prefs, cb
-
-  # else if url.indexOf('https://gitlab.com') is 0
-  #   new Gitlab prefs, cb
-
-  # else if $('meta[name="description"]').attr('content').indexOf('GitLab') > -1
-  #   new Gitlab prefs, cb
+  else if 'GitLab' in $('meta[name="description"]').attr('content')
+    new Gitlab prefs, cb

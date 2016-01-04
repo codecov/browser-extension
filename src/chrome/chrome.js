@@ -6,18 +6,27 @@ var storage_get = function(key, cb){
 var storage_set = chrome.storage.local.set;
 
 $(function(){
-  // start codecov
-  chrome.storage.sync.get({"overlay": true, "enterprise": '', "debug": false}, function(prefs){
-    if (prefs['overlay'] === undefined) { pref['overlay'] = true; }
-    window.codecov = create_codecov_instance(prefs);
+  chrome.storage.sync.get({'overlay': true, 'enterprise': '', 'debug': false, 'hosts': ''}, function(prefs){
+    var hosts = (prefs['hosts'] || '').split('\n');
+    hosts.push('github.com');
+    hosts.push('bitbucket.org');
+
+    // detect
+    var ref, indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item){ return i; } } return -1; };
+    if (ref = window.location.hostname, indexOf.call(hosts, ref) >= 0) {
+      if (prefs['overlay'] === undefined) { pref['overlay'] = true; }
+
+      // start codecov
+      window.codecov = create_codecov_instance(prefs);
+
+      // inject listener
+      var s = document.createElement('script');
+      s.src = chrome.extension.getURL('lib/listener.js');
+      s.onload = function(){this.parentNode.removeChild(this);};
+      (document.head||document.documentElement).appendChild(s);
+
+    }
   });
-
-  // inject listener
-  var s = document.createElement('script');
-  s.src = chrome.extension.getURL('lib/listener.js');
-  s.onload = function(){this.parentNode.removeChild(this);};
-  (document.head||document.documentElement).appendChild(s);
-
 });
 
 window.addEventListener("message", (function(event) {

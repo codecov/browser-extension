@@ -3,6 +3,7 @@ function save_options() {
   chrome.storage.sync.set({
     overlay: document.getElementById('overlay').checked,
     enterprise: document.getElementById('enterprise').value,
+    hosts: document.getElementById('hosts').value,
     debug: document.getElementById('debug').checked
   }, function() {
     // Update status to let user know options were saved.
@@ -29,11 +30,13 @@ function restore_options() {
   chrome.storage.sync.get({
     overlay: true,
     enterprise: '',
+    hosts: '',
     debug: false
   }, function(items) {
     if (items['overlay'] === undefined) { items['overlay'] = true; }
     document.getElementById('overlay').checked = items.overlay;
     document.getElementById('enterprise').value = items.enterprise;
+    document.getElementById('hosts').value = items.hosts;
     document.getElementById('debug').checked = items.debug;
   });
 }
