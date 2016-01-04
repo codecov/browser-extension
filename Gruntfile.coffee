@@ -167,7 +167,6 @@ module.exports = (grunt) ->
             'http://localhost:3000/test/github/test_tree.html'
             'http://localhost:3000/test/github/test_blame.html'
             'http://localhost:3000/test/github/test_compare.html'
-            'http://localhost:3000/test/github/test_compare_test.html'
             'http://localhost:3000/test/github/test_commit.html'
             # Bitbucket
             'http://localhost:3000/test/bitbucket/test_src.html'
