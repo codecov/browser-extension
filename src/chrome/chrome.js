@@ -11,10 +11,17 @@ $(function(){
     hosts.push('github.com');
     hosts.push('bitbucket.org');
 
+    if (prefs['debug']) {
+      console.log('Detecting hostname', window.location.hostname, hosts);
+    }
     // detect
     var ref, indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item){ return i; } } return -1; };
     if (ref = window.location.hostname, indexOf.call(hosts, ref) >= 0) {
       if (prefs['overlay'] === undefined) { pref['overlay'] = true; }
+
+      if (prefs['debug']) {
+        console.log('Hostname passed. Starting Codecov.');
+      }
 
       // start codecov
       window.codecov = create_codecov_instance(prefs);

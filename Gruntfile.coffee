@@ -62,11 +62,6 @@ module.exports = (grunt) ->
 
     concat:
       chrome:
-        options:
-          banner: """if (window.jQuery !== undefined &&
-                         (window.location.hostname === "bitbucket.org" ||
-                          $('meta[property="og:site_name"]').attr('content') == 'GitHub')) {\n\n"""
-          footer: '\n}'
         files: 'tmp/chrome/lib/codecov.js': ['src/chrome/chrome.js', 'tmp/chrome/lib/codecov.js']
       firefox:
         files: 'tmp/firefox/data/codecov.js': ['src/firefox/firefox.js', 'tmp/firefox/data/codecov.js']
@@ -84,7 +79,7 @@ module.exports = (grunt) ->
         command: [
           'cd tmp/firefox'
           '../../node_modules/jpm/bin/jpm xpi'
-          'mv hello@codecov.io-0.5.4.xpi ../../dist/firefox.xpi'
+          'mv hello@codecov.io-0.5.6.xpi ../../dist/firefox.xpi'
           ].join(' && ')
       opera:
         command: 'cp dist/chrome.crx dist/opera.nex'
