@@ -1,7 +1,7 @@
 class window.Bitbucket extends Codecov
   get_ref: (href) ->
     @log('::get_ref')
-    @service = if window.location.hostname is 'bitbucket.org' then 'bb' else 'bbs'
+    @service = if window.location.hostname is 'bitbucket.org' or @settings.debug_url? then 'bb' else 'bbs'
 
     if @page is 'src'
       return href[6].split('?')[0]
