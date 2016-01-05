@@ -1,6 +1,6 @@
 class window.Github extends Codecov
   get_ref: (href) ->
-    @service = if window.location.hostname is 'github.com' or @settings.debug_url? then 'gh' else 'gle'
+    @service = if window.location.hostname is 'github.com' or @settings.debug_url? then 'gh' else 'ghe'
     @file = null
     if @page in ['releases', 'tags']
       # planned
