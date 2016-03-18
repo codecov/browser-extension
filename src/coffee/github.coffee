@@ -19,13 +19,13 @@ class window.Github extends Codecov
 
     else if @page is 'compare'
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
-      @base = "&base=#{$('.commit-id:first').text()}"
-      return $('.commit-id:last').text()
+      @base = "&base=#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
+      return $('.commit-id:last').text() || $('input[name=comparison_end_oid]').val()
 
     else if @page is 'pull'
       # https://github.com/codecov/codecov-python/pull/16/files
-      @base = "&base=#{$('.commit-id:first').text()}"
-      return $('.commit-id:last').text()
+      @base = "&base=#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
+      return $('.commit-id:last').text() || $('input[name=comparison_end_oid]').val()
 
     else if @page is 'tree'
       return $('.js-permalink-shortcut').attr('href').split('/')[4]
@@ -53,10 +53,9 @@ class window.Github extends Codecov
     self = @
     $('.codecov-removable').remove()
     if @page is 'tree'
-      replacement = "/#{self.slug}/blob/#{$('.file-navigation .repo-root a:first').attr('data-branch')}/"
       $('.commit-tease span.right').append("""<a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}" class="sha-block codecov codecov-removable tooltipped tooltipped-n" aria-label="Overall coverage">#{res['report']['coverage'].toFixed(2)}%</a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
-        filepath = $('td.content a', @).attr('href')?.replace(replacement, '')
+        filepath = $('td.content a', @).attr('href')?.split('/')[5..].join('/')
         if filepath
           coverage = res['report']['files']?[filepath]?.coverage
           unless coverage?.ignored
@@ -67,11 +66,11 @@ class window.Github extends Codecov
         if res['base']
           compare = (res['report']['coverage'] - res['base']).toFixed(2)
           plus = if compare > 0 then '+' else '-'
-          $('.toc-diff-stats').append(if compare is '0.00' then '<span class="codecov codecov-removable">Coverage did not change.</span>' else """<span class="codecov codecov-removable"> Coverage changed <strong>#{plus}#{compare}%</strong></span>""")
+          $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat').append(if compare is '0.00' then '<span class="codecov codecov-removable">Coverage did not change.</span>' else """<span class="codecov codecov-removable"> <strong>#{plus}#{compare}%</strong></span>""")
         else
           coverage = res['report']['coverage'].toFixed(2)
           unless coverage?.ignored
-            $('.toc-diff-stats').append("""<span class="codecov codecov-removable"> Coverage <strong>#{coverage}%</strong></span>""")
+            $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat').append("""<span class="codecov codecov-removable"> <strong>#{coverage}%</strong></span>""")
 
       self = @
       total_hits = 0
@@ -108,7 +107,7 @@ class window.Github extends Codecov
               button = file.find('.btn.codecov')
                            .attr('aria-label', 'Toggle Codecov (c), shift+click to open in Codecov')
                            .attr('data-codecov-url', "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{fp}?ref=#{self.ref}")
-                           .text("Coverage #{coverage_precent}%")
+                           .text("#{coverage_precent}%")
                            .removeClass('disabled')
                            .unbind()
                            .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
@@ -136,10 +135,14 @@ class window.Github extends Codecov
               if self.page in ['commit', 'compare', 'pull']
                 diff = self.ratio hits, lines
                 button.text("Coverage #{coverage_precent}% (Diff #{diff}%)")
-                # update in toc
-                $('#toc a[href="#'+file.prev().attr('name')+'"]')
-                  .parent('span.diffstat')
-                  .prepend("""<span class="codecov codecov-removable">#{coverage_precent}% <strong>(#{diff}%)</strong></span>""")
+                # pull view
+                if self.page is 'pull'
+                  $('a[href="#'+file.prev().attr('name')+'"] .diffstat')
+                    .prepend("""<span class="codecov codecov-removable">#{coverage_precent}% <strong>(#{diff}%)</strong></span>""")
+                else
+                  # compare view
+                  $('a[href="#'+file.prev().attr('name')+'"]').parent().find('.diffstat')
+                    .prepend("""<span class="codecov codecov-removable">#{coverage_precent}% <strong>(#{diff}%)</strong></span>""")
 
               # toggle blob/blame
               if self.settings.overlay and self.page in ['blob', 'blame']
@@ -150,7 +153,7 @@ class window.Github extends Codecov
 
       if self.page in ['commit', 'compare', 'pull']
         # upate toc-diff-stats
-        $('.toc-diff-stats .codecov').append(" (Diff <strong>#{self.ratio(total_hits, total_lines)}%</strong>)</span>")
+        $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat').find('.codecov').append(" (Diff <strong>#{self.ratio(total_hits, total_lines)}%</strong>)</span>")
 
   toggle_coverage: (e) ->
     if e.shiftKey

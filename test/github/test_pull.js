@@ -1,10 +1,14 @@
 $(function(){
+    // need to fake the sha, not sure why
+    $('body')
+      .append('<input name="comparison_end_oid" value="1d30954874ebec7111ba0266d79586ecccf278dc">')
+      .append('<input name="comparison_start_oid" value="16d10b964db04920cda005b4555166fe4f7b4f95">');
     window.cc = new Github({
       "debug": true,
       "callback": mocha.run,
       "overlay": true,
       "enterprise": '',
-      "debug_url": "https://github.com/codecov/codecov-python/pull/16"
+      "debug_url": "https://github.com/codecov/codecov-python/pull/16/files"
     });
 });
 
@@ -14,8 +18,8 @@ describe('github pull', function(){
       expect(window.cc.page).to.equal('pull');
       expect(window.cc.slug).to.equal('codecov/codecov-python');
       expect(window.cc.file).to.equal(null);
-      expect(window.cc.ref).to.equal('1d30954');
-      expect(window.cc.base).to.equal("&base=3229ed3");
+      expect(window.cc.ref).to.equal('1d30954874ebec7111ba0266d79586ecccf278dc');
+      expect(window.cc.base).to.equal("&base=16d10b964db04920cda005b4555166fe4f7b4f95");
   });
   it('should add coverage button', function(){
     var button = $('.file-actions .btn-group a.btn.codecov');
@@ -23,7 +27,7 @@ describe('github pull', function(){
     expect($(button).eq(1).text()).to.equal('Coverage 84.92% (Diff 100%)');
   });
   it('should show diff in toc', function(){
-    expect($('a[href="#diff-ed4cb86e1f4a5c5feeecc37b90ec6a23"]').parent('.diffstat').find('.codecov').text()).to.equal('84.92% (100%)');
+    expect($('a[href="#diff-ed4cb86e1f4a5c5feeecc37b90ec6a23"] .diffstat .codecov').text()).to.equal('84.92% (100%)');
   });
   it('should still have all lines', function(){
     expect($('.file tr').length).to.equal(69);

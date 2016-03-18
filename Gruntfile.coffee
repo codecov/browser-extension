@@ -79,7 +79,7 @@ module.exports = (grunt) ->
         command: [
           'cd tmp/firefox'
           '../../node_modules/jpm/bin/jpm xpi'
-          'mv hello@codecov.io-0.5.8.xpi ../../dist/firefox.xpi'
+          'mv hello@codecov.io-0.5.9.xpi ../../dist/firefox.xpi'
           ].join(' && ')
       opera:
         command: 'cp dist/chrome.crx dist/opera.nex'
@@ -107,7 +107,7 @@ module.exports = (grunt) ->
 
     curl:
       # Github
-      'test/github/test_pull.html': 'https://github.com/codecov/codecov-python/pull/16'
+      'test/github/test_pull.html': 'https://github.com/codecov/codecov-python/pull/16/files'
       'test/github/test_blob.html': 'https://github.com/codecov/codecov-python/blob/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py'
       'test/github/test_tree.html': 'https://github.com/codecov/codecov-python/tree/097f692a0f02649a80de6c98749ca32a126223fc/codecov'
       'test/github/test_blame.html': 'https://github.com/codecov/codecov-python/blame/097f692a0f02649a80de6c98749ca32a126223fc/codecov/clover.py'

@@ -29,8 +29,8 @@ describe('github compare w/ split', function(){
     expect($('.toc-diff-stats .codecov').text()).to.equal(" Coverage 85.38% (Diff 77.14%)");
   });
   it('should show diff in toc', function(){
-    expect($('a[href="#diff-ed4cb86e1f4a5c5feeecc37b90ec6a23"]').parent('.diffstat').find('.codecov').text()).to.equal('89.17% (83.33%)');
-    expect($('a[href="#diff-4b50cd5807f5f353de7e70825979d1be"]').parent('.diffstat').find('.codecov').text()).to.equal('60.00% (50.00%)');
+    expect($('a[href="#diff-ed4cb86e1f4a5c5feeecc37b90ec6a23"]').parent().find('.diffstat .codecov').text()).to.equal('89.17% (83.33%)');
+    expect($('a[href="#diff-4b50cd5807f5f353de7e70825979d1be"]').parent().find('.diffstat .codecov').text()).to.equal('60.00% (50.00%)');
   });
   it('should still have all lines', function(){
     expect($('.file tr').length).to.equal(184);

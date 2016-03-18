@@ -23,7 +23,7 @@ describe('github compare', function(){
     expect($(buttons).eq(2).text()).to.equal("Not covered");
   });
   it('should show diff in toc', function(){
-    expect($('a[href="#diff-ed4cb86e1f4a5c5feeecc37b90ec6a23"]').parent('.diffstat').find('.codecov').text()).to.equal('90.80% (50.00%)');
+    expect($('a[href="#diff-ed4cb86e1f4a5c5feeecc37b90ec6a23"]').parent().find('.diffstat .codecov').text()).to.equal('90.80% (50.00%)');
   });
   it('should not be shown', function(){
     expect($('.codecov-on').length).to.equal(0);
