@@ -1,3 +1,3 @@
-$(document).on("pjax:success", function(){
+document.addEventListener("pjax:success", function(){
   window.postMessage({type:"codecov"},"*");
 });
