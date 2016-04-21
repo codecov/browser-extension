@@ -39,6 +39,10 @@ class window.Codecov
     # Go
     @_start()
 
+  format: (cov) ->
+    # format with your settings
+    parseFloat(cov).toFixed(2)
+
   get_ref: -> # find and return the page ref
   prepare: -> # first prepare the page for coverage overlay
   overlay: -> # method to overlay coverage results
