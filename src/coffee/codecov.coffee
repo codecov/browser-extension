@@ -97,7 +97,7 @@ class window.Codecov
     # get coverage
     # ============
     $.ajax
-      url: "#{endpoint}/api/#{@service}/#{@slug}?ref=#{@ref}#{@base}"
+      url: "#{endpoint}/api/#{@service}/#{@slug}/commits/#{@ref}#{@base}"
       type: 'get'
       dataType: 'json'
       success: (res) ->
@@ -133,23 +133,18 @@ class window.Codecov
 
     try
       @overlay res
+
     catch error
       @log error
       @error 500, error
 
   color: (ln) ->
-    if ln is 0
+    if ln.c is 0
       "missed"
-    else if not ln
-      null
-    else if ln is true
+    else if ln.c is true
       "partial"
-    else if ln instanceof Array
-      h = $.grep(ln, (p) -> p[2]>0).length > 0
-      m = $.grep(ln, (p) -> p[2]==0).length > 0
-      if h and m then "partial" else if h then "hit" else "missed"
-    else if '/' in ln.toString()
-      v = ln.split('/')
+    else if '/' in ln.c.toString()
+      v = ln.c.split('/')
       if v[0] is '0'
         "missed"
       else if v[0] == v[1]
@@ -160,6 +155,7 @@ class window.Codecov
       "hit"
 
   ratio: (x, y) ->
+    # [todo] respect the yml.coverage.ratio & yml.coverage.round
     if x >= y
       "100"
     else if y > x > 0

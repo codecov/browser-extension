@@ -19,12 +19,12 @@ class window.Github extends Codecov
 
     else if @page is 'compare'
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
-      @base = "&base=#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
+      @base = "?base=#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
       return $('.commit-id:last').text() || $('input[name=comparison_end_oid]').val()
 
     else if @page is 'pull'
       # https://github.com/codecov/codecov-python/pull/16/files
-      @base = "&base=#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
+      @base = "?base=#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
       return $('.commit-id:last').text() || $('input[name=comparison_end_oid]').val()
 
     else if @page is 'tree'
@@ -44,7 +44,9 @@ class window.Github extends Codecov
           file.find('.file-actions a:first')
               .wrap('<div class="btn-group"></div>')
         file.find('.file-actions > .btn-group')
-            .prepend('<a class="btn btn-sm codecov disabled tooltipped tooltipped-n" aria-label="Requesting coverage from Codecov.io" data-hotkey="c">Coverage loading...</a>')
+            .prepend('''<a class="btn btn-sm codecov disabled tooltipped tooltipped-n"
+                           aria-label="Requesting coverage from Codecov.io"
+                           data-hotkey="c">Coverage loading...</a>''')
 
     yes  # get content to overlay
 
@@ -53,7 +55,7 @@ class window.Github extends Codecov
     self = @
     $('.codecov-removable').remove()
 
-    report = res?['commit']?['report'] or res?['head']?['report']
+    report = res?.commit?.report or res?.head?.report
 
     if @page is 'tree'
       $('.commit-tease span.right').append("""
@@ -65,10 +67,10 @@ class window.Github extends Codecov
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
         filepath = $('td.content a', @).attr('href')?.split('/')[5..].join('/')
         if filepath
-          coverage = report['files']?[filepath]?['l']['c']
+          coverage = report.files?[filepath]?.t.c
           if coverage?
             $('td:last', @).append("""
-              <a href="#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{filepath}?ref=#{self.ref}"
+              <a href="#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/src/#{self.ref}/#{filepath}"
                  class="sha codecov codecov-removable tooltipped tooltipped-n"
                   aria-label="Coverage">
                 #{self.format coverage}%
@@ -77,7 +79,7 @@ class window.Github extends Codecov
     else
       if @page in ['commit', 'compare', 'pull']
         if res['base']
-          compare = self.format(parseFloat(report['totals']['c']) - parseFloat(res['base']['totals']['c']))
+          compare = self.format(parseFloat(report.totals.c) - parseFloat(res.base.totals.c))
           plus = if compare > 0 then '+' else '-'
           $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat')
             .append(if compare is '0.00' then '<span class="codecov codecov-removable">Coverage did not change.</span>' else """<span class="codecov codecov-removable"> <strong>#{plus}#{compare}%</strong></span>""")
@@ -182,7 +184,7 @@ class window.Github extends Codecov
     CALLED: by user interaction
     GOAL: toggle coverage overlay on diff/compare
     ###
-    if e.shiftKey
+    if e.altKey
       window.location = $(@).attr('data-codecov-url')
       return
 
