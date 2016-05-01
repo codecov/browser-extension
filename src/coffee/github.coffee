@@ -19,12 +19,12 @@ class window.Github extends Codecov
 
     else if @page is 'compare'
       # https://github.com/codecov/codecov-python/compare/v1.1.5...v1.1.6
-      @base = "?base=#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
+      @base = "#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
       return $('.commit-id:last').text() || $('input[name=comparison_end_oid]').val()
 
     else if @page is 'pull'
       # https://github.com/codecov/codecov-python/pull/16/files
-      @base = "?base=#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
+      @base = "#{$('.commit-id:first').text() || $('input[name=comparison_start_oid]').val()}"
       return $('.commit-id:last').text() || $('input[name=comparison_end_oid]').val()
 
     else if @page is 'tree'
@@ -127,7 +127,7 @@ class window.Github extends Codecov
             lines = 0
             file.find('tr').each ->
               td = $(_td, @)
-              cov = self.color file_data['l'][td.attr('data-line-number') or (td.attr('id')?[1..])]['c']
+              cov = self.color file_data['l'][td.attr('data-line-number') or (td.attr('id')?[1..])]
               if cov
                 if split_view
                   # only add codecov classes on last two columns
