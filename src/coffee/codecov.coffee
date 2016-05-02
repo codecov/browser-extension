@@ -39,6 +39,10 @@ class window.Codecov
     # Go
     @_start()
 
+  format: (cov) ->
+    # format with your settings
+    parseFloat(cov).toFixed(2)
+
   get_ref: -> # find and return the page ref
   prepare: -> # first prepare the page for coverage overlay
   overlay: -> # method to overlay coverage results
@@ -66,19 +70,20 @@ class window.Codecov
     return if @_processing
     @log('::run')
     self = @
-    slugref = "#{self.slug}/#{self.ref}"
+    @cachekey = "#{@slug}/#{@ref}" + (if @base then "/{@base}" else '')
 
     # get fron storage
     # ----------------
     @_processing = yes
-    if @cache[0] == slugref
-      self.log('process(cache)')
+    @storage_get = storage_get
+    if @cache[0] == @cachekey
+      self.log '::in-memory'
       @_process @cache[1]
     else
-      storage_get slugref, (res) ->
-        if res?[self.ref]
-          self.log('process(storage)', res[self.ref])
-          self._process res[self.ref]
+      storage_get @cachekey, (result) ->
+        if result?
+          self.log '::in-cached'
+          self._process result
         else
           # run first url
           self._get self.settings.urls[self.urlid]
@@ -93,7 +98,7 @@ class window.Codecov
     # get coverage
     # ============
     $.ajax
-      url: "#{endpoint}/api/#{@service}/#{@slug}?ref=#{@ref}#{@base}"
+      url: "#{endpoint}/api/#{@service}/#{@slug}/" + (if @base then "compare/#{@base}...#{@ref}" else "commits/#{@ref}") + "?src=extension"
       type: 'get'
       dataType: 'json'
       success: (res) ->
@@ -120,42 +125,39 @@ class window.Codecov
     ###
     @_processing = no
     @log('::process', res)
-    slugref = "#{@slug}/#{@ref}"
     # cache in extension
-    @cache = [slugref, res]
+    @cache = [@cachekey, res]
     # cache in storage
     if store and @cacheable
-      storage_set {slugref: res}, -> null
+      storage_set {"#{@cachekey}": res}, -> null
 
     try
       @overlay res
+
     catch error
+      console.debug(error)
       @log error
       @error 500, error
 
   color: (ln) ->
-    if ln is 0
-      "missed"
-    else if not ln
-      null
-    else if ln is true
-      "partial"
-    else if ln instanceof Array
-      h = $.grep(ln, (p) -> p[2]>0).length > 0
-      m = $.grep(ln, (p) -> p[2]==0).length > 0
-      if h and m then "partial" else if h then "hit" else "missed"
-    else if '/' in ln.toString()
-      v = ln.split('/')
-      if v[0] is '0'
+    if ln
+      if ln.c is 0
         "missed"
-      else if v[0] == v[1]
-        "hit"
-      else
+      else if ln.c is true
         "partial"
-    else
-      "hit"
+      else if '/' in ln.c
+        v = ln.c.split('/')
+        if v[0] is '0'
+          "missed"
+        else if v[0] == v[1]
+          "hit"
+        else
+          "partial"
+      else
+        "hit"
 
   ratio: (x, y) ->
+    # [todo] respect the yml.coverage.ratio & yml.coverage.round
     if x >= y
       "100"
     else if y > x > 0

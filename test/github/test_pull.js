@@ -19,7 +19,7 @@ describe('github pull', function(){
       expect(window.cc.slug).to.equal('codecov/codecov-python');
       expect(window.cc.file).to.equal(null);
       expect(window.cc.ref).to.equal('1d30954874ebec7111ba0266d79586ecccf278dc');
-      expect(window.cc.base).to.equal("&base=16d10b964db04920cda005b4555166fe4f7b4f95");
+      expect(window.cc.base).to.equal("?base=16d10b964db04920cda005b4555166fe4f7b4f95");
   });
   it('should add coverage button', function(){
     var button = $('.file-actions .btn-group a.btn.codecov');

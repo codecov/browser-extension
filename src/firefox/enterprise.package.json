@@ -37,6 +37,6 @@
     }
   ],
   "permissions": {
-    "cross-domain-content": ["https://codecov.io/"]
+    "cross-domain-content": ["https://"]
   }
 }
