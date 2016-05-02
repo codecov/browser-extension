@@ -1,6 +1,6 @@
 {
   "name": "Codecov Extension",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "homepage_url": "https://github.com/codecov/browser-extension",
   "description": "Coverage reports overlay in Github and Bitbucket.",
   "offline_enabled": false,

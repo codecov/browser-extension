@@ -46,6 +46,7 @@ class window.Codecov
   get_ref: -> # find and return the page ref
   prepare: -> # first prepare the page for coverage overlay
   overlay: -> # method to overlay coverage results
+  get_codecov_yml: ->  # return yaml source code if viewing it in GH
 
   _start: ->
     ###
@@ -101,7 +102,7 @@ class window.Codecov
       url = "#{endpoint}/api/#{@service}/#{@slug}/" + (if @base then "compare/#{@base}...#{@ref}" else "commits/#{@ref}") + "?src=extension"
     else
       # (enterprise) cc-v3
-      url = "#{endpoint}/api/#{@service}/#{@slug}?ref=#{@ref}" + (if @base then "&base=#{@base}"  else "") + "?src=extension"
+      url = "#{endpoint}/api/#{@service}/#{@slug}?ref=#{@ref}" + (if @base then "&base=#{@base}"  else "")
 
     # get coverage
     # ============
@@ -118,6 +119,7 @@ class window.Codecov
       complete: ->
         self.log('::ajax.complete', arguments)
         self.settings?.callback?()
+        self._validate_codecov_yml()
 
       # try to get coverage data from enterprise urls if any
       error: (xhr, type, reason) ->
@@ -174,6 +176,16 @@ class window.Codecov
     else
       "0.00"
 
+  _validate_codecov_yml: ->
+    self = @
+    yml = self.get_codecov_yml()
+    if yml
+      $.ajax
+        url: "#{self.settings.urls[self.urlid]}/validate"
+        type: 'post'
+        data: yml
+        success: self.yaml_ok
+        error: (xhr, type, reason) -> self.yml_error(reason)
 
 window.create_codecov_instance = (prefs, cb) ->
   # hide codecov plugin

@@ -125,16 +125,17 @@ class window.Github extends Codecov
         fp = self.file or file.find('.file-info>span[title]').attr('title')
         if fp
           file_data = report.files[fp]
-          return if !file_data? or file_data.ignored  # v4 or (v3)
 
           # assure button group
           if file.find('.file-actions > .btn-group').length is 0
-            file.find('.file-actions a:first').wrap('<div class="btn-group"></div>')
+            file
+              .find('.file-actions a:first')
+              .wrap('<div class="btn-group"></div>')
 
           # report coverage
           # ===============
-          if file_data?
-            total = if file_data.t?.c? then file_data.t.c else file_data.coverage
+          if file_data? and file_data.ignored isnt true
+            total = self.format(if file_data.t?.c? then file_data.t.c else file_data.coverage)
             button = file.find('.btn.codecov')
                          .attr('aria-label', 'Toggle Codecov (c), alt+click to open in Codecov')
                          .attr('data-codecov-url',
@@ -145,7 +146,7 @@ class window.Github extends Codecov
                                  "#{fp}?ref=#{self.ref}"
                              )
                           )
-                         .text("#{self.format total}%")
+                         .text("#{total}%")
                          .removeClass('disabled')
                          .unbind()
                          .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
@@ -177,22 +178,26 @@ class window.Github extends Codecov
 
             if self.page in ['commit', 'compare', 'pull']
               diff = self.format self.ratio hits, lines
-              button.text("Coverage #{coverage_precent}% (Diff #{diff}%)")
+              button.text("Coverage #{total}% (Diff #{diff}%)")
               # pull view
               if self.page is 'pull'
                 $('a[href="#'+file.prev().attr('name')+'"] .diffstat')
-                  .prepend("""<span class="codecov codecov-removable">#{coverage_precent}% <strong>(#{diff}%)</strong></span>""")
+                  .prepend("""<span class="codecov codecov-removable">#{total}% <strong>(#{diff}%)</strong></span>""")
               else
                 # compare view
                 $('a[href="#'+file.prev().attr('name')+'"]')
                   .parent()
                   .find('.diffstat')
-                  .prepend("""<span class="codecov codecov-removable">#{coverage_precent}% <strong>(#{diff}%)</strong></span>""")
+                  .prepend("""<span class="codecov codecov-removable">#{total}% <strong>(#{diff}%)</strong></span>""")
 
             # toggle blob/blame
             if self.settings.overlay and self.page in ['blob', 'blame']
               button.trigger('click')
-
+          else if file_data.ignored is true  # v3
+            file
+              .find('.btn.codecov')
+              .attr('aria-label', 'File ignored')
+              .text('Not covered')
           else
             file
               .find('.btn.codecov')
