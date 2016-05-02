@@ -46,9 +46,9 @@ class window.Github extends Codecov
             .wrap('<div class="btn-group"></div>')
         file
           .find('.file-actions > .btn-group')
-          .prepend('''<a class="btn btn-sm codecov disabled tooltipped tooltipped-n"
+          .prepend("""<a class="btn btn-sm codecov disabled tooltipped tooltipped-n"
                          aria-label="Requesting coverage from Codecov.io"
-                         data-hotkey="c">Coverage loading...</a>''')
+                         data-hotkey="c">Coverage loading...</a>""")
 
     yes  # get content to overlay
 
@@ -96,14 +96,14 @@ class window.Github extends Codecov
           $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat')
             .append(
               if compare is '0.00'
-                '''<span class="codecov codecov-removable">Coverage did not change.</span>'''
+                """<span class="codecov codecov-removable">Coverage did not change.</span>"""
               else
-                '''<span class="codecov codecov-removable"> <strong>#{plus}#{compare}%</strong></span>'''
+                """<span class="codecov codecov-removable"> <strong>#{plus}#{compare}%</strong></span>"""
             )
         else
           total = if report.totals.c? then report.totals.c else report.coverage  # v4 || v3
           $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat')
-            .append('''<span class="codecov codecov-removable"> <strong>#{self.format total}%</strong></span>''')
+            .append("""<span class="codecov codecov-removable"> <strong>#{self.format total}%</strong></span>""")
 
       self = @
       total_hits = 0
