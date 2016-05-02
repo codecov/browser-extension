@@ -41,12 +41,14 @@ class window.Github extends Codecov
       file = $(@)
       if file.find('.btn.codecov').length is 0
         if file.find('.file-actions > .btn-group').length is 0
-          file.find('.file-actions a:first')
-              .wrap('<div class="btn-group"></div>')
-        file.find('.file-actions > .btn-group')
-            .prepend('''<a class="btn btn-sm codecov disabled tooltipped tooltipped-n"
-                           aria-label="Requesting coverage from Codecov.io"
-                           data-hotkey="c">Coverage loading...</a>''')
+          file
+            .find('.file-actions a:first')
+            .wrap('<div class="btn-group"></div>')
+        file
+          .find('.file-actions > .btn-group')
+          .prepend('''<a class="btn btn-sm codecov disabled tooltipped tooltipped-n"
+                         aria-label="Requesting coverage from Codecov.io"
+                         data-hotkey="c">Coverage loading...</a>''')
 
     yes  # get content to overlay
 
@@ -55,22 +57,27 @@ class window.Github extends Codecov
     self = @
     $('.codecov-removable').remove()
 
-    report = res?.commit?.report or res?.head?.report
+    # v4/commits or v4/compare or v3/commit&compare
+    report = res.commit?.report or res.head?.report or res.report
 
     if @page is 'tree'
+      total = if report.totals?.c? then report.totals.c else report.coverage  # v4 || v3
       $('.commit-tease span.right').append("""
         <a href="#{@settings.urls[@urlid]}/github/#{@slug}?ref=#{@ref}"
            class="sha-block codecov codecov-removable tooltipped tooltipped-n"
            aria-label="Overall coverage">
-          #{self.format report['totals']['c']}%
+          #{self.format total}%
         </a>""")
       $('.file-wrap tr:not(.warning):not(.up-tree)').each ->
         filepath = $('td.content a', @).attr('href')?.split('/')[5..].join('/')
         if filepath
-          coverage = report.files?[filepath]?.t.c
+          file = report.files?[filepath]
+          return if !file? or file.ignored  # v4 or (v3)
+          coverage = if file.t?.c? then file.t.c else file.coverage  # v4 || v3
           if coverage?
+            path = if file.t?.c? then "src/#{self.ref}/#{filepath}" else "#{filepath}?ref=#{self.ref}"  # v4 || v3
             $('td:last', @).append("""
-              <a href="#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/src/#{self.ref}/#{filepath}"
+              <a href="#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{path}"
                  class="sha codecov codecov-removable tooltipped tooltipped-n"
                   aria-label="Coverage">
                 #{self.format coverage}%
@@ -78,14 +85,25 @@ class window.Github extends Codecov
 
     else
       if @page in ['commit', 'compare', 'pull']
-        if res['base']
-          compare = self.format(parseFloat(report.totals.c) - parseFloat(res.base.totals.c))
+        if res.base?
+          if report.totals.c?  # v4
+            total = report.totals.c
+            compare = self.format(parseFloat(total) - parseFloat(res.base.report.totals.c))
+          else  # v3
+            total = report.coverage
+            compare = self.format(parseFloat(total) - parseFloat(res.base))
           plus = if compare > 0 then '+' else '-'
           $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat')
-            .append(if compare is '0.00' then '<span class="codecov codecov-removable">Coverage did not change.</span>' else """<span class="codecov codecov-removable"> <strong>#{plus}#{compare}%</strong></span>""")
+            .append(
+              if compare is '0.00'
+                '''<span class="codecov codecov-removable">Coverage did not change.</span>'''
+              else
+                '''<span class="codecov codecov-removable"> <strong>#{plus}#{compare}%</strong></span>'''
+            )
         else
+          total = if report.totals.c? then report.totals.c else report.coverage  # v4 || v3
           $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat')
-            .append("""<span class="codecov codecov-removable"> <strong>#{self.format report['totals']['c']}%</strong></span>""")
+            .append('''<span class="codecov codecov-removable"> <strong>#{self.format total}%</strong></span>''')
 
       self = @
       total_hits = 0
@@ -106,18 +124,28 @@ class window.Github extends Codecov
         # find covered file
         fp = self.file or file.find('.file-info>span[title]').attr('title')
         if fp
-          file_data = report['files'][fp]
+          file_data = report.files[fp]
+          return if !file_data? or file_data.ignored  # v4 or (v3)
+
           # assure button group
           if file.find('.file-actions > .btn-group').length is 0
             file.find('.file-actions a:first').wrap('<div class="btn-group"></div>')
 
           # report coverage
           # ===============
-          if file_data
+          if file_data?
+            total = if file_data.t?.c? then file_data.t.c else file_data.coverage
             button = file.find('.btn.codecov')
-                         .attr('aria-label', 'Toggle Codecov (c), shift+click to open in Codecov')
-                         .attr('data-codecov-url', "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/src/#{self.ref}/#{fp}")
-                         .text("#{self.format file_data['t']['c']}%")
+                         .attr('aria-label', 'Toggle Codecov (c), alt+click to open in Codecov')
+                         .attr('data-codecov-url',
+                             "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/" + (
+                               if file_data.t?.c?  # v4
+                                 "src/#{self.ref}/#{fp}"
+                               else  # v3
+                                 "#{fp}?ref=#{self.ref}"
+                             )
+                          )
+                         .text("#{self.format total}%")
                          .removeClass('disabled')
                          .unbind()
                          .click(if self.page in ['blob', 'blame'] then self.toggle_coverage else self.toggle_diff)
@@ -125,9 +153,10 @@ class window.Github extends Codecov
             # overlay coverage
             hits = 0
             lines = 0
+            file_lines = if file_data.l? then file_data.l else file_data.lines
             file.find('tr').each ->
               td = $(_td, @)
-              cov = self.color file_data['l'][td.attr('data-line-number') or (td.attr('id')?[1..])]
+              cov = self.color file_lines[td.attr('data-line-number') or (td.attr('id')?[1..])]
               if cov
                 if split_view
                   # only add codecov classes on last two columns
@@ -155,7 +184,9 @@ class window.Github extends Codecov
                   .prepend("""<span class="codecov codecov-removable">#{coverage_precent}% <strong>(#{diff}%)</strong></span>""")
               else
                 # compare view
-                $('a[href="#'+file.prev().attr('name')+'"]').parent().find('.diffstat')
+                $('a[href="#'+file.prev().attr('name')+'"]')
+                  .parent()
+                  .find('.diffstat')
                   .prepend("""<span class="codecov codecov-removable">#{coverage_precent}% <strong>(#{diff}%)</strong></span>""")
 
             # toggle blob/blame
@@ -163,11 +194,16 @@ class window.Github extends Codecov
               button.trigger('click')
 
           else
-            file.find('.btn.codecov').attr('aria-label', 'File not reported to Codecov').text('Not covered')
+            file
+              .find('.btn.codecov')
+              .attr('aria-label', 'File not reported to Codecov')
+              .text('Not covered')
 
       if self.page in ['commit', 'compare', 'pull']
         # upate toc-diff-stats
-        $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat').find('.codecov').append(" (Diff <strong>#{self.ratio(total_hits, total_lines)}%</strong>)</span>")
+        $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat')
+          .find('.codecov')
+          .append(" (Diff <strong>#{self.ratio(total_hits, total_lines)}%</strong>)</span>")
 
   toggle_coverage: (e) ->
     if e.shiftKey
@@ -212,11 +248,33 @@ class window.Github extends Codecov
 
   error: (status, reason) ->
     if status is 401
-      $('.btn.codecov').text("Please login at Codecov").addClass('danger').attr('aria-label', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
-      $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Please login at Codecov.io').attr('aria-label', 'Login to view coverage by Codecov').click -> window.location = "https://codecov.io/login/github?redirect=#{escape window.location.href}"
+      $('.btn.codecov')
+        .text("Please login at Codecov")
+        .addClass('danger')
+        .attr('aria-label', 'Login to view coverage by Codecov')
+        .click ->
+          window.location = "#{self.settings.urls[self.urlid]}/login/github?redirect=#{escape window.location.href}"
+      $('.commit.codecov .sha-block')
+        .addClass('tooltipped tooltipped-n')
+        .text('Please login into Codecov')
+        .attr('aria-label', 'Login to view coverage by Codecov')
+        .click ->
+          window.location = "#{self.settings.urls[self.urlid]}/login/github?redirect=#{escape window.location.href}"
+
     else if status is 404
-      $('.btn.codecov').text("No coverage").attr('aria-label', 'Coverage not found')
-      $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('No coverage').attr('aria-label', 'Coverage not found')
+      $('.btn.codecov')
+        .text("No coverage")
+        .attr('aria-label', 'Coverage not found')
+      $('.commit.codecov .sha-block')
+        .addClass('tooltipped tooltipped-n')
+        .text('No coverage')
+        .attr('aria-label', 'Coverage not found')
+
     else
-      $('.btn.codecov').text("Coverage error").attr('aria-label', 'There was an error loading coverage. Sorry')
-      $('.commit.codecov .sha-block').addClass('tooltipped tooltipped-n').text('Coverage Error').attr('aria-label', 'There was an error loading coverage. Sorry')
+      $('.btn.codecov')
+        .text("Coverage error")
+        .attr('aria-label', 'There was an error loading coverage. Sorry')
+      $('.commit.codecov .sha-block')
+        .addClass('tooltipped tooltipped-n')
+        .text('Coverage Error')
+        .attr('aria-label', 'There was an error loading coverage. Sorry')

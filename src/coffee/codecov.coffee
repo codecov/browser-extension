@@ -95,10 +95,18 @@ class window.Codecov
     ###
     @log('::get', endpoint)
     self = @
+
+    if endpoint is 'https://codecov.io'
+      # cc-v4
+      url = "#{endpoint}/api/#{@service}/#{@slug}/" + (if @base then "compare/#{@base}...#{@ref}" else "commits/#{@ref}") + "?src=extension"
+    else
+      # (enterprise) cc-v3
+      url = "#{endpoint}/api/#{@service}/#{@slug}?ref=#{@ref}" + (if @base then "&base=#{@base}"  else "") + "?src=extension"
+
     # get coverage
     # ============
     $.ajax
-      url: "#{endpoint}/api/#{@service}/#{@slug}/" + (if @base then "compare/#{@base}...#{@ref}" else "commits/#{@ref}") + "?src=extension"
+      url: url
       type: 'get'
       dataType: 'json'
       success: (res) ->
@@ -140,21 +148,22 @@ class window.Codecov
       @error 500, error
 
   color: (ln) ->
-    if ln
-      if ln.c is 0
+    return if !ln?  # undefined or null
+    c = if !ln.c? then ln else ln.c
+    if c is 0
+      "missed"
+    else if c is true
+      "partial"
+    else if '/' in c
+      v = c.split('/')
+      if v[0] is '0'
         "missed"
-      else if ln.c is true
-        "partial"
-      else if '/' in ln.c
-        v = ln.c.split('/')
-        if v[0] is '0'
-          "missed"
-        else if v[0] == v[1]
-          "hit"
-        else
-          "partial"
-      else
+      else if v[0] == v[1]
         "hit"
+      else
+        "partial"
+    else
+      "hit"
 
   ratio: (x, y) ->
     # [todo] respect the yml.coverage.ratio & yml.coverage.round
