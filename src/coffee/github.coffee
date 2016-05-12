@@ -72,16 +72,17 @@ class window.Github extends Codecov
         filepath = $('td.content a', @).attr('href')?.split('/')[5..].join('/')
         if filepath
           file = report.files?[filepath]
-          return if !file? or file.ignored  # v4 or (v3)
-          coverage = if file.t?.c? then file.t.c else file.coverage  # v4 || v3
-          if coverage?
-            path = if file.t?.c? then "src/#{self.ref}/#{filepath}" else "#{filepath}?ref=#{self.ref}"  # v4 || v3
-            $('td:last', @).append("""
-              <a href="#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{path}"
-                 class="sha codecov codecov-removable tooltipped tooltipped-n"
-                  aria-label="Coverage">
-                #{self.format coverage}%
-              </a>""")
+          if file
+              return file?.ignored  # v4 or (v3)
+              coverage = if file.t?.c? then file.t.c else file.coverage  # v4 || v3
+              if coverage?
+                path = if file.t?.c? then "src/#{self.ref}/#{filepath}" else "#{filepath}?ref=#{self.ref}"  # v4 || v3
+                $('td:last', @).append("""
+                  <a href="#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/#{path}"
+                     class="sha codecov codecov-removable tooltipped tooltipped-n"
+                      aria-label="Coverage">
+                    #{self.format coverage}%
+                  </a>""")
 
     else
       if @page in ['commit', 'compare', 'pull']
@@ -134,7 +135,7 @@ class window.Github extends Codecov
 
           # report coverage
           # ===============
-          if file_data? and file_data.ignored isnt true
+          if file_data? and file_data?.ignored isnt true
             total = self.format(if file_data.t?.c? then file_data.t.c else file_data.coverage)
             button = file.find('.btn.codecov')
                          .attr('aria-label', 'Toggle Codecov (c), alt+click to open in Codecov')
@@ -193,7 +194,7 @@ class window.Github extends Codecov
             # toggle blob/blame
             if self.settings.overlay and self.page in ['blob', 'blame']
               button.trigger('click')
-          else if file_data.ignored is true  # v3
+          else if file_data?.ignored is true  # v3
             file
               .find('.btn.codecov')
               .attr('aria-label', 'File ignored')
