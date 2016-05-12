@@ -193,7 +193,7 @@ class window.Github extends Codecov
             # toggle blob/blame
             if self.settings.overlay and self.page in ['blob', 'blame']
               button.trigger('click')
-          else if file_data.ignored is true  # v3
+          else if file_data? and file_data.ignored is true  # v3
             file
               .find('.btn.codecov')
               .attr('aria-label', 'File ignored')
