@@ -1,3 +1,6 @@
+## `v1.0.4`
+- fix compare overlay when base not found
+
 ## `v0.5.2`
 - [fix] GitHub split views
 

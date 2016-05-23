@@ -1,6 +1,6 @@
 {
   "name": "codecov-extension",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Overlay Codecov coverage reports in Github and Bitbucket",
   "scripts": {
     "test": "grunt test"

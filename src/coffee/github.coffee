@@ -89,7 +89,12 @@ class window.Github extends Codecov
         if res.base?
           if report.totals.c?  # v4
             total = report.totals.c
-            compare = self.format(parseFloat(total) - parseFloat(res.base.report.totals.c))
+            if res.base?.report?.totals?.c
+              compare = self.format(parseFloat(total) - parseFloat(res.base.report.totals.c))
+            else
+              total = if report.totals.c? then report.totals.c else report.coverage  # v4 || v3
+              $('.toc-diff-stats, .diffbar-item.diffstat, #diffstat')
+                .append("""<span class="codecov codecov-removable"> <strong>#{self.format total}%</strong></span>""")
           else  # v3
             total = report.coverage
             compare = self.format(parseFloat(total) - parseFloat(res.base))
