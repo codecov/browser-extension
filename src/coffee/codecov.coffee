@@ -71,7 +71,7 @@ class window.Codecov
     return if @_processing
     @log('::run')
     self = @
-    @cachekey = "#{@slug}/#{@ref}" + (if @base then "/{@base}" else '')
+    @cachekey = "#{@slug}/#{@ref}" + (if @base then "/#{@base}" else '')
 
     # get fron storage
     # ----------------
