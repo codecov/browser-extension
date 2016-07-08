@@ -1,3 +1,7 @@
+## `v1.0.5`
+- fix [github] overlay for files that are moved+changed
+- fix storage cache key key
+
 ## `v1.0.4`
 - fix compare overlay when base not found
 
