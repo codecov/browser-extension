@@ -130,6 +130,7 @@ class window.Github extends Codecov
         # find covered file
         fp = self.file or file.find('.file-info>span[title]').attr('title')
         if fp
+          fp = fp.split('→')[1].trim() if '→' in fp
           file_data = report.files[fp]
 
           # assure button group
