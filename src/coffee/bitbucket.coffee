@@ -35,21 +35,30 @@ class window.Bitbucket extends Codecov
     # tree view
     $('#source-list tr td.dirname').attr('colspan', 5)
     $('#source-list tr').each ->
-      fn = $('a', @).attr('href')?.split('?')[0].split('/').slice(5).join('/')
-      cov = report?.files?[fn].t.c
+      fp = $('a', @).attr('href')?.split('?')[0].split('/').slice(5).join('/')
+      cov = report?.files?[fp]?.t.c
       if cov?
         $('td.size', @)
-          .after("<td title=\"Coverage\" class=\"codecov codecov-removable\">#{self.format cov}%</td>")
+          .after("""
+            <td title="Coverage"
+                style="background:linear-gradient(90deg, #{self.bg cov} #{cov}%, white #{cov}%);text-align:right;"
+                class="codecov codecov-removable">
+              #{self.format cov}%
+            </td>""")
+      else
+        # add empty cell
+        $('td.size', @).after("<td style=\"color:#e7e7e7\">n/a</td>")
+
 
     # diff file
     $('section.bb-udiff').each ->
-      file = $(@)
-      fp = file.attr('data-path')
-      file = report?.files?[fp]
-      if file?
+      $file = $(@)
+      fp = $file.attr('data-path')
+      data = report?.files?[fp]
+      if data?
         button = $('.aui-button.codecov', @)
                   .attr('title', 'Toggle Codecov')
-                  .text("Coverage #{self.format file.t.c}%")
+                  .text("Coverage #{self.format data.t.c}%")
                   .attr('data-codecov-url', "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/src/#{self.ref}/#{fp}")
                   .unbind()
                   .click(self.toggle_diff)
@@ -58,41 +67,45 @@ class window.Bitbucket extends Codecov
           .find('a.line-numbers').each ->
             a = $(@)
             ln = a.attr('data-tnum')
-            ln = file?.l?[ln]
+            ln = data?.l?[ln]
             if ln? then a.addClass("codecov codecov-#{self.color ln}")
 
       else
-        file.find('.aui-button.codecov').attr('title', 'File coverage not found').text('Not covered')
+        $file.find('.aui-button.codecov').attr('title', 'File coverage not found').text('Not covered')
 
     # single file
     $("#editor-container").each ->
-      file = $(@)
-      fp = file.attr('data-path')
+      $file = $(@)
+      fp = $file.attr('data-path')
       # find covered file
       file = report?.files?[fp]
       filename = fp.split('/').pop()
       if file?
         # ... show diff not full file coverage for compare view
-        button = file.find('.aui-button.codecov')
-                     .attr('title', 'Toggle Codecov')
-                     .text("Coverage #{self.format file.t.c}%")
-                     .unbind()
-                     .click(self.toggle_coverage)
+        button = $file.find('.aui-button.codecov')
+                      .attr('title', 'Toggle Codecov')
+                      .text("Coverage #{self.format file.t.c}%")
+                      .attr('data-codecov-url', '[TODO]')
+                      .unbind()
+                      .click(self.toggle_coverage)
 
         # overlay coverage
-        for ln, cov of coverage['l']
-          $("a[name='#{filename}-#{ln}']", file).addClass("codecov codecov-#{self.color(cov)}")
+        for ln, cov of file['l']
+          $("a[name='#{filename}-#{ln}']", $file).addClass("codecov codecov-#{self.color(cov)}")
 
         # toggle blob/blame
         if self.settings.overlay and self.page in ['src', '']
           button.trigger('click')
 
       else
-        file.find('.aui-button.codecov').attr('title', 'File coverage not found').text('Not covered')
+        $file.find('.aui-button.codecov')
+             .attr('title', 'File coverage not found')
+             .attr('data-codecov-url', '[TODO]')
+             .text('Not covered')
 
   toggle_coverage: (e) ->
     e.preventDefault()
-    if e.altKey
+    if e.altKey or e.shiftKey
       window.location = $(@).attr('data-codecov-url')
 
     else if $('.codecov.codecov-on:first').length == 0

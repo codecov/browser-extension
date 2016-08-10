@@ -7,6 +7,23 @@ class window.Codecov
   found: no   # was coverage found
   urlid: 0    # which url to use when searching reports
   cache: [null, null]
+  colors: ['#f8d9d3', '#f8d9d3', '#f8d9d3', '#f9dad2', '#f9dad2', '#fadad1',
+           '#fadad1', '#fadad1', '#fbdbd0', '#fbdbd0', '#fbdbd0', '#fcdbcf',
+           '#fcdccf', '#fddcce', '#fddcce', '#fdddce', '#feddcd', '#feddcd',
+           '#fedecd', '#ffdecc', '#ffdecc', '#ffdfcc', '#fee0cd', '#fee2cd',
+           '#fee3cd', '#fee4cd', '#fde5ce', '#fde6ce', '#fde7ce', '#fde8ce',
+           '#fce9cf', '#fceacf', '#fcebcf', '#fceccf', '#fbedd0', '#fbeed0',
+           '#fbefd0', '#fbefd0', '#faf0d1', '#faf1d1', '#faf1d1', '#faf2d1',
+           '#faf2d1', '#faf2d1', '#faf3d1', '#f9f3d2', '#f9f4d2', '#f9f4d2',
+           '#f9f4d2', '#f9f5d2', '#f9f5d2', '#f9f5d2', '#f8f6d3', '#f8f6d3',
+           '#f8f6d3', '#f8f7d3', '#f8f7d3', '#f8f7d3', '#f7f8d3', '#f7f7d4',
+           '#f7f7d4', '#f7f8d3', '#f7f8d3', '#f7f9d2', '#f6f9d2', '#f6f9d2',
+           '#f6fad1', '#f6fad1', '#f6fbd0', '#f6fbd0', '#f5fbd0', '#f5fccf',
+           '#f5fccf', '#f4fdce', '#f4fdce', '#f4fdce', '#f3fecd', '#f3fecd',
+           '#f3ffcc', '#f2ffcc', '#f2ffcc', '#f1ffcc', '#f0ffcc', '#eefecd',
+           '#edfecd', '#ecfecd', '#ebfecd', '#e9fecd', '#e8fdce', '#e7fdce',
+           '#e6fdce', '#e5fdce', '#e4fdce', '#e3fccf', '#e2fccf', '#e1fccf',
+           '#e0fccf', '#dffccf', '#defbd0', '#ddfbd0', '#dcfbd0']
   settings:
     urls: []
     overlay: true
@@ -38,10 +55,6 @@ class window.Codecov
 
     # Go
     @_start()
-
-  format: (cov) ->
-    # format with your settings
-    parseFloat(cov).toFixed(2)
 
   get_ref: -> # find and return the page ref
   prepare: -> # first prepare the page for coverage overlay
@@ -97,12 +110,11 @@ class window.Codecov
     @log('::get', endpoint)
     self = @
 
-    if endpoint is 'https://codecov.io'
-      # cc-v4
-      url = "#{endpoint}/api/#{@service}/#{@slug}/" + (if @base then "compare/#{@base}...#{@ref}" else "commits/#{@ref}") + "?src=extension"
+    if '/' in @ref
+      url = "#{endpoint}/api/#{@service}/#{@slug}/#{@ref}&src=extension"
     else
-      # (enterprise) cc-v3
-      url = "#{endpoint}/api/#{@service}/#{@slug}?ref=#{@ref}" + (if @base then "&base=#{@base}"  else "")
+      e = if @base then "compare/#{@base}...#{@ref}" else "commits/#{@ref}"
+      url = "#{endpoint}/api/#{@service}/#{@slug}/#{e}?src=extension"
 
     # get coverage
     # ============
@@ -141,6 +153,14 @@ class window.Codecov
     if store and @cacheable
       storage_set {"#{@cachekey}": res}, -> null
 
+    @yaml =
+      round: res.repo?.yaml?.coverage?.round? || 'down'
+      precision: if res.repo?.yaml?.coverage?.precision? then res.repo.yaml.coverage.precision else 2
+      range: [
+        parseFloat(if res.repo?.yaml?.coverage?.range? then res.repo.yaml.coverage.range[0] else 70),
+        parseFloat(if res.repo?.yaml?.coverage?.range? then res.repo.yaml.coverage.range[1] else 100)
+      ]
+
     try
       @overlay res
 
@@ -167,14 +187,35 @@ class window.Codecov
     else
       "hit"
 
+  bg: (coverage) ->
+    coverage = parseFloat coverage
+    if coverage <= @yaml.range[0]
+      @colors[0]
+    else if coverage >= @yaml.range[1]
+      @colors[100]
+    else
+      @colors[parseInt(((coverage - @yaml.range[0]) / (@yaml.range[1] - @yaml.range[0])) * 100)]
+
   ratio: (x, y) ->
-    # [todo] respect the yml.coverage.ratio & yml.coverage.round
     if x >= y
       "100"
     else if y > x > 0
-      (Math.round( (x / y) * 10000 ) / 100).toFixed(2)
+      @format (Math.round( (x / y) * 10000 ) / 100)
     else
-      "0.00"
+      "0"
+
+  format: (cov) ->
+    cov = parseFloat(cov)
+    if @yaml.round is 'up'
+        _ = parseFloat(Math.pow(10, @yaml.precision))
+        c = (Math.ceil(cov * _) / _)
+    else if @yaml.round is 'down'
+        _ = parseFloat(Math.pow(10, @yaml.precision))
+        c = (Math.floor(cov * _) / _)
+    else
+        c = Math.round(cov, @yaml.precision)
+
+    cov.toFixed(@yaml.precision)
 
   _validate_codecov_yml: ->
     self = @

@@ -4,7 +4,7 @@ $(function(){
       "callback": mocha.run,
       "overlay": true,
       "enterprise": '',
-      "debug_url": "https://bitbucket.org/osallou/go-docker/src/8c304f3171716b23f78dc6c1f6541b290a43386b/godocker/godscheduler.py"
+      "debug_url": "https://bitbucket.org/osallou/go-docker/src/7766b261f7cefae31688636b830fd3497fc80c05/godocker/godscheduler.py"
     });
 });
 
@@ -12,7 +12,7 @@ describe('bitbucket src', function(){
   after(function(){save_coverage('bb-src');});
   it('should start with no errors', function(){
     expect(window.cc).to.have.property('slug').and.to.equal('osallou/go-docker');
-    expect(window.cc).to.have.property('ref').and.to.equal('8c304f3171716b23f78dc6c1f6541b290a43386b');
+    expect(window.cc).to.have.property('ref').and.to.equal('7766b261f7cefae31688636b830fd3497fc80c05');
     expect(window.cc).to.have.property('page').and.to.equal('src');
     expect(window.cc).to.have.property('base').and.to.equal('');
   });
