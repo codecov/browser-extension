@@ -33,6 +33,6 @@ function save_coverage(name){
     "url": "http://localhost:4000/"+name,
     "type": "POST",
     "contentType": 'application/json',
-    "data": JSON.stringify(_$jscoverage)
+    "data": {"coverage": JSON.stringify(_$jscoverage)}
   });
 }
