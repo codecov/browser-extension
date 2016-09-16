@@ -54,15 +54,16 @@ class window.Github extends Codecov
     $('.repository-content .file').each ->
       file = $(@)
       if file.find('.btn.codecov').length is 0
-        if file.find('.file-actions > .btn-group').length is 0
+        if file.find('.file-actions > .BtnGroup').length is 0
           file
             .find('.file-actions a:first')
-            .wrap('<div class="btn-group"></div>')
+            .wrap('<div class="BtnGroup"></div>')
         file
-          .find('.file-actions > .btn-group')
-          .prepend("""<a class="btn btn-sm codecov disabled tooltipped tooltipped-n"
+          .find('.file-actions > .BtnGroup')
+          .prepend("""<a class="btn BtnGroup-item btn-sm codecov disabled tooltipped tooltipped-n"
                          aria-label="Requesting coverage from Codecov.io"
                          data-hotkey="c">Coverage loading...</a>""")
+          .find('.btn').addClass('BtnGroup-item')
 
     yes  # get content to overlay
 
@@ -151,10 +152,10 @@ class window.Github extends Codecov
             file_data = report.files[fp]
 
             # assure button group
-            if file.find('.file-actions > .btn-group').length is 0
+            if file.find('.file-actions > .BtnGroup').length is 0
               file
                 .find('.file-actions a:first')
-                .wrap('<div class="btn-group"></div>')
+                .wrap('<div class="BtnGroup"></div>')
 
             # report coverage
             # ===============
