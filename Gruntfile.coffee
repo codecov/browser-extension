@@ -79,7 +79,7 @@ module.exports = (grunt) ->
         command: [
           'cd tmp/firefox'
           '../../node_modules/jpm/bin/jpm xpi'
-          'mv hello@codecov.io-1.0.8.xpi ../../dist/firefox.xpi'
+          'mv hello@codecov.io-1.0.9.xpi ../../dist/firefox.xpi'
           ].join(' && ')
       opera:
         command: 'cp dist/chrome.crx dist/opera.nex'

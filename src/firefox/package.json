@@ -7,7 +7,7 @@
   "homepage": "https://github.com/codecov/browser-extension",
   "icon": "data/icons/codecov-48.png",
   "license": "Apache v2.0",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "preferences": [
     {
       "name": "overlay",

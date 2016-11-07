@@ -146,7 +146,7 @@ class window.Github extends Codecov
           file = $(@)
 
           # find covered file
-          fp = self.file or file.find('.file-info>span[title]').attr('title')
+          fp = self.file or file.find('.file-info>a[title]').attr('title')
           if fp
             fp = fp.split('→')[1].trim() if '→' in fp
             file_data = report.files[fp]
@@ -201,7 +201,7 @@ class window.Github extends Codecov
               total_hits += hits
               total_lines += lines
 
-              if self.page in ['commit', 'compare', 'pull']
+              if self.page in ['commit', 'pull']
                 diff = self.format self.ratio hits, lines
                 button.text("Coverage #{total}% (Diff #{diff}%)")
                 # pull view
