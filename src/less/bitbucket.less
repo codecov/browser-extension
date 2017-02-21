@@ -1,3 +1,29 @@
+@hit: #dbffdb;
+@partial: rgb(247, 246, 172);
+@missed: #ffdddd;
+
+@hit-diff: #4FD94F;
+
+// src/browse view
+.codecov .codecov-removable {
+}
+
+.CodeMirror-code {
+  .codecov-hit{
+    background-color: @hit;
+  }
+  .codecov-partial {
+    background-color: @partial;
+  }
+  .codecov-missed {
+    background-color: @missed;
+  }
+
+  .CodeMirror-gutter-wrapper > .CodeMirror-gutter-elt > .codecov-hit {
+    background-color: @hit-diff;
+  }
+}
+
 // coming soon
 .file-source-container{
   .highlight{

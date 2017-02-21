@@ -86,7 +86,7 @@ class window.Github extends Codecov
         if commit?.totals?.c?
           $commit
             .find('.commit-meta.commit-author-section')
-            .append("""<a title="Codecov Coverage" href="#{base_url}/#{commit.commitid}">#{self.format commit.totals.c}%</a>""")
+            .append("""<a title="Codecov Coverage" href="#{base_url}/#{commit.commitid}">#{self.format commit.totals.c}%</Aa>""")
 
     else
       # v4/commits or v4/compare or v3/commit&compare

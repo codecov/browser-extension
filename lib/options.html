@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Codecov Extension</title>
+  <style>
+    body: { padding: 10px; }
+  </style>
+</head>
+
+<body>
+  <div>
+    <input type="checkbox" id="overlay"> <label>Overlay coverage at startup</label>
+  </div>
+  <br>
+
+  <div>
+    <h3>Codecov Enterprise Endpoint(s)</h3>
+    <textarea id="enterprise" cols="30" rows="2" placeholder="https://codecov.mysite.com"></textarea>
+    <br>
+    <small>HTTPS is required. Ex. <code>https://codecov.mysite.com</code> Newline for each url.</small>
+    <br>
+    Learn more <a href="http://docs.codecov.io/docs/enable-ssl">here</a>.
+  </div>
+
+  <br>
+  <div>
+    <h3>GitHub/Bitbucket/GitLab Endpoint(s)</h3>
+    <textarea id="hosts" cols="30" rows="2" placeholder="github.mysite.com"></textarea>
+    <br>
+    <small>Please use hostname only. Ex. <code>github.mysite.com</code> Newline for each hostname.</small>
+  </div>
+
+  <br>
+  <div>
+    <input type="checkbox" id="debug"> <label>Debug Mode</label>
+  </div>
+  <br>
+
+  <button id="save">Save Changes</button> <span id="status"></span>
+
+  <p style="font-family:monospace;color:grey">Contribute at <a href="https://github.com/codecov/browser-extension">https://github.com/codecov/browser-extension</a></p>
+  <script src="options.js"></script>
+</body>
+</html>
