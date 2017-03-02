@@ -8,7 +8,6 @@ var storage_set = chrome.storage.local.set;
 $(function(){
   chrome.storage.sync.get({'overlay': true, 'enterprise': '', 'debug': false, 'hosts': ''}, function(prefs){
     var hosts = (prefs['hosts'] || '').split('\n');
-	hosts.push('localhost');
     hosts.push('github.com');
     hosts.push('bitbucket.org');
   

@@ -69,7 +69,7 @@ module.exports = (grunt) ->
 
     concat:
       chrome:
-        files: 'tmp/chrome/lib/codecov.js': ['test/data/github/gulp_starter.js', 'src/chrome/chrome.js', 'tmp/chrome/lib/codecov.js']
+        files: 'tmp/chrome/lib/codecov.js': ['src/chrome/chrome.js', 'tmp/chrome/lib/codecov.js']
       firefox:
         files: 'tmp/firefox/data/codecov.js': ['src/firefox/firefox.js', 'tmp/firefox/data/codecov.js']
       safari:

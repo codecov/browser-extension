@@ -3,14 +3,14 @@ class window.BitbucketServer extends Codecov
   ref:''           # sha of head
   href: ''         # Page url
   sub_page: ''     # E.g.: pull-requests/diff
-  timeout: 1500    # Timeout time in ms, for UI updates
+  timeout: 1700    # Timeout time in ms, for UI updates
   time_interval: 0 # Timeout function
   service: 'bbs'   # BBS
 
   getParameterByName: (name, url) ->
     if !url
-      url   = window.location.href
-    name    = name.replace(/[\[\]]/g, "\\$&")
+      url   = window.location.href;
+    name    = name.replace(/[\[\]]/g, "\\$&");
     regex   = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)")
     results = regex.exec(url)
     if results == null
@@ -24,6 +24,7 @@ class window.BitbucketServer extends Codecov
     @log('::bbs_rest_request', url)
     $.ajax
       url: url
+      async: false
       success: (res) ->
         callback res
       error: (xhr, type, reason) ->
@@ -33,8 +34,6 @@ class window.BitbucketServer extends Codecov
     @log('::refresh_href')
     href = (@settings.debug_url or window.location.href).split('/')
     if href != @href
-      @base = ''
-      @ref  = ''
       @href = href
       @parse_href()
       return yes
@@ -51,6 +50,7 @@ class window.BitbucketServer extends Codecov
         else if $('#repository-layout-revision-selector').length != 0
           json = JSON.parse $('#repository-layout-revision-selector').children().eq(1).attr('data-revision-ref')
           @ref = json.latestCommit
+        return yes
       when 'commits'
         ref = 'branch/master/commits?'
         if href[7] == 'commits' && typeof(href[8]) == 'undefined'
@@ -66,37 +66,39 @@ class window.BitbucketServer extends Codecov
             @ref = href[8].split('#')[0]
           else
             @ref = href[8]
+        return yes
       when 'pull-requests'
         if @sub_page is 'commits' and @href[@href.length - 1] is 'commits'
           # commits overview table
           if $('.branch_name').length > 0
             @ref = $($('.branch_name')[0]).text()
+        else 
+          rest_path = "#{@href.slice(3,9).join('/')}/commits"
+          @bbs_rest_request(rest_path, (response) ->
+            if @sub_page is 'diff'
+              self.ref  = response.values[0].id
+              self.base = response.values[1].id
+            else if @sub_page is 'commits'
+              if @href[10].indexOf '#' > -1
+                self.ref = href[10].split('#')[0]
+              else
+                self.ref = href[10]
+              commit_obj = $.grep(response.values, (e) => e.id is self.ref )
+              self.base = commit_obj.parents[0].id
+          )
     no
+
+  post_hooks: ->
+    @log('::post_hooks')
+    href_changed = @refresh_href()
+    @log('::href_changed', href_changed)
+    if href_changed
+      @get_ref @href
 
   update_view: =>
     @log('::update_view')
-    self = @
-    href_changed = @refresh_href()
-    if href_changed
-      if @page == 'pull-requests' and @href[@href.length - 1] != 'commits'
-          rest_path = "#{@href.slice(3,9).join('/')}/commits"
-          @bbs_rest_request(rest_path, (response) ->
-            if self.sub_page == 'diff'
-              self.ref  = response.values[0].id
-              self.base = response.values[1].id
-            else if self.sub_page == 'commits'
-              if self.href[10].indexOf('#') != -1
-                self.ref = self.href[10].split('#')[0]
-              else
-                self.ref = self.href[10]
-              commit_obj = $.grep(response.values, (e) -> return e.id == self.ref)
-              if commit_obj.length
-                self.base = commit_obj[0].parents[0].id
-            self._run()
-          )
-      else
-        @get_ref @href
-        @_run()
+    @post_hooks()
+    @_run()
     clearTimeout(@time_interval)
     @time_interval = 0
 
@@ -160,7 +162,7 @@ class window.BitbucketServer extends Codecov
       $('.file-path > a').each (index, element) =>
         if $(element).text() != @slug.split('/')[1]
           filename += $(element).text() + '/'
-      filename += $('.breadcrumbs').children('.stub').text()
+        filename += $('.breadcrumbs').children('.stub').text()
 
     if $('#browse-table tr').length > 0
       # File tree view
@@ -182,23 +184,22 @@ class window.BitbucketServer extends Codecov
           # add empty cell
           $(@).append("<td class=\"codecov-on\" style=\"color:#e7e7e7\">n/a</td>")
 
-    # Single file view
-    cov = report?.files?[filename]
-    @log('::filename is', filename)
+      # Single file view
+      cov = report?.files?[filename]
 
-    if cov?
-      button = $('.aui-button.codecov')
+      if cov?
+        button = $('.aui-button.codecov')
                  .attr('title', 'Toggle Codecov')
                  .text("Coverage #{self.format cov.t.c}%")
                  .attr('data-codecov-url', "#{self.settings.urls[self.urlid]}/#{self.service}/#{self.slug}/src/#{self.ref}/#{filename}")
 
-      $(button).on('click', ->
-        self.update_view()
-       )
+        $(button).on('click', ->
+          self.update_view()
+        )
 
-      for key, value of cov['l']
-        line =  $('.CodeMirror-code .line:nth-child('+key+')')
-        line.addClass("codecov codecov-#{self.color(value)}")
+        for key, value of cov['l']
+          line =  $('.CodeMirror-code .line:nth-child('+key+')')
+          line.addClass("codecov codecov-#{self.color(value)}")
 
   # Commits
   commits_view: (res) ->
@@ -246,23 +247,14 @@ class window.BitbucketServer extends Codecov
   # Pull requests
   pr_view: (res) =>
     self = @
-    filename = ''
     if @sub_page
       # Specific pull request
       switch @sub_page
         when 'overview'
           0
         when 'diff'
-          report = res.head.report
-          # TODO: Used multiple times with different views, consider a seperate function
-          $('.file-path > span').each (index, element) ->
-            filename += $(element).text()
-          filename += "/#{$('.breadcrumbs').children('.stub').text()}"
-          cov = report.files[filename]
-          for key, value of cov.l
-            line =  $('.side-by-side-diff-editor-to').find('.CodeMirror-code .line:nth-child('+key+')')
-            self.log('::line is', line)
-            line.children('.CodeMirror-gutter-wrapper').find('.line-number').addClass("codecov codecov-#{self.color(value)}")
+          @log('::pull-request:diff', res)
+          0
         when 'commits'
           if @href[@href.length - 1] is 'commits'
             # TODO: This is identical to commits/commits table expect for the id of the table
@@ -281,16 +273,7 @@ class window.BitbucketServer extends Codecov
                 commit
                   .find('.message')
                   .append("""<a style="float:right;" class="codecov-on" title="Codecov Coverage" href="#{base_url}/#{commit_data.commitid}">#{self.format commit_data.totals.c}%</Aa>""")
-          else
-            report = res.head.report
-            # TODO: Used multiple times with different views, consider a seperate function
-            $('.file-path > span').each (index, element) ->
-              filename += $(element).text()
-            filename += "/#{$('.breadcrumbs').children('.stub').text()}"
-            cov = report.files[filename]
-            for key, value of cov.l
-              line =  $('.side-by-side-diff-editor-to').find('.CodeMirror-code .line:nth-child('+key+')')
-              line.children('.CodeMirror-gutter-wrapper').find('.line-number').addClass("codecov codecov-#{self.color(value)}")
+
     else
       # All pull requests overview
       if $('.pull-requests-table').length > 0
