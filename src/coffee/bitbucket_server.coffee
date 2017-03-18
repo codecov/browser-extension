@@ -1,5 +1,4 @@
 class window.BitbucketServer extends Codecov
-  bind_id: ''      # DOM element that triggers updates
   ref:''           # sha of head
   href: ''         # Page url
   sub_page: ''     # E.g.: pull-requests/diff
@@ -83,7 +82,7 @@ class window.BitbucketServer extends Codecov
           @bbs_rest_request(rest_path, (response) ->
             if self.sub_page == 'diff'
               self.ref  = response.values[0].id
-              self.base = response.values[1].id
+              self.base = response.values[0].parents[0].id
             else if self.sub_page == 'commits'
               if self.href[10].indexOf('#') != -1
                 self.ref = self.href[10].split('#')[0]
@@ -118,6 +117,7 @@ class window.BitbucketServer extends Codecov
     if @page == 'pull-requests' and @href.length >= 9
       @sub_page = @href[9]
 
+    ###
     switch @page
       when 'pull-requests'
         if @href.length < 9
@@ -136,22 +136,47 @@ class window.BitbucketServer extends Codecov
           @register_bind_id('.commit-files')
         else
           @register_bind_id('#commits-table')
+     ###
 
   prepare: ->
+    self = @
     @log('::prepare')
     @refresh_href()
 
-    # add Coverage Toggle
-    $('.file-toolbar > .secondary').prepend(
-        '<div class="aui-buttons"><button class="aui-button codecov" title="'+ "#{@messages.status.pending.title}" +'"> '+"#{@messages.status.pending.text}"+'</button></div>'
-     )
-    
+    switch @page
+      when 'browse'
+        if $('.file-content').length != 0
+          $('.file-toolbar > .secondary').prepend(
+            '<div class="aui-buttons"><button class="aui-button codecov-button" title="Toggle coverage from codecov"> Coverage </button></div>'
+          )
+        else if $('.filebrowser-content').length != 0
+          $('.aui-toolbar2-secondary > .aui-buttons').append(
+            '<button class="aui-button codecov-button" title="Toggle coverage from codecov"> Coverage </button>'
+          )
+      when 'commits'
+        if $('.commits-table').length != 0
+          $('.aui-toolbar2-secondary').append(
+            '<div class="aui-buttons"><button class="aui-button codecov-button" title="Toggle coverage from codecov"> Coverage </button></div>'
+          )
+        else if $('.file-content').length != 0
+          setTimeout ->
+            $('#commit-file-content > .file-toolbar > .secondary').prepend(
+              '<button class="aui-button codecov-button" title="Toggle coverage from codecov"> Coverage </button>'
+            )
+            $('.codecov-button').on 'click', ->
+              self.update_view()
+          , 1000
+      when 'pull-requests'
+        $('.tabs-menu').append('<button class="aui-button codecov-button" style="float:right; border-bottom:0; border-radius:0" title="Toggle coverage from codecov"> Coverage </button>')
+    $('.codecov-button').on 'click', ->
+      self.update_view()
     yes
 
   # Views
 
   # Browse/src view
   browse_view: (res) ->
+    @log('::browse_view', res)
     self = @
     report = res?.commit?.report or res?.head?.report
     filename = ''
@@ -202,6 +227,7 @@ class window.BitbucketServer extends Codecov
 
   # Commits
   commits_view: (res) ->
+    @log('::commits_view', res)
     self = @
     report = res?.commit?.report or res?.head?.report
     filename = ''
@@ -220,9 +246,8 @@ class window.BitbucketServer extends Codecov
                     .attr('data-codecov-url', coverage_url)
 
         for key, value of cov['l']
-          if value == 1
-            line =  $('.CodeMirror-code .line:nth-child('+key+')')
-            line.children('.CodeMirror-gutter-wrapper').find('.line-number').addClass("codecov codecov-#{self.color(value)}")
+          line =  $('.side-by-side-diff-editor-to').find('.CodeMirror-code .line:nth-child('+key+')')
+          line.children('.CodeMirror-gutter-wrapper').find('.line-number').addClass("codecov codecov-#{self.color(value)}")
 
     else
       # List view, all commits
@@ -245,6 +270,7 @@ class window.BitbucketServer extends Codecov
 
   # Pull requests
   pr_view: (res) =>
+    @log('::pr_view', res)
     self = @
     filename = ''
     if @sub_page
@@ -261,7 +287,6 @@ class window.BitbucketServer extends Codecov
           cov = report.files[filename]
           for key, value of cov.l
             line =  $('.side-by-side-diff-editor-to').find('.CodeMirror-code .line:nth-child('+key+')')
-            self.log('::line is', line)
             line.children('.CodeMirror-gutter-wrapper').find('.line-number').addClass("codecov codecov-#{self.color(value)}")
         when 'commits'
           if @href[@href.length - 1] is 'commits'
@@ -325,8 +350,6 @@ class window.BitbucketServer extends Codecov
   _start: ->
     @log('::start')
     @prepare()
-    if @time_interval == 0
-      @send_signal()
 
   error: (status, reason) ->
     if status is 401
