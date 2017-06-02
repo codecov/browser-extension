@@ -1,4 +1,5 @@
 class window.Bitbucket extends Codecov
+  @href
   get_ref: (href) ->
     @log('::get_ref')
     @service = if window.location.hostname is 'bitbucket.org' or @settings.debug_url? then 'bb' else 'bbs'

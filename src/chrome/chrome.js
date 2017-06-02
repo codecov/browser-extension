@@ -10,7 +10,7 @@ $(function(){
     var hosts = (prefs['hosts'] || '').split('\n');
     hosts.push('github.com');
     hosts.push('bitbucket.org');
-
+  
     if (prefs['debug']) {
       console.log('Detecting hostname', window.location.hostname, hosts);
     }
@@ -31,6 +31,12 @@ $(function(){
       s.src = chrome.extension.getURL('lib/listener.js');
       s.onload = function(){this.parentNode.removeChild(this);};
       (document.head||document.documentElement).appendChild(s);
+	  // inject styles
+	  var style = document.createElement('link');
+	  style.rel = 'stylesheet';
+	  style.type = 'text/css';
+      style.href = chrome.extension.getURL('lib/codecov.css');
+	  (document.head||document.documentElement).appendChild(style);
 
     }
   });

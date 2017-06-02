@@ -1,3 +1,35 @@
+@hit: #dbffdb;
+@partial: rgb(247, 246, 172);
+@missed: #ffdddd;
+
+@hit-diff: #4FD94F;
+@hit-miss: #C44D58;
+
+// src/browse view
+.codecov .codecov-removable {
+}
+
+.CodeMirror-code {
+  .codecov-hit{
+    background-color: @hit;
+  }
+  .codecov-partial {
+    background-color: @partial;
+  }
+  .codecov-missed {
+    background-color: @missed;
+  }
+
+  .CodeMirror-gutter-wrapper > .CodeMirror-gutter-elt {
+    .codecov-hit {
+      background-color: @hit-diff !important;
+    }
+    .codecov-missed {
+      background-color: @hit-miss !important;
+    }
+  }
+}
+
 // coming soon
 .file-source-container{
   .highlight{

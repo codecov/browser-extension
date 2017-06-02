@@ -1,3 +1,9 @@
+require('dotenv').config()
+os = require('os')
+auth_config = 
+  username: process.env.AUTH_USER
+  password: process.env.AUTH_PASSWORD
+
 module.exports = (grunt) ->
   grunt.initConfig
 
@@ -23,6 +29,7 @@ module.exports = (grunt) ->
           'src/coffee/codecov.coffee'
           'src/coffee/github.coffee'
           'src/coffee/bitbucket.coffee'
+          'src/coffee/bitbucket_server.coffee'
           'src/coffee/gitlab.coffee'
         ]
         options: bare: yes
@@ -72,9 +79,7 @@ module.exports = (grunt) ->
       chrome:
         command: [
           'cd tmp/chrome && zip -r ../../dist/chrome.zip .'
-          '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --pack-extension="/Users/peak/Documents/codecov/browser-extension/tmp/chrome" --pack-extension-key="/Users/peak/.ssh/chrome.pem"'
-          'mv ../chrome.crx ../../dist/chrome.crx'
-          ].join(' && ')
+        ]
       firefox:
         command: [
           'cd tmp/firefox'
@@ -126,15 +131,19 @@ module.exports = (grunt) ->
         options:
           remove: ['link', 'script']
           prepend: {selector:'body', html:'<div id="mocha"></div>'},
-          append: {selector:'head', html:'''<link rel="stylesheet" href="../mocha.css" />
-                                            <script src="../mocha.js"></script>
-                                            <script src="../chai.js"></script>
-                                            <script src="../bridge.js"></script>
-                                            <script src="../../lib/jquery-2.1.3.min.js"></script>
-                                            <script src="../deps.js"></script>
-                                            <script src="../../lib-cov/codecov.js"></script>
-                                            <script src="../../lib-cov/github.js"></script>
-                                            <script src="../../lib-cov/bitbucket.js"></script>'''}
+          append:[
+            {selector:'head', html:'''<link rel="stylesheet" href="../mocha.css" />
+                                      <script src="../mocha.js"></script>
+                                      <script src="../chai.js"></script>
+                                      <script src="../sinon-1.17.6.js"></script>
+                                      <script src="../bridge.js"></script>
+                                      <script src="../../lib/jquery-2.1.3.min.js"></script>
+                                      <script src="../deps.js"></script>
+                                      <script src="../../lib-cov/codecov.js"></script>
+                                      <script src="../../lib-cov/github.js"></script>
+                                      <script src="../../lib-cov/bitbucket.js"></script>
+                                      <script src="../../lib-cov/bitbucket_server.js"></script>\n'''}
+          ]
       github_blob: {src: 'test/github/test_blob.html', options: {append: {selector:'body',html:'<script src="test_blob.js"></script>'}}}
       github_pull: {src: 'test/github/test_pull.html', options: {append: {selector:'body',html:'<script src="test_pull.js"></script>'}}}
       github_tree: {src: 'test/github/test_tree.html', options: {append: {selector:'body',html:'<script src="test_tree.js"></script>'}}}
@@ -146,6 +155,20 @@ module.exports = (grunt) ->
       bitbucket_src: {src: 'test/bitbucket/test_src.html', options: {append: {selector:'body',html:'<script src="test_src.js"></script>'}}}
       bitbucket_tree: {src: 'test/bitbucket/test_tree.html', options: {append: {selector:'body',html:'<script src="test_tree.js"></script>'}}}
 
+      bitbucket_server_src:
+        src: 'test/bitbucket_server/test_src.html'
+        options: 
+          append:[
+            { selector:'head', html:'<script src="../data/github/gulp_starter.js"></script>\n' }
+            { selector:'head', html:'<script src="test_src.js"></script>\n' }
+          ]
+      bitbucket_server_commit:
+        src: 'test/bitbucket_server/test_commits.html'
+        options: 
+          append:[
+            { selector:'head', html:'<script src="test_commits.js"></script>' }
+          ]
+
     mocha:
       all:
         options:
@@ -153,22 +176,25 @@ module.exports = (grunt) ->
             settings:
               webSecurityEnabled: no
           mocha:
-            ignoreLeaks: no
+            ignoreLeaks: yes
             globals: ['jQuery*', 'codecov']
           urls: [
             # Github
-            'http://localhost:3000/test/github/test_blob.html'
-            'http://localhost:3000/test/github/test_pull.html'
-            'http://localhost:3000/test/github/test_tree.html'
-            'http://localhost:3000/test/github/test_blame.html'
-            'http://localhost:3000/test/github/test_compare.html'
-            'http://localhost:3000/test/github/test_commit.html'
+            #'http://localhost:3000/test/github/test_blob.html'
+            #'http://localhost:3000/test/github/test_pull.html'
+            #'http://localhost:3000/test/github/test_tree.html'
+            #'http://localhost:3000/test/github/test_blame.html'
+            #'http://localhost:3000/test/github/test_compare.html'
+            #'http://localhost:3000/test/github/test_commit.html'
             # Bitbucket
-            'http://localhost:3000/test/bitbucket/test_src.html'
-            'http://localhost:3000/test/bitbucket/test_tree.html'
+            #'http://localhost:3000/test/bitbucket/test_src.html'
+            #'http://localhost:3000/test/bitbucket/test_tree.html'
+            # Bitbucket server
+            #'http://localhost:3000/test/bitbucket_server/test_commits.html'
+            'http://localhost:3000/test/bitbucket_server/test_src.html'
             # Gitlab
             ]
-          run: no
+          run: yes
           reporter: 'mocha-phantom-coverage-reporter'
           timeout: 10000
 

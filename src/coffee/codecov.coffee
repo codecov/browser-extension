@@ -7,6 +7,21 @@ class window.Codecov
   found: no   # was coverage found
   urlid: 0    # which url to use when searching reports
   cache: [null, null]
+  messages: 
+    status: 
+      pending: 
+        title: 'Requesting coverage from Codecov.io'
+        text: 'Coverage loading...'
+      not_found: 
+        title: 'Coverage not found'
+        text: 'No coverage'
+      login:
+        title: 'Login to view coverage by Codecov'
+        text: 'Please login at Codecov'
+      error:
+        title: 'Coverage error',
+        text: 'There was an error loading coverage. Sorry'
+
   colors: ['#f8d9d3', '#f8d9d3', '#f8d9d3', '#f9dad2', '#f9dad2', '#fadad1',
            '#fadad1', '#fadad1', '#fbdbd0', '#fbdbd0', '#fbdbd0', '#fcdbcf',
            '#fcdccf', '#fddcce', '#fddcce', '#fdddce', '#feddcd', '#feddcd',
@@ -232,13 +247,15 @@ window.create_codecov_instance = (prefs, cb) ->
   # hide codecov plugin
   document.getElementById('chrome-install-plugin')?.style.display = 'none'
   document.getElementById('opera-install-plugin')?.style.display = 'none'
-
   # detect git service
   if $('meta[name="hostname"]').length > 0
     new Github prefs, cb
 
-  else if $('meta[name="application-name"]').attr('content') in ['Bitbucket', 'Stash']
+  else if $('meta[name="application-name"]').attr('content') in ['Bitbucket', 'Stash'] and $('meta[name="bb-canon-url"]').attr('content') == 'https://bitbucket.org'
     new Bitbucket prefs, cb
+
+  else if $('meta[name="application-name"]').attr('content') in ['Bitbucket', 'Stash'] and $('meta[name="bb-canon-url"]').attr('content') != 'https://bitbucket.org'
+    new BitbucketServer prefs, cb
 
   else if 'GitLab' in $('meta[name="description"]').attr('content')
     new Gitlab prefs, cb
