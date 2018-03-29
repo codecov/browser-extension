@@ -1,4 +1,4 @@
-if ($ == null || $ == undefined) {
+if (typeof $ === "undefined" || $ == null || $ == undefined) {
   document.addEventListener("pjax:success", function(){
     window.postMessage({type:"codecov"},"*");
   });
