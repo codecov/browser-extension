@@ -1,6 +1,6 @@
 Codecov Extension
 =================
-> Overlay reports directly into Github and Bitbucket to streamline your workflow.
+> Overlay reports directly into GitHub and Bitbucket to streamline your workflow.
 
 [![video][10]][11]
 
